@@ -1,0 +1,23 @@
+<resources>
+  <string name="app_name">KRichTextEditor</string>
+
+  <string name="font_size">Size</string>
+  <string name="font_color">Text Color</string>
+  <string name="font_spacing">Exact Spacing</string>
+  <string name="font_none">none</string>
+  <string name="font_highlight_color">Highlight</string>
+  <string name="font_default_text">AaBbCcDd</string>
+  <string name="font_style_normal">Normal</string>
+  <string name="font_style_heading_1">Heading 1</string>
+  <string name="font_style_heading_2">Heading 2</string>
+  <string name="font_style_heading_3">Heading 3</string>
+  <string name="font_insert">Insert</string>
+  <string name="edit_hyperlink">Edit Hyperlink</string>
+  <string name="address">Address:</string>
+  <string name="text_to_display">Text to display:</string>
+  <string name="ok">OK</string>
+  <string name="edit_table">Edit Table</string>
+  <string name="heading_4">Heading 4</string>
+  <string name="heading_5">Heading 5</string>
+  <string name="heading_6">Heading 6</string>
+</resources>
