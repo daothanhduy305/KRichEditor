@@ -6,15 +6,16 @@
 
   <color name="textPrimary">#2F3640</color>
 
-  <color name="white">#FFFFFF</color>
+  <color name="white">#FFF</color>
   <color name="gray_100">#FAFAFA</color>
   <color name="light_blue_500">#03A9F4</color>
 
   <color name="tintColor">#515151</color>
 
-  <color name="black">#000000</color>
+  <color name="black">#000</color>
   <color name="blue">#2196F3</color>
   <color name="green">#4CAF50</color>
   <color name="yellow">#FFEB3B</color>
   <color name="red">#F44336</color>
+  <color name="editor_toolbar_bg_color">#E5E5E5</color>
 </resources>
