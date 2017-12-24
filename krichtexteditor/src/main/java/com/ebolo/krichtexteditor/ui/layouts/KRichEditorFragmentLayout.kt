@@ -1,6 +1,8 @@
 package com.ebolo.krichtexteditor.ui.layouts
 
 import android.annotation.SuppressLint
+import android.support.v4.content.ContextCompat
+import android.util.Log
 import android.view.Gravity
 import android.view.Gravity.CENTER_VERTICAL
 import android.view.View
@@ -72,7 +74,7 @@ class KRichEditorFragmentLayout(
             UNORDERED, NORMAL, H1, H2, H3, H4, H5, H6
     )
     private val otherButtonIds = listOf(INDENT, OUTDENT, BLOCK_QUOTE, BLOCK_CODE, LINE, CODE_VIEW)
-    private lateinit var barFormatButtons: Map<Int, View>
+    private lateinit var barFormatButtons: Map<Int, ImageView>
     private var menuFormatButtons = mutableMapOf<Int, View>()
 
     private lateinit var webView: WebView
@@ -215,23 +217,12 @@ class KRichEditorFragmentLayout(
 
                         // Add format buttons
                         barFormatButtons = formatButtonIds.map { type ->
-                            val button = imageView(ActionImageView.actionButtonDrawables[type]!!) {
+                            type to imageView(ActionImageView.actionButtonDrawables[type]!!) {
                                 padding = dip(9)
                                 backgroundResource = R.drawable.btn_colored_material
 
-                                var isActivated = false
-
-                                onClick {
-                                    editor.command(type)
-                                    isActivated = !isActivated
-                                    setColorFilter(when {
-                                        isActivated -> R.color.colorAccent
-                                        else -> R.color.tintColor
-                                    })
-                                }
+                                onClick { editor.command(type) }
                             }.apply { actionImageViewStyle() }
-                            // addView(button)
-                            type to button
                         }.toMap()
 
                         // Add other buttons
@@ -242,7 +233,6 @@ class KRichEditorFragmentLayout(
 
                                 onClick { editor.command(type) }
                             }.apply { actionImageViewStyle() }
-                            // addView(button)
                         }
 
                     }.lparams(width = wrapContent, height = dip(40))
@@ -653,6 +643,11 @@ class KRichEditorFragmentLayout(
     }
 
     private fun updateActionStates(@ActionImageView.Companion.ActionType type: Int, value: String) {
+        updateActionStateToolbar(type, value)
+        updateActionStateMenu(type, value)
+    }
+
+    private fun updateActionStateMenu(@ActionImageView.Companion.ActionType type: Int, value: String) {
         if (editorMenu.visibility == View.VISIBLE)
             when (type) {
                 FAMILY -> fontFamilyTextView.text = value
@@ -665,10 +660,21 @@ class KRichEditorFragmentLayout(
                     }
                 }
                 LINE_HEIGHT -> lineHeightTextView.text = value
-                BOLD, ITALIC, UNDERLINE, SUBSCRIPT, SUPERSCRIPT, STRIKETHROUGH, JUSTIFY_LEFT,
-                JUSTIFY_CENTER, JUSTIFY_RIGHT, JUSTIFY_FULL, NORMAL, H1, H2, H3, H4, H5, H6,
-                ORDERED, UNORDERED -> updateActionStates(type, value.toBoolean())
+                in formatButtonIds -> updateActionStates(type, value.toBoolean())
             }
+
+    }
+
+    private fun updateActionStateToolbar(@ActionImageView.Companion.ActionType type: Int, value: String) {
+        if (type in formatButtonIds) {
+            Log.d("Toolbar", "Type = $type, value = $value")
+            barFormatButtons[type]?.setColorFilter(ContextCompat.getColor(editorFragment.context,
+                    when {
+                        value.toBoolean() -> editorFragment.formatButtonActivatedColor
+                        else -> editorFragment.formatButtonDeactivatedColor
+                    }
+            ))
+        }
     }
 
     private fun updateActionStates(@ActionImageView.Companion.ActionType type: Int, isActive: Boolean) {

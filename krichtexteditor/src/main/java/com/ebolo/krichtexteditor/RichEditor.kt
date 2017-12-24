@@ -1,10 +1,11 @@
 package com.ebolo.krichtexteditor
 
-import android.graphics.Typeface.BOLD
 import android.os.Build
+import android.util.Log
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import com.ebolo.krichtexteditor.ui.widgets.ActionImageView
+import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.BOLD
 import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.H1
 import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.H2
 import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.H3
@@ -25,7 +26,7 @@ import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.UNDERLINE
 import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.UNORDERED
 import com.ebolo.krichtexteditor.utils.FontStyle
 import com.github.salomonbrys.kotson.fromJson
-import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 
 /**
  * Rich Editor = Rich Editor Action + Rich Editor Callback
@@ -34,7 +35,7 @@ import com.google.gson.Gson
  */
 
 class RichEditor(private val mWebView: WebView, private val callback: ((type: Int, value: String) -> Unit)?) {
-    private val gson by lazy { Gson() }
+    private val gson by lazy { GsonBuilder().setPrettyPrinting().create() }
     private var mFontStyle = FontStyle()
     var html: String? = null
 
@@ -51,6 +52,8 @@ class RichEditor(private val mWebView: WebView, private val callback: ((type: In
     } catch (e: Exception) {} // ignored
 
     private fun updateStyle(fontStyle: FontStyle) {
+        Log.d("FontStyle", gson.toJson(fontStyle))
+
         if (mFontStyle.fontFamily == null || mFontStyle.fontFamily != fontStyle.fontFamily) {
             if (fontStyle.fontFamily!!.isNotBlank()) {
                 notifyFontStyleChange(
