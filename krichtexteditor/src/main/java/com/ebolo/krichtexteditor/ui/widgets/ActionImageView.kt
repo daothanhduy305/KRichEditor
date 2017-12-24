@@ -5,9 +5,6 @@ import android.support.annotation.IntRange
 import com.ebolo.krichtexteditor.R
 
 class ActionImageView(private val context: Context, val type: Int) {
-    var activatedColor: Int = R.color.colorAccent
-    var deactivatedColor: Int = R.color.tintColor
-
     companion object {
         const val NONE = 0
 
