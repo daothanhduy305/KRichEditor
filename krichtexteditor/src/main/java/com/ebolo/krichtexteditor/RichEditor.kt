@@ -24,6 +24,7 @@ import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.SUPERSCRIP
 import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.UNDERLINE
 import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.UNORDERED
 import com.ebolo.krichtexteditor.utils.FontStyle
+import com.github.salomonbrys.kotson.fromJson
 import com.google.gson.Gson
 
 /**
@@ -46,7 +47,7 @@ class RichEditor(private val mWebView: WebView, private val callback: ((type: In
 
     @JavascriptInterface
     fun updateCurrentStyle(currentStyle: String) = try {
-        updateStyle(gson.fromJson(currentStyle, FontStyle::class.java))
+        updateStyle(gson.fromJson(currentStyle))
     } catch (e: Exception) {} // ignored
 
     private fun updateStyle(fontStyle: FontStyle) {
