@@ -1,12 +1,14 @@
 package com.ebolo.krichtexteditor.ui.layouts
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.support.v4.content.ContextCompat
 import android.util.Log
 import android.view.Gravity
 import android.view.Gravity.CENTER_VERTICAL
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -61,7 +63,9 @@ import com.ebolo.krichtexteditor.ui.widgets.TextEditorWebView
 import org.jetbrains.anko.*
 import org.jetbrains.anko.custom.ankoView
 import org.jetbrains.anko.sdk25.coroutines.onClick
+import org.jetbrains.anko.sdk25.coroutines.onTouch
 import java.util.regex.Pattern
+
 
 class KRichEditorFragmentLayout(
         private val editorFragment: KRichEditorFragment
@@ -108,6 +112,8 @@ class KRichEditorFragmentLayout(
                     }
                     webChromeClient = WebChromeClient()
 
+                    onTouch { _, _ -> hideEditorMenu() }
+
                     settings.javaScriptEnabled = true
                     settings.domStorageEnabled = true
                     editor = RichEditor(this) { type, value -> updateActionStates(type, value) }
@@ -132,13 +138,14 @@ class KRichEditorFragmentLayout(
                         isShown = !isShown
                         when {
                             isShown -> {
-                                webViewHolder.layoutParams = halfLayoutParams
-                                editorMenu.visibility = View.VISIBLE
+                                // Hide soft keyboard if is shown
+                                val imm = ui.ctx.getSystemService(Context.INPUT_METHOD_SERVICE)
+                                            as InputMethodManager
+                                imm.hideSoftInputFromWindow(view.windowToken, 0)
+
+                                showEditorMenu()
                             }
-                            else -> {
-                                webViewHolder.layoutParams = fullLayoutParams
-                                editorMenu.visibility = View.GONE
-                            }
+                            else -> { hideEditorMenu() }
                         }
                     }
                 }.apply { actionImageViewStyle() }
@@ -715,6 +722,18 @@ class KRichEditorFragmentLayout(
             String.format("#%02x%02x%02x", Integer.valueOf(m.group(1)),
                     Integer.valueOf(m.group(2)), Integer.valueOf(m.group(3)))
         } else null
+    }
+
+    private fun hideEditorMenu() {
+        // Make the webview to own the whole space
+        webViewHolder.layoutParams = fullLayoutParams
+        editorMenu.visibility = View.GONE
+    }
+
+    private fun showEditorMenu() {
+        // Share the space among webview and editor menu
+        webViewHolder.layoutParams = halfLayoutParams
+        editorMenu.visibility = View.VISIBLE
     }
 }
 
