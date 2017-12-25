@@ -57,6 +57,7 @@ import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.UNDERLINE
 import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.UNDO
 import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.UNORDERED
 import com.ebolo.krichtexteditor.ui.widgets.ColorPaletteView
+import com.ebolo.krichtexteditor.ui.widgets.TextEditorWebView
 import org.jetbrains.anko.*
 import org.jetbrains.anko.custom.ankoView
 import org.jetbrains.anko.sdk25.coroutines.onClick
@@ -97,15 +98,16 @@ class KRichEditorFragmentLayout(
             weightSum = 2f
 
             webViewHolder = frameLayout {
-                webView = webView {
+
+                webView = ankoView(::TextEditorWebView, 0) {
                     webViewClient = object : WebViewClient() {
                         override fun shouldOverrideUrlLoading(view: WebView, url: String?): Boolean {
                             view.loadUrl(url)
                             return true
                         }
                     }
-
                     webChromeClient = WebChromeClient()
+
                     settings.javaScriptEnabled = true
                     settings.domStorageEnabled = true
                     editor = RichEditor(this) { type, value -> updateActionStates(type, value) }
@@ -113,9 +115,7 @@ class KRichEditorFragmentLayout(
                     loadUrl("file:///android_asset/richEditor.html")
                 }.lparams(width = matchParent, height = matchParent)
 
-            }.lparams(width = matchParent, height = 0) {
-                weight = 2f
-            }
+            }.lparams(width = matchParent, height = 0) { weight = 2f }
 
             // Outer toolbar holder
             editorToolbar = linearLayout {
@@ -605,9 +605,7 @@ class KRichEditorFragmentLayout(
 
                 }.lparams(width = matchParent, height = wrapContent)
 
-            }.lparams(width = matchParent, height = 0) {
-                weight = 1f
-            }
+            }.lparams(width = matchParent, height = 0) { weight = 1f }
         }
     }
 
