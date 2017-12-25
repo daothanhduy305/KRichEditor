@@ -1,7 +1,6 @@
 package com.ebolo.krichtexteditor
 
 import android.os.Build
-import android.util.Log
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import com.ebolo.krichtexteditor.ui.widgets.ActionImageView
@@ -57,7 +56,7 @@ class RichEditor(private val mWebView: WebView, private val callback: ((type: In
     fun getInitText() = placeHolder
 
     private fun updateStyle(fontStyle: FontStyle) {
-        Log.d("FontStyle", gson.toJson(fontStyle))
+        // Log.d("FontStyle", gson.toJson(fontStyle))
 
         if (mFontStyle.fontFamily == null || mFontStyle.fontFamily != fontStyle.fontFamily) {
             if (fontStyle.fontFamily!!.isNotBlank()) {

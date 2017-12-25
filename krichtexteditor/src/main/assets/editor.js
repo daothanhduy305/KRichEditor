@@ -6,7 +6,6 @@ var initSummernote = function(){
         callbacks: {
             onInit: function() {
                 $("#summernote").summernote("fullscreen.toggle");
-                //$('#summernote').summernote('fontName', 'Helvetica Neue');
             }
         }
     });

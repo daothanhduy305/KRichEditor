@@ -3,13 +3,13 @@ package com.ebolo.krichtexteditor.ui.layouts
 import android.annotation.SuppressLint
 import android.content.Context
 import android.support.v4.content.ContextCompat
-import android.util.Log
 import android.view.Gravity
 import android.view.Gravity.CENTER_VERTICAL
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.webkit.WebChromeClient
+import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.FrameLayout
@@ -111,6 +111,7 @@ class KRichEditorFragmentLayout(
 
                     settings.javaScriptEnabled = true
                     settings.domStorageEnabled = true
+                    settings.cacheMode = WebSettings.LOAD_NO_CACHE
                     editor = RichEditor(this) { type, value -> updateActionStates(type, value) }
                     addJavascriptInterface(editor, "KRichEditor")
                     loadUrl("file:///android_asset/richEditor.html")
@@ -160,6 +161,7 @@ class KRichEditorFragmentLayout(
                         imageView( R.drawable.ic_undo) {
                             id = R.id.iv_action_undo
                             padding = dip(8)
+                            backgroundResource = R.drawable.btn_colored_material
 
                             onClick { onActionPerform(UNDO) }
                         }.apply { actionImageViewStyle() }
@@ -167,6 +169,7 @@ class KRichEditorFragmentLayout(
                         imageView(R.drawable.ic_redo) {
                             id = R.id.iv_action_redo
                             padding = dip(8)
+                            backgroundResource = R.drawable.btn_colored_material
 
                             onClick { onActionPerform(REDO) }
                         }.apply { actionImageViewStyle() }
@@ -190,6 +193,7 @@ class KRichEditorFragmentLayout(
                         imageView(R.drawable.ic_insert_photo) {
                             id = R.id.iv_action_insert_image
                             padding = dip(8)
+                            backgroundResource = R.drawable.btn_colored_material
 
                             onClick { onActionPerform(IMAGE) }
                         }.apply { actionImageViewStyle() }
@@ -197,6 +201,7 @@ class KRichEditorFragmentLayout(
                         imageView(R.drawable.ic_insert_link) {
                             id = R.id.iv_action_insert_link
                             padding = dip(8)
+                            backgroundResource = R.drawable.btn_colored_material
 
                             onClick { onActionPerform(LINK) }
                         }.apply { actionImageViewStyle() }
@@ -204,6 +209,7 @@ class KRichEditorFragmentLayout(
                         imageView(R.drawable.ic_table) {
                             id = R.id.iv_action_table
                             padding = dip(11)
+                            backgroundResource = R.drawable.btn_colored_material
 
                             onClick { onActionPerform(TABLE) }
                         }.apply { actionImageViewStyle() }
@@ -665,7 +671,7 @@ class KRichEditorFragmentLayout(
 
     private fun updateActionStateToolbar(@ActionImageView.Companion.ActionType type: Int, value: String) {
         if (type in formatButtonIds) {
-            Log.d("Toolbar", "Type = $type, value = $value")
+            // Log.d("Toolbar", "Type = $type, value = $value")
             barFormatButtons[type]?.setColorFilter(ContextCompat.getColor(editorFragment.context,
                     when {
                         value.toBoolean() -> editorFragment.formatButtonActivatedColor

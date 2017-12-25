@@ -24,24 +24,6 @@ import com.google.gson.annotations.SerializedName
 
 class FontStyle {
 
-    /**
-     * font-family : "Helvetica Neue", Helvetica, Arial, sans-serif
-     * font-size : 36
-     * text-align : start
-     * list-style-type : disc
-     * line-height : 1.1
-     * font-bold : normal
-     * font-italic : normal
-     * font-underline : normal
-     * font-subscript : normal
-     * font-superscript : normal
-     * font-strikethrough : normal
-     * list-style : none
-     * anchor : false
-     * ancestors : [{},{}]
-     * range : {"sc":{},"so":4,"ec":{},"eo":4}
-     */
-
     @SerializedName("font-family") var fontFamily: String? = null
     @SerializedName("font-size") var fontSize: Int = 0
     @SerializedName("font-backColor") var fontBackColor: String? = null
@@ -57,7 +39,6 @@ class FontStyle {
     @SerializedName("font-strikethrough") var fontStrikethrough: String? = null
     @SerializedName("font-block") var fontBlock: String? = null
     @SerializedName("list-style") var listStyle: String? = null
-    var isAnchor: Boolean = false
 
     fun getTextAlign() = when (textAlign.isNullOrBlank()) {
         true -> null
