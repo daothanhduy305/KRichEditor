@@ -104,12 +104,7 @@ class KRichEditorFragmentLayout(
             webViewHolder = frameLayout {
 
                 webView = ankoView(::TextEditorWebView, 0) {
-                    webViewClient = object : WebViewClient() {
-                        override fun shouldOverrideUrlLoading(view: WebView, url: String?): Boolean {
-                            view.loadUrl(url)
-                            return true
-                        }
-                    }
+                    webViewClient = WebViewClient()
                     webChromeClient = WebChromeClient()
 
                     onTouch { _, _ -> hideEditorMenu() }
@@ -139,8 +134,9 @@ class KRichEditorFragmentLayout(
                         when {
                             isShown -> {
                                 // Hide soft keyboard if is shown
-                                val imm = ui.ctx.getSystemService(Context.INPUT_METHOD_SERVICE)
-                                            as InputMethodManager
+                                val imm = ui.ctx
+                                        .getSystemService(Context.INPUT_METHOD_SERVICE)
+                                        as InputMethodManager
                                 imm.hideSoftInputFromWindow(view.windowToken, 0)
 
                                 showEditorMenu()
