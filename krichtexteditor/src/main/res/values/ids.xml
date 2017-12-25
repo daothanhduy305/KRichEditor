@@ -44,7 +44,4 @@
     <item name="iv_action_table" type="id" />
     <item name="iv_action_line" type="id" />
     <item name="iv_action_code_view" type="id" />
-    <item name="webViewHolder" type="id" />
-    <item name="editorToolbar" type="id" />
-    <item name="editorMenu" type="id" />
 </resources>

@@ -97,7 +97,6 @@ class KRichEditorFragmentLayout(
             weightSum = 2f
 
             webViewHolder = frameLayout {
-                id = R.id.webViewHolder
                 webView = webView {
                     webViewClient = object : WebViewClient() {
                         override fun shouldOverrideUrlLoading(view: WebView, url: String?): Boolean {
@@ -120,7 +119,6 @@ class KRichEditorFragmentLayout(
 
             // Outer toolbar holder
             editorToolbar = linearLayout {
-                id = R.id.editorToolbar
                 backgroundColorResource = R.color.editor_toolbar_bg_color
                 gravity = CENTER_VERTICAL
 
@@ -243,7 +241,6 @@ class KRichEditorFragmentLayout(
 
             // Editor menu
             editorMenu = frameLayout {
-                id = R.id.editorMenu
                 visibility = View.GONE
 
                 scrollView {
