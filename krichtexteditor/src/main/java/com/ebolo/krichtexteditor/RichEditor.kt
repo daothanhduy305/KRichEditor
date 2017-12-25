@@ -43,6 +43,8 @@ class RichEditor(private val mWebView: WebView, private val callback: ((type: In
     private val mTextAlignGroup by lazy { listOf(JUSTIFY_LEFT, JUSTIFY_CENTER, JUSTIFY_RIGHT, JUSTIFY_FULL) }
     private val mListStyleGroup by lazy{ listOf(ORDERED, UNORDERED) }
 
+    var placeHolder = "Start writing..."
+
     @JavascriptInterface
     fun returnHtml(html: String) { this.html = html }
 
@@ -50,6 +52,9 @@ class RichEditor(private val mWebView: WebView, private val callback: ((type: In
     fun updateCurrentStyle(currentStyle: String) = try {
         updateStyle(gson.fromJson(currentStyle))
     } catch (e: Exception) {} // ignored
+
+    @JavascriptInterface
+    fun getInitText() = placeHolder
 
     private fun updateStyle(fontStyle: FontStyle) {
         Log.d("FontStyle", gson.toJson(fontStyle))

@@ -1,10 +1,12 @@
 var initSummernote = function(){
+    var initText = KRichEditor.getInitText();
     $('#summernote').summernote({
         toolbar: [],
+        placeholder: initText,
         callbacks: {
-            onInit: function(e) {
+            onInit: function() {
                 $("#summernote").summernote("fullscreen.toggle");
-                $('#summernote').summernote('fontName', 'Helvetica Neue');
+                //$('#summernote').summernote('fontName', 'Helvetica Neue');
             }
         }
     });
