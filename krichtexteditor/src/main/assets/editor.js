@@ -55,26 +55,32 @@ var enable = function() {
 
 var bold = function() {
     $('#summernote').summernote('bold');
+    $('#summernote').summernote('buttons.updateCurrentStyle');
 };
 
 var italic = function() {
     $('#summernote').summernote('italic');
+    $('#summernote').summernote('buttons.updateCurrentStyle');
 };
 
 var underline = function() {
     $('#summernote').summernote('underline');
+    $('#summernote').summernote('buttons.updateCurrentStyle');
 };
 
 var strikethrough = function() {
     $('#summernote').summernote('strikethrough');
+    $('#summernote').summernote('buttons.updateCurrentStyle');
 };
 
 var superscript = function() {
     $('#summernote').summernote('superscript');
+    $('#summernote').summernote('buttons.updateCurrentStyle');
 };
 
 var subscript = function() {
     $('#summernote').summernote('subscript');
+    $('#summernote').summernote('buttons.updateCurrentStyle');
 };
 
 var backColor = function(color) {
