@@ -80,7 +80,8 @@ class KRichEditorFragmentLayout(
     )
     private val otherButtonIds = listOf(INDENT, OUTDENT, BLOCK_QUOTE, BLOCK_CODE, LINE, CODE_VIEW)
     private lateinit var barFormatButtons: Map<Int, ImageView>
-    private var menuFormatButtons = mutableMapOf<Int, View>()
+    private val menuFormatButtons = mutableMapOf<Int, ImageView>()
+    private val menuFormatHeadingBlocks = mutableMapOf<Int, View>()
 
     private lateinit var webView: WebView
     private lateinit var fontFamilyTextView: TextView
@@ -269,9 +270,8 @@ class KRichEditorFragmentLayout(
                                     gravity = Gravity.CENTER
                                     setPadding(dip(16), dip(6), dip(16), dip(6))
 
-                                    fun formatButton(drawable: Int, id: Int) =
+                                    fun formatButton(drawable: Int) =
                                             imageView(drawable) {
-                                                this.id = id
                                                 padding = dip(8)
                                                 backgroundResource = R.drawable.btn_white_material
 
@@ -280,27 +280,10 @@ class KRichEditorFragmentLayout(
                                                     .lparams { weight = 1f }
                                                     .apply { actionImageViewStyle() }
 
-                                    val boldButton = formatButton(
-                                            R.drawable.ic_format_bold,
-                                            R.id.iv_action_bold
-                                    )
-                                    val italicButton = formatButton(
-                                            R.drawable.ic_format_italic,
-                                            R.id.iv_action_italic
-                                    )
-                                    val underlineButton = formatButton(
-                                            R.drawable.ic_format_underlined,
-                                            R.id.iv_action_underline
-                                    )
-                                    val strikethroughButton = formatButton(
-                                            R.drawable.ic_format_strikethrough,
-                                            R.id.iv_action_strikethrough
-                                    )
-
-                                    menuFormatButtons.put(BOLD, boldButton)
-                                    menuFormatButtons.put(ITALIC, italicButton)
-                                    menuFormatButtons.put(UNDERLINE, underlineButton)
-                                    menuFormatButtons.put(STRIKETHROUGH, strikethroughButton)
+                                    menuFormatButtons.put(BOLD, formatButton(R.drawable.ic_format_bold))
+                                    menuFormatButtons.put(ITALIC, formatButton(R.drawable.ic_format_italic))
+                                    menuFormatButtons.put(UNDERLINE, formatButton(R.drawable.ic_format_underlined))
+                                    menuFormatButtons.put(STRIKETHROUGH, formatButton(R.drawable.ic_format_strikethrough))
 
                                 }.lparams(width = matchParent, height = dip(46)) { topMargin = dip(8) }
 
@@ -369,9 +352,8 @@ class KRichEditorFragmentLayout(
                                 gravity = Gravity.CENTER
                                 setPadding(0, dip(16), 0, dip(16))
 
-                                fun justifyButton(drawable: Int, id: Int, neighbor: Boolean = false) =
+                                fun justifyButton(drawable: Int, neighbor: Boolean = false) =
                                         imageView(drawable) {
-                                            this.id = id
                                             padding = dip(10)
                                             backgroundResource = R.drawable.btn_white_material
 
@@ -380,25 +362,21 @@ class KRichEditorFragmentLayout(
                                             if (neighbor) marginStart = dip(16)
                                         }.apply(ImageView::actionImageViewStyle)
 
-                                justifyButton(
-                                        R.drawable.ic_format_align_left,
-                                        R.id.iv_action_justify_left
-                                )
-                                justifyButton(
-                                        R.drawable.ic_format_align_center,
-                                        R.id.iv_action_justify_center,
-                                        true
-                                )
-                                justifyButton(
-                                        R.drawable.ic_format_align_right,
-                                        R.id.iv_action_justify_right,
-                                        true
-                                )
-                                justifyButton(
-                                        R.drawable.ic_format_align_justify,
-                                        R.id.iv_action_justify_full,
-                                        true
-                                )
+                                menuFormatButtons.put(JUSTIFY_LEFT, justifyButton(
+                                        R.drawable.ic_format_align_left
+                                ))
+
+                                menuFormatButtons.put(JUSTIFY_CENTER, justifyButton(
+                                        R.drawable.ic_format_align_center, true
+                                ))
+
+                                menuFormatButtons.put(JUSTIFY_RIGHT, justifyButton(
+                                        R.drawable.ic_format_align_right, true
+                                ))
+
+                                menuFormatButtons.put(JUSTIFY_FULL, justifyButton(
+                                        R.drawable.ic_format_align_justify,true
+                                ))
 
                             }.lparams(width = wrapContent, height = wrapContent) {
                                 marginStart = dip(8)
@@ -415,7 +393,6 @@ class KRichEditorFragmentLayout(
                                 backgroundColorResource = R.color.white
 
                                 fun headingBlock(
-                                        id: Int,
                                         previewText: Pair<String, Float>,
                                         text: Int,
                                         neighbor: Boolean = false
@@ -446,40 +423,40 @@ class KRichEditorFragmentLayout(
                                     if (neighbor) marginStart = dip(8)
                                 }
 
-                                headingBlock(
-                                        id = R.id.ll_normal, previewText = "AaBbCcDd" to 10f,
+                                menuFormatHeadingBlocks.put(NORMAL, headingBlock(
+                                        previewText = "AaBbCcDd" to 10f,
                                         text = R.string.font_style_normal
-                                )
+                                ))
 
-                                headingBlock(
-                                        id = R.id.ll_h1, previewText = "AaBb" to 18f,
+                                menuFormatHeadingBlocks.put(H1, headingBlock(
+                                        previewText = "AaBb" to 18f,
                                         text = R.string.font_style_heading_1, neighbor = true
-                                )
+                                ))
 
-                                headingBlock(
-                                        id = R.id.ll_h2, previewText = "AaBbC" to 14f,
+                                menuFormatHeadingBlocks.put(H2, headingBlock(
+                                        previewText = "AaBbC" to 14f,
                                         text = R.string.font_style_heading_2, neighbor = true
-                                )
+                                ))
 
-                                headingBlock(
-                                        id = R.id.ll_h3, previewText = "AaBbCcD" to 12f,
+                                menuFormatHeadingBlocks.put(H3, headingBlock(
+                                        previewText = "AaBbCcD" to 12f,
                                         text = R.string.font_style_heading_3, neighbor = true
-                                )
+                                ))
 
-                                headingBlock(
-                                        id = R.id.ll_h4, previewText = "AaBbCcDd" to 12f,
+                                menuFormatHeadingBlocks.put(H4, headingBlock(
+                                        previewText = "AaBbCcDd" to 12f,
                                         text = R.string.heading_4, neighbor = true
-                                )
+                                ))
 
-                                headingBlock(
-                                        id = R.id.ll_h5, previewText = "AaBbCcDd" to 12f,
+                                menuFormatHeadingBlocks.put(H5, headingBlock(
+                                        previewText = "AaBbCcDd" to 12f,
                                         text = R.string.heading_5, neighbor = true
-                                )
+                                ))
 
-                                headingBlock(
-                                        id = R.id.ll_h6, previewText = "AaBbCcDd" to 12f,
+                                menuFormatHeadingBlocks.put(H6, headingBlock(
+                                        previewText = "AaBbCcDd" to 12f,
                                         text = R.string.heading_6, neighbor = true
-                                )
+                                ))
 
                             }.lparams { topMargin = dip(8) }
 
@@ -503,17 +480,18 @@ class KRichEditorFragmentLayout(
                                 gravity = Gravity.CENTER
                                 setPadding(0, dip(8), 0, dip(8))
 
-                                fun formatButton(item: Pair<Int, Int>) =
-                                        imageView(item.first) {
-                                            id = item.second
-                                            backgroundResource = R.drawable.btn_white_material
-                                            padding = dip(10)
-                                        }
-
-                                formatButton(item1).apply { actionImageViewStyle() }
-                                formatButton(item2)
-                                        .lparams { marginStart = dip(32) }
-                                        .apply { actionImageViewStyle() }
+                                fun formatButton(item: Pair<Int, Int>, isSecond: Boolean = false) =
+                                        menuFormatButtons.put(
+                                                item.first,
+                                                imageView(item.second) {
+                                                    backgroundResource = R.drawable.btn_white_material
+                                                    padding = dip(10)
+                                                }
+                                                        .lparams { if (isSecond) marginStart = dip(32) }
+                                                        .apply { actionImageViewStyle() }
+                                        )
+                                formatButton(item1)
+                                formatButton(item2, true)
                             }.lparams(width = wrapContent, height = wrapContent) {
                                 weight = 1f
                                 if (isSecond) marginStart = dip(8)
@@ -525,17 +503,17 @@ class KRichEditorFragmentLayout(
                         }.lparams(width = matchParent, height = wrapContent) { topMargin = dip(8) }
 
                         additionalFormatBox(
-                                item1 = R.drawable.ic_format_indent_increase to R.id.iv_action_indent,
-                                item2 = R.drawable.ic_format_indent_decrease to R.id.iv_action_outdent,
-                                item3 = R.drawable.ic_format_list_bulleted to R.id.iv_action_insert_bullets,
-                                item4 = R.drawable.ic_format_list_numbered to R.id.iv_action_insert_numbers
+                                item1 = INDENT to R.drawable.ic_format_indent_increase,
+                                item2 = OUTDENT to R.drawable.ic_format_indent_decrease,
+                                item3 = UNORDERED to R.drawable.ic_format_list_bulleted,
+                                item4 = ORDERED to R.drawable.ic_format_list_numbered
                         )
 
                         additionalFormatBox(
-                                item1 = R.drawable.ic_format_subscript to R.id.iv_action_subscript,
-                                item2 = R.drawable.ic_format_superscript to R.id.iv_action_superscript,
-                                item3 = R.drawable.ic_format_quote to R.id.iv_action_blockquote,
-                                item4 = R.drawable.ic_code_block to R.id.iv_action_code_block
+                                item1 = SUBSCRIPT to R.drawable.ic_format_subscript,
+                                item2 = SUPERSCRIPT to R.drawable.ic_format_superscript,
+                                item3 = BLOCK_QUOTE to R.drawable.ic_format_quote,
+                                item4 = BLOCK_CODE to R.drawable.ic_code_block
                         )
 
                         verticalLayout {
@@ -633,7 +611,7 @@ class KRichEditorFragmentLayout(
     }
 
     private fun updateActionStateMenu(@ActionImageView.Companion.ActionType type: Int, value: String) {
-        if (editorMenu.visibility == View.VISIBLE)
+        // if (editorMenu.visibility == View.VISIBLE)
             when (type) {
                 FAMILY -> fontFamilyTextView.text = value
                 SIZE -> fontSizeTextView.text = value.toDouble().toInt().toString()
@@ -645,7 +623,23 @@ class KRichEditorFragmentLayout(
                     }
                 }
                 LINE_HEIGHT -> lineHeightTextView.text = value
-                in formatButtonIds -> updateActionStates(type, value.toBoolean())
+                in formatButtonIds -> when (type) {
+                    NORMAL, H1, H2, H3, H4, H5, H6 -> {
+                        menuFormatHeadingBlocks[type]?.backgroundResource = when {
+                            value.toBoolean() -> R.drawable.round_rectangle_blue
+                            else -> R.drawable.round_rectangle_white
+                        }
+                    }
+                    else -> {
+                        menuFormatButtons[type]?.setColorFilter(ContextCompat.getColor(
+                                editorFragment.context,
+                                when {
+                                    value.toBoolean() -> editorFragment.formatButtonActivatedColor
+                                    else -> editorFragment.formatButtonDeactivatedColor
+                                }
+                        ))
+                    }
+                }
             }
 
     }
@@ -660,42 +654,6 @@ class KRichEditorFragmentLayout(
                     }
             ))
         }
-    }
-
-    private fun updateActionStates(@ActionImageView.Companion.ActionType type: Int, isActive: Boolean) {
-        /*rootView.post(Runnable {
-            var view: View? = null
-            for (e in mViewTypeMap.entries) {
-                val key = e.key
-                if (e.value === type) {
-                    view = rootView.findViewById(key!!)
-                    break
-                }
-            }
-
-            if (view == null) {
-                return@Runnable
-            }
-
-            when (type) {
-                BOLD, ITALIC, UNDERLINE, SUBSCRIPT, SUPERSCRIPT, STRIKETHROUGH,
-                JUSTIFY_LEFT, JUSTIFY_CENTER, JUSTIFY_RIGHT, JUSTIFY_FULL,
-                ORDERED, CODE_VIEW, UNORDERED -> if (isActive) {
-                    (view as ImageView).setColorFilter(
-                            ContextCompat.getColor(getContext(), R.color.colorAccent))
-                } else {
-                    (view as ImageView).setColorFilter(
-                            ContextCompat.getColor(getContext(), R.color.tintColor))
-                }
-                NORMAL, H1, H2, H3, H4, H5, H6 -> if (isActive) {
-                    view.setBackgroundResource(R.drawable.round_rectangle_blue)
-                } else {
-                    view.setBackgroundResource(R.drawable.round_rectangle_white)
-                }
-                else -> {
-                }
-            }
-        })*/
     }
 
     private fun rgbToHex(rgb: String): String? {
