@@ -180,21 +180,23 @@ class RichEditor(private val mWebView: WebView, private val callback: ((type: In
     fun lineHeight(lineHeight: Double) = load("javascript:lineHeight($lineHeight)")
     fun insertImageUrl(imageUrl: String) = load("javascript:insertImageUrl('$imageUrl')")
     fun insertImageData(fileName: String, base64Str: String) {
-        val imageUrl = "data:image/" + fileName
-                .split("\\.".toRegex())
+        val imageUrl = "data:image/${
+        fileName.split("\\.".toRegex())
                 .dropLastWhile { it.isEmpty() }
-                .toTypedArray()[1] + ";base64," + base64Str
+                .toTypedArray()[1]
+        };base64,$base64Str"
         load("javascript:insertImageUrl('$imageUrl')")
     }
     fun insertText(text: String) = load("javascript:insertText('$text')")
     fun createLink(linkText: String, linkUrl: String) = load("javascript:createLink('$linkText','$linkUrl')")
     fun unlink() = load("javascript:unlink()")
     fun codeView() = load("javascript:codeView()")
-    fun insertTable(colCount: Int, rowCount: Int) = load("javascript:insertTable('" + colCount + "x" + rowCount + "')")
+    fun insertTable(colCount: Int, rowCount: Int) = load("javascript:insertTable('${colCount}x$rowCount')")
     fun insertHorizontalRule() = load("javascript:insertHorizontalRule()")
     fun formatBlockquote() = load("javascript:formatBlock('blockquote')")
     fun formatBlockCode() = load("javascript:formatBlock('pre')")
     fun insertHtml(html: String) = load("javascript:pasteHTML('$html')")
+    fun updateStyle() = load("javascript:updateCurrentStyle()")
     // fun refreshHtml(callback: RichEditorCallback) = load("javascript:refreshHTML()")
 
     private fun load(trigger: String) {

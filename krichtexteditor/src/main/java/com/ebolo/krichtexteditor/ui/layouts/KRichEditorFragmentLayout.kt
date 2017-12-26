@@ -736,6 +736,7 @@ class KRichEditorFragmentLayout(
         // Share the space among webview and editor menu
         webViewHolder.layoutParams = halfLayoutParams
         editorMenu.visibility = View.VISIBLE
+        editor.updateStyle()
     }
 }
 

@@ -204,3 +204,7 @@ var insertTable = function(dim){
 var insertHorizontalRule = function() {
     $('#summernote').summernote('insertHorizontalRule');
 }
+
+var updateCurrentStyle = function() {
+    $('#summernote').summernote('buttons.updateCurrentStyle');
+}
