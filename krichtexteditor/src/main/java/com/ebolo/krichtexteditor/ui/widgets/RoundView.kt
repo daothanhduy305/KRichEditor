@@ -65,7 +65,7 @@ class RoundView(context: Context): View(context) {
     }
 
     override fun setSelected(selected: Boolean) {
-        isSelected = selected
+        super.setSelected(selected)
         invalidate()
     }
 
