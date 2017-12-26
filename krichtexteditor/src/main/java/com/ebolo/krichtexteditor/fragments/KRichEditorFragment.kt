@@ -10,6 +10,8 @@ import com.ebolo.krichtexteditor.ui.layouts.KRichEditorFragmentLayout
 import org.jetbrains.anko.AnkoContext
 
 class KRichEditorFragment: Fragment() {
+    private lateinit var layout: KRichEditorFragmentLayout
+
     var formatButtonActivatedColor: Int = R.color.colorAccent
     var formatButtonDeactivatedColor: Int = R.color.tintColor
 
@@ -17,6 +19,13 @@ class KRichEditorFragment: Fragment() {
             inflater: LayoutInflater?,
             container: ViewGroup?,
             savedInstanceState: Bundle?
-    ): View = KRichEditorFragmentLayout(this)
-            .createView(AnkoContext.Companion.create(context, this))
+    ): View {
+        layout = KRichEditorFragmentLayout(this)
+        return layout.createView(AnkoContext.Companion.create(context, this))
+    }
+
+    override fun onResume() {
+        super.onResume()
+        layout.hideEditorMenu()
+    }
 }
