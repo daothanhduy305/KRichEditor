@@ -248,7 +248,7 @@ class KRichEditorFragmentLayout(
 
                                 fontSizeTextView = textView("16") {
                                     textSize = 18f
-                                    textColor = R.color.light_blue_500
+                                    textColor = ContextCompat.getColor(ui.ctx, R.color.light_blue_500)
                                 }.lparams { topMargin = dip(8) }
 
                             }.lparams(width = dip(100), height = dip(100))
@@ -258,7 +258,7 @@ class KRichEditorFragmentLayout(
                                 gravity = Gravity.CENTER
 
                                 fontFamilyTextView = textView {
-                                    textColor = R.color.textPrimary
+                                    textColor = ContextCompat.getColor(ui.ctx, R.color.textPrimary)
                                     textSize = 18f
                                     backgroundResource = R.drawable.btn_white_round_rectangle
                                     gravity = Gravity.CENTER
@@ -359,7 +359,7 @@ class KRichEditorFragmentLayout(
 
                                 lineHeightTextView = textView("16") {
                                     textSize = 18f
-                                    textColor = R.color.light_blue_500
+                                    textColor = ContextCompat.getColor(ui.ctx, R.color.light_blue_500)
                                 }.lparams { topMargin = dip(8) }
 
                             }.lparams(width = wrapContent, height = matchParent) { weight = 1f }
