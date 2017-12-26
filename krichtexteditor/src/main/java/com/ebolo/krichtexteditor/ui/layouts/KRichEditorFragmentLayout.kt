@@ -174,22 +174,6 @@ class KRichEditorFragmentLayout(
                             onClick { onActionPerform(REDO) }
                         }.apply { actionImageViewStyle() }
 
-                        /*themedImageView(R.style.ActionImageView) {
-                            id = R.id.iv_action_txt_color
-                            padding = dip(9)
-                            imageResource = R.drawable.ic_format_text_color
-                            visibility = View.GONE
-
-                        }.lparams(width = wrapContent, height = wrapContent)*/
-
-                        /*themedImageView(R.style.ActionImageView) {
-                            id = R.id.iv_action_txt_bg_color
-                            padding = dip(9)
-                            imageResource = R.drawable.ic_format_text_bg_clolr
-                            visibility = View.GONE
-
-                        }.lparams(width = wrapContent, height = wrapContent)*/
-
                         imageView(R.drawable.ic_insert_photo) {
                             id = R.id.iv_action_insert_image
                             padding = dip(8)
@@ -213,14 +197,6 @@ class KRichEditorFragmentLayout(
 
                             onClick { onActionPerform(TABLE) }
                         }.apply { actionImageViewStyle() }
-
-                        /*themedImageView(R.style.ActionImageView) {
-                            id = R.id.iv_action_line_height
-                            padding = dip(11)
-                            imageResource = R.drawable.ic_line_height
-                            visibility = View.GONE
-
-                        }.lparams(width = wrapContent, height = wrapContent)*/
 
                         // Add format buttons
                         barFormatButtons = formatButtonIds.map { type ->
@@ -267,6 +243,7 @@ class KRichEditorFragmentLayout(
 
                                 textView(R.string.font_size) {
                                     textSize = 10f
+                                    gravity = Gravity.CENTER
                                 }
 
                                 fontSizeTextView = textView("16") {
@@ -376,6 +353,7 @@ class KRichEditorFragmentLayout(
 
                                 textView(R.string.font_spacing) {
                                     textSize = 10f
+                                    gravity = Gravity.CENTER
                                     setPadding(dip(16), 0, dip(16), 0)
                                 }
 
@@ -459,7 +437,10 @@ class KRichEditorFragmentLayout(
                                         bottomMargin = dip(4)
                                     }
 
-                                    textView(text) { textSize = 10f }
+                                    textView(text) {
+                                        textSize = 10f
+                                        gravity = Gravity.CENTER
+                                    }
 
                                 }.lparams(width = dip(80), height = matchParent) {
                                     if (neighbor) marginStart = dip(8)
