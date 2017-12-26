@@ -667,15 +667,19 @@ class KRichEditorFragmentLayout(
 
     fun hideEditorMenu() {
         // Make the webview to own the whole space
-        webViewHolder.layoutParams = fullLayoutParams
-        editorMenu.visibility = View.GONE
+        if (editorMenu.visibility != View.GONE) {
+            webViewHolder.layoutParams = fullLayoutParams
+            editorMenu.visibility = View.GONE
+        }
     }
 
     private fun showEditorMenu() {
         // Share the space among webview and editor menu
-        webViewHolder.layoutParams = halfLayoutParams
-        editorMenu.visibility = View.VISIBLE
-        editor.updateStyle()
+        if (editorMenu.visibility != View.VISIBLE) {
+            webViewHolder.layoutParams = halfLayoutParams
+            editorMenu.visibility = View.VISIBLE
+            editor.updateStyle()
+        }
     }
 }
 
