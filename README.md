@@ -1,5 +1,25 @@
+[ ![Download](https://api.bintray.com/packages/ebolo/ebolo-oss/krichtexteditor/images/download.svg) ](https://bintray.com/ebolo/ebolo-oss/krichtexteditor/_latestVersion)
+
 # KRichEditor
 A rich text editor (based on [Summernote](https://github.com/summernote/summernote) and [MRichTextEditor](https://raw.githubusercontent.com/Even201314/MRichEditor)) ported to Kotlin
+
+# Install
+Add to root Gradle:
+
+    allprojects {
+      repositories {
+          google()
+          jcenter()
+          ...
+          maven { url 'http://dl.bintray.com/ebolo/ebolo-oss' }
+          ...
+      }
+    }
+
+Gradle:
+
+    implementation 'com.ebolo:krichtexteditor:0.0.1'
+
 
 ## Features
 
