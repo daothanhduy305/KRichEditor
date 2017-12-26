@@ -1,8 +1,9 @@
 var initSummernote = function(){
     var initText = KRichEditor.getInitText();
     $('#summernote').summernote({
+        focus: true,
         toolbar: [],
-        placeholder: initText,
+        // placeholder: initText,
         callbacks: {
             onInit: function() {
                 $("#summernote").summernote("fullscreen.toggle");
