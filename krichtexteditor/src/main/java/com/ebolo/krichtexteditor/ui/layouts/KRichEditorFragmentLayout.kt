@@ -76,9 +76,9 @@ class KRichEditorFragmentLayout(
             BOLD, ITALIC, UNDERLINE, SUBSCRIPT, SUPERSCRIPT,
             STRIKETHROUGH, JUSTIFY_LEFT, JUSTIFY_CENTER,
             JUSTIFY_RIGHT, JUSTIFY_FULL, ORDERED,
-            UNORDERED, NORMAL, H1, H2, H3, H4, H5, H6
+            UNORDERED, NORMAL, H1, H2, H3, H4, H5, H6,
+            INDENT, OUTDENT, BLOCK_QUOTE, BLOCK_CODE, LINE, CODE_VIEW
     )
-    private val otherButtonIds = listOf(INDENT, OUTDENT, BLOCK_QUOTE, BLOCK_CODE, LINE, CODE_VIEW)
     private lateinit var barFormatButtons: Map<Int, ImageView>
     private val menuFormatButtons = mutableMapOf<Int, ImageView>()
     private val menuFormatHeadingBlocks = mutableMapOf<Int, View>()
@@ -208,16 +208,6 @@ class KRichEditorFragmentLayout(
                                 onClick { editor.command(type) }
                             }.apply { actionImageViewStyle() }
                         }.toMap()
-
-                        // Add other buttons
-                        otherButtonIds.forEach { type ->
-                            imageView(ActionImageView.actionButtonDrawables[type]!!) {
-                                padding = dip(9)
-                                backgroundResource = R.drawable.btn_colored_material
-
-                                onClick { editor.command(type) }
-                            }.apply { actionImageViewStyle() }
-                        }
 
                     }.lparams(width = wrapContent, height = dip(40))
 
