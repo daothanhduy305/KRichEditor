@@ -58,6 +58,27 @@ Gradle:
 
 <img src="ss/1.jpg" width=300/><img src="ss/2.jpg" width=300/><img src="ss/3.jpg" width=300/><img src="ss/4.jpg" width=300/>
 
+## Usage
+
+Kotlin simple - simply initialize this from any Context:
+
+    val editorFragment = kRichEditorFragment()
+
+Kotlin advanced - you can customize it, too:
+
+    val editorFragment = kRichEditorFragment {
+        // Customization block
+    }
+        
+## Customizations
+
+- To change activated/deactivated state colors:
+
+        formatButtonActivatedColor = R.color.customActivatedColor
+        formatButtonDeactivatedColor = R.color.customDeactivatedColor
+        
+- ...more to come...
+
 ## License
 ```
 The MIT License (MIT)
