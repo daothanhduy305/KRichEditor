@@ -12,33 +12,10 @@
     <item name="iv_selected" type="id" />
     <item name="ll_color_container" type="id" />
     <item name="ll_font_size" type="id" />
-    <item name="iv_action_bold" type="id" />
-    <item name="iv_action_italic" type="id" />
-    <item name="iv_action_underline" type="id" />
-    <item name="iv_action_strikethrough" type="id" />
     <item name="textView" type="id" />
     <item name="ll_line_height" type="id" />
     <item name="tv_font_spacing" type="id" />
-    <item name="iv_action_justify_left" type="id" />
-    <item name="iv_action_justify_center" type="id" />
-    <item name="iv_action_justify_right" type="id" />
-    <item name="iv_action_justify_full" type="id" />
     <item name="hsv_action_bar" type="id" />
-    <item name="ll_normal" type="id" />
-    <item name="ll_h1" type="id" />
-    <item name="ll_h2" type="id" />
-    <item name="ll_h3" type="id" />
-    <item name="ll_h4" type="id" />
-    <item name="ll_h5" type="id" />
-    <item name="ll_h6" type="id" />
-    <item name="iv_action_indent" type="id" />
-    <item name="iv_action_outdent" type="id" />
-    <item name="iv_action_insert_bullets" type="id" />
-    <item name="iv_action_insert_numbers" type="id" />
-    <item name="iv_action_subscript" type="id" />
-    <item name="iv_action_superscript" type="id" />
-    <item name="iv_action_blockquote" type="id" />
-    <item name="iv_action_code_block" type="id" />
     <item name="iv_action_insert_image" type="id" />
     <item name="iv_action_insert_link" type="id" />
     <item name="iv_action_table" type="id" />
