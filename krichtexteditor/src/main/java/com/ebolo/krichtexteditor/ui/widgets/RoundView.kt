@@ -64,10 +64,6 @@ class RoundView(context: Context): View(context) {
         return String.format("#%06X", 0xFFFFFF and bgColor)
     }
 
-    override fun isSelected(): Boolean {
-        return isSelected
-    }
-
     override fun setSelected(selected: Boolean) {
         isSelected = selected
         invalidate()
