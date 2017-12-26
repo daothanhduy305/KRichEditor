@@ -1,4 +1,5 @@
 [ ![Download](https://api.bintray.com/packages/ebolo/ebolo-oss/krichtexteditor/images/download.svg) ](https://bintray.com/ebolo/ebolo-oss/krichtexteditor/_latestVersion)
+[![](https://jitpack.io/v/daothanhduy305/KRichEditor.svg)](https://jitpack.io/#daothanhduy305/KRichEditor)
 
 # KRichEditor
 A rich text editor (based on [Summernote](https://github.com/summernote/summernote) and [MRichTextEditor](https://github.com/Even201314/MRichEditor/)) ported to Kotlin
