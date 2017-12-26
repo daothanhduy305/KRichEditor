@@ -1,5 +1,6 @@
 package com.ebolo.krichtexteditor.fragments
 
+import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
@@ -28,4 +29,11 @@ class KRichEditorFragment: Fragment() {
         super.onResume()
         layout.hideEditorMenu()
     }
+}
+
+fun Context.kRichEditorFragment(
+        setup: ((KRichEditorFragment).() -> Unit)? = null
+): KRichEditorFragment = with (KRichEditorFragment()) {
+    setup?.invoke(this)
+    return this
 }

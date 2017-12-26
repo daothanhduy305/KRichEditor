@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
-import com.ebolo.krichtexteditor.fragments.KRichEditorFragment
+import com.ebolo.krichtexteditor.fragments.kRichEditorFragment
 import org.jetbrains.anko.setContentView
 
 class MainActivity : AppCompatActivity() {
@@ -13,9 +13,11 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         MainActivityLayout().setContentView(this)
 
+        val editorFragment = kRichEditorFragment()
+
         supportFragmentManager
                 .beginTransaction()
-                .replace(R.id.fragment_holder, KRichEditorFragment())
+                .replace(R.id.fragment_holder, editorFragment)
                 .commit()
     }
 
