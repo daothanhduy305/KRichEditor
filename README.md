@@ -2,9 +2,11 @@
 [![](https://jitpack.io/v/daothanhduy305/KRichEditor.svg)](https://jitpack.io/#daothanhduy305/KRichEditor)
 
 # KRichEditor
+
 A rich text editor (based on [Summernote](https://github.com/summernote/summernote) and [MRichTextEditor](https://github.com/Even201314/MRichEditor/)) ported to Kotlin
 
-# Install
+## Install
+
 Add to root Gradle:
 
     allprojects {
@@ -20,7 +22,6 @@ Add to root Gradle:
 Gradle:
 
     implementation 'com.ebolo:krichtexteditor:0.0.1'
-
 
 ## Features
 
@@ -55,7 +56,7 @@ Gradle:
 - Undo
 - Redo
 
-#### Screenshot
+## Screenshot
 
 <img src="ss/1.jpg" width=300/><img src="ss/2.jpg" width=300/><img src="ss/3.jpg" width=300/><img src="ss/4.jpg" width=300/>
 
@@ -81,6 +82,7 @@ Kotlin advanced - you can customize it, too:
 - ...more to come...
 
 ## License
+
 ```
 The MIT License (MIT)
 
