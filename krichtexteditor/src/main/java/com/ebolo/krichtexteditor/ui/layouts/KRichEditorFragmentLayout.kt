@@ -255,13 +255,13 @@ class KRichEditorFragmentLayout(
                                 linearLayout {
                                     backgroundResource = R.drawable.round_rectangle_white
                                     gravity = Gravity.CENTER
-                                    setPadding(0, dip(16), 0, dip(16))
+                                    setPadding(16, dip(6), 16, dip(6))
 
                                     fun justifyButton(
                                             @ActionImageView.Companion.ActionType type: Int,
                                             drawable: Int,
                                             neighbor: Boolean = false) = menuFormatButtons.put(type, imageView(drawable) {
-                                        padding = dip(10)
+                                        padding = dip(8)
                                         backgroundResource = R.drawable.btn_white_material
 
                                         onClick { onActionPerform(type) }
