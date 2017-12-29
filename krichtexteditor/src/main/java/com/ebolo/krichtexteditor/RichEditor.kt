@@ -55,7 +55,7 @@ class RichEditor(private val mWebView: WebView, private val callback: ((type: In
             UNORDERED to "bullet"
     ) }
 
-    var placeHolder = "Start writing..."
+    lateinit var placeHolder: String
 
     @JavascriptInterface
     fun returnHtml(html: String) { this.html = html }

@@ -99,6 +99,11 @@ class KRichEditorFragmentLayout(
     private val fullLayoutParams = LinearLayout.LayoutParams(matchParent, 0, 2f)
     private val halfLayoutParams = LinearLayout.LayoutParams(matchParent, 0, 1f)
 
+    // Customizable settings
+    var buttonActivatedColorId: Int = R.color.colorAccent
+    var buttonDeactivatedColorId: Int = R.color.tintColor
+    var placeHolder = "Start writing..."
+
     @SuppressLint("SetJavaScriptEnabled")
     override fun createView(ui: AnkoContext<KRichEditorFragment>) = with(ui) {
         verticalLayout {
@@ -120,7 +125,11 @@ class KRichEditorFragmentLayout(
                     isFocusable = true
                     isFocusableInTouchMode = true
 
-                    editor = RichEditor(this) { type, value -> updateActionStates(type, value) }
+                    editor = RichEditor(this) {
+                        type, value -> updateActionStates(type, value)
+                    }.apply {
+                        this.placeHolder = this@KRichEditorFragmentLayout.placeHolder
+                    }
                     addJavascriptInterface(editor, "KRichEditor")
                     loadUrl("file:///android_asset/richEditor.html")
                 }.lparams(width = matchParent, height = matchParent)
@@ -621,8 +630,8 @@ class KRichEditorFragmentLayout(
                     menuFormatButtons[type]?.setColorFilter(ContextCompat.getColor(
                             editorFragment.context,
                             when {
-                                value.toBoolean() -> editorFragment.formatButtonActivatedColor
-                                else -> editorFragment.formatButtonDeactivatedColor
+                                value.toBoolean() -> buttonActivatedColorId
+                                else -> buttonDeactivatedColorId
                             }
                     ))
                 }
@@ -636,8 +645,8 @@ class KRichEditorFragmentLayout(
             // Log.d("Toolbar", "Type = $type, value = $value")
             barFormatButtons[type]?.setColorFilter(ContextCompat.getColor(editorFragment.context,
                     when {
-                        value.toBoolean() -> editorFragment.formatButtonActivatedColor
-                        else -> editorFragment.formatButtonDeactivatedColor
+                        value.toBoolean() -> buttonActivatedColorId
+                        else -> buttonDeactivatedColorId
                     }
             ))
         }

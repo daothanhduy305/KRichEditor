@@ -6,15 +6,12 @@ import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.ebolo.krichtexteditor.R
 import com.ebolo.krichtexteditor.ui.layouts.KRichEditorFragmentLayout
 import org.jetbrains.anko.AnkoContext
 
 class KRichEditorFragment: Fragment() {
     private lateinit var layout: KRichEditorFragmentLayout
-
-    var formatButtonActivatedColor: Int = R.color.colorAccent
-    var formatButtonDeactivatedColor: Int = R.color.tintColor
+    var settings: ((KRichEditorFragmentLayout).() -> Unit)? = null
 
     override fun onCreateView(
             inflater: LayoutInflater?,
@@ -22,6 +19,7 @@ class KRichEditorFragment: Fragment() {
             savedInstanceState: Bundle?
     ): View {
         layout = KRichEditorFragmentLayout(this)
+        settings?.invoke(layout)
         return layout.createView(AnkoContext.Companion.create(context, this))
     }
 
@@ -32,8 +30,8 @@ class KRichEditorFragment: Fragment() {
 }
 
 fun Context.kRichEditorFragment(
-        setup: ((KRichEditorFragment).() -> Unit)? = null
+        settings: ((KRichEditorFragmentLayout).() -> Unit)? = null
 ): KRichEditorFragment = with (KRichEditorFragment()) {
-    setup?.invoke(this)
+    this.settings = settings
     return this
 }
