@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/font_size_small"
+        android:title="@string/font_size_small"/>
+    <item
+        android:id="@+id/font_size_normal"
+        android:title="@string/font_size_normal"/>
+    <item
+        android:id="@+id/font_size_large"
+        android:title="@string/font_size_large"/>
+    <item
+        android:id="@+id/font_size_huge"
+        android:title="@string/font_size_huge"/>
+</menu>

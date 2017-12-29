@@ -58,6 +58,7 @@ dependencies {
     // Others
     implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.34'
     implementation 'com.github.salomonbrys.kotson:kotson:2.5.0'
+    implementation 'com.github.whalemare:sheetmenu:1.3.3'
 }
 
 kotlin {

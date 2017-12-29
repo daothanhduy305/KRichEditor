@@ -80,7 +80,7 @@ var fontName = function(fontName) {
 };
 
 var fontSize = function(fontSize) {
-    $('#summernote').summernote('fontSize', fontSize);
+    quill.format('size', fontSize);
 };
 
 var align = function(style) {

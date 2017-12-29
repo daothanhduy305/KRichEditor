@@ -20,6 +20,7 @@ import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.JUSTIFY_LE
 import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.JUSTIFY_RIGHT
 import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.NORMAL
 import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.ORDERED
+import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.SIZE
 import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.STRIKETHROUGH
 import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.SUBSCRIPT
 import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.SUPERSCRIPT
@@ -132,6 +133,10 @@ class RichEditor(private val mWebView: WebView, private val callback: ((type: In
             }
         }
 
+        if (currentFormat.size != quillFormat.size) {
+            notifyFontStyleChange(SIZE, quillFormat.size ?: "normal")
+        }
+
         currentFormat = quillFormat
     }
 
@@ -156,7 +161,7 @@ class RichEditor(private val mWebView: WebView, private val callback: ((type: In
     fun backColor(color: String) = load("javascript:backColor('$color')")
     fun foreColor(color: String) = load("javascript:foreColor('$color')")
     fun fontName(fontName: String) = load("javascript:fontName('$fontName')")
-    fun fontSize(foreSize: Double) = load("javascript:fontSize($foreSize)")
+    fun fontSize(size: String) = load("javascript:fontSize('$size')")
 
     // Paragraph
     fun align(style: String) = load("javascript:align('$style')")

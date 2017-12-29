@@ -5,6 +5,7 @@ import android.content.Context
 import android.support.v4.content.ContextCompat
 import android.view.Gravity
 import android.view.Gravity.CENTER_VERTICAL
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
@@ -65,6 +66,7 @@ import org.jetbrains.anko.*
 import org.jetbrains.anko.custom.ankoView
 import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.jetbrains.anko.sdk25.coroutines.onTouch
+import ru.whalemare.sheetmenu.SheetMenu
 import java.util.regex.Pattern
 
 
@@ -232,6 +234,7 @@ class KRichEditorFragmentLayout(
                         linearLayout {
                             backgroundColorResource = R.color.white
                             padding = dip(16)
+                            weightSum = 10f
 
                             // Font size box
                             verticalLayout {
@@ -244,12 +247,31 @@ class KRichEditorFragmentLayout(
                                     gravity = Gravity.CENTER
                                 }
 
-                                fontSizeTextView = textView("small") {
+                                fontSizeTextView = textView("normal") {
                                     textSize = 18f
                                     textColor = ContextCompat.getColor(ui.ctx, R.color.light_blue_500)
+
+                                    onClick {
+                                        //val menu = PopupMenu(ui.ctx, this@textView)
+                                        SheetMenu().apply {
+                                            titleId = R.string.font_sizes_title
+                                            menu = R.menu.font_sizes_menu
+                                            showIcons = false // true, by default
+
+                                            click = MenuItem.OnMenuItemClickListener {
+                                                onActionPerform(SIZE,  when (it.itemId) {
+                                                    R.id.font_size_small -> "small"
+                                                    R.id.font_size_large -> "large"
+                                                    R.id.font_size_huge -> "huge"
+                                                    else -> ""
+                                                } )
+                                                true
+                                            }
+                                        }.show(ui.ctx)
+                                    }
                                 }.lparams { topMargin = dip(8) }
 
-                            }.lparams(width = dip(100), height = dip(100))
+                            }.lparams(width = dip(0), height = dip(100)) { weight = 3f }
 
                             verticalLayout {
                                 gravity = Gravity.CENTER
@@ -304,7 +326,10 @@ class KRichEditorFragmentLayout(
 
                                 }.lparams(width = matchParent, height = dip(46)) { topMargin = dip(8) }
 
-                            }.lparams(width = matchParent, height = dip(100)) { marginStart = dip(8) }
+                            }.lparams(width = dip(0), height = dip(100)) {
+                                marginStart = dip(8)
+                                weight = 7f
+                            }
 
                         }.lparams(width = matchParent, height = wrapContent)
 
@@ -520,7 +545,7 @@ class KRichEditorFragmentLayout(
                                 insertButton(R.drawable.ic_table, R.id.iv_action_table)
                                 insertButton(R.drawable.ic_code_review, R.id.iv_action_code_view)
 
-                            }.lparams(width = matchParent, height = wrapContent) { topMargin = dip(4) }
+                            }.lparams(width = matchParent, height = wrapContent) { topMargin = dip(8) }
 
                         }.lparams(width = matchParent, height = wrapContent) { topMargin = dip(8) }
 
@@ -543,7 +568,7 @@ class KRichEditorFragmentLayout(
         when (type) {
             UNDO -> editor.undo()
             REDO -> editor.redo()
-            SIZE -> editor.fontSize(param!!.toDouble())
+            SIZE -> editor.fontSize(param!!)
             LINE_HEIGHT -> editor.lineHeight(param!!.toDouble())
             FORE_COLOR -> editor.foreColor(param!!)
             BACK_COLOR -> editor.backColor(param!!)
@@ -576,7 +601,7 @@ class KRichEditorFragmentLayout(
         // if (editorMenu.visibility == View.VISIBLE)
         when (type) {
             FAMILY -> fontFamilyTextView.text = value
-            SIZE -> fontSizeTextView.text = value.toDouble().toInt().toString()
+            SIZE -> fontSizeTextView.text = value
             FORE_COLOR, BACK_COLOR -> {
                 val selectedColor = rgbToHex(value)
                 if (selectedColor != null) {
