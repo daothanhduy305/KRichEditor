@@ -22,6 +22,7 @@ import com.ebolo.krichtexteditor.fragments.EditHyperlinkFragment
 import com.ebolo.krichtexteditor.fragments.KRichEditorFragment
 import com.ebolo.krichtexteditor.fragments.editHyperlinkDialog
 import com.ebolo.krichtexteditor.fragments.editTableDialog
+import com.ebolo.krichtexteditor.ui.actionImageViewStyle
 import com.ebolo.krichtexteditor.ui.widgets.ActionImageView
 import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.BACK_COLOR
 import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.BLOCK_CODE
@@ -227,10 +228,12 @@ class KRichEditorFragmentLayout(
                     verticalLayout {
                         backgroundColorResource = R.color.gray_100
 
+                        // First box: font size, alignment, basic text format
                         linearLayout {
                             backgroundColorResource = R.color.white
                             padding = dip(16)
 
+                            // Font size box
                             verticalLayout {
                                 id = R.id.ll_font_size
                                 gravity = Gravity.CENTER
@@ -248,10 +251,10 @@ class KRichEditorFragmentLayout(
 
                             }.lparams(width = dip(100), height = dip(100))
 
-
                             verticalLayout {
                                 gravity = Gravity.CENTER
 
+                                // Justify(alignment) buttons
                                 linearLayout {
                                     backgroundResource = R.drawable.round_rectangle_white
                                     gravity = Gravity.CENTER
@@ -276,6 +279,7 @@ class KRichEditorFragmentLayout(
 
                                 }.lparams(width = matchParent, height = dip(46))
 
+                                // Basic formats: bold, italic, underline, strike
                                 linearLayout {
                                     backgroundResource = R.drawable.round_rectangle_white
                                     gravity = Gravity.CENTER
@@ -304,6 +308,7 @@ class KRichEditorFragmentLayout(
 
                         }.lparams(width = matchParent, height = wrapContent)
 
+                        // Second box: text color and highlight
                         verticalLayout {
                             backgroundColorResource = R.color.white
                             padding = dip(16)
@@ -338,6 +343,7 @@ class KRichEditorFragmentLayout(
 
                         }.lparams(width = matchParent, height = wrapContent) { topMargin = dip(8) }
 
+                        // Third box: headings
                         horizontalScrollView {
                             id = R.id.hsv_action_bar
 
@@ -417,6 +423,16 @@ class KRichEditorFragmentLayout(
 
                         }.lparams(width = matchParent, height = wrapContent)
 
+                        /**
+                         * Inner function:  additionalFormatBox
+                         * Description:     Create a box with 4 buttons divided into two
+                         *                  smaller ones.
+                         * Param pattern:   a pair mapping ActionType Int to Drawable Res Id
+                         * @param item1 first button
+                         * @param item2 second button
+                         * @param item3 third button
+                         * @param item4 fourth button
+                         */
                         fun additionalFormatBox(
                                 item1: Pair<Int, Int>,
                                 item2: Pair<Int, Int>,
@@ -447,6 +463,7 @@ class KRichEditorFragmentLayout(
                                                         .lparams { if (isSecond) marginStart = dip(32) }
                                                         .apply { actionImageViewStyle() }
                                         )
+
                                 formatButton(item1)
                                 formatButton(item2, true)
                             }.lparams(width = wrapContent, height = wrapContent) {
@@ -473,6 +490,7 @@ class KRichEditorFragmentLayout(
                                 item4 = BLOCK_CODE to R.drawable.ic_code_block
                         )
 
+                        // Sixth box: insert buttons - image, link, table, code
                         verticalLayout {
                             backgroundColorResource = R.color.white
                             padding = dip(16)
@@ -500,29 +518,9 @@ class KRichEditorFragmentLayout(
                                 insertButton(R.drawable.ic_insert_photo, R.id.iv_action_insert_image)
                                 insertButton(R.drawable.ic_insert_link, R.id.iv_action_insert_link)
                                 insertButton(R.drawable.ic_table, R.id.iv_action_table)
-                                insertButton(R.drawable.ic_line, R.id.iv_action_line)
+                                insertButton(R.drawable.ic_code_review, R.id.iv_action_code_view)
 
                             }.lparams(width = matchParent, height = wrapContent) { topMargin = dip(4) }
-
-                        }.lparams(width = matchParent, height = wrapContent) { topMargin = dip(8) }
-
-                        linearLayout {
-                            backgroundColorResource = R.color.white
-                            isBaselineAligned = false
-                            setPadding(dip(16), dip(8), dip(16), dip(8))
-
-                            linearLayout {
-                                backgroundResource = R.drawable.round_rectangle_white
-                                gravity = Gravity.CENTER
-                                setPadding(dip(16), dip(8), dip(16), dip(8))
-
-                                imageView(R.drawable.ic_code_review) {
-                                    id = R.id.iv_action_code_view
-                                    backgroundResource = R.drawable.btn_white_material
-                                    padding = dip(10)
-                                }.apply { actionImageViewStyle() }
-
-                            }.lparams(width = wrapContent, height = wrapContent) { topMargin = dip(8) }
 
                         }.lparams(width = matchParent, height = wrapContent) { topMargin = dip(8) }
 
@@ -534,15 +532,22 @@ class KRichEditorFragmentLayout(
         }
     }
 
-    private fun onActionPerform(@ActionImageView.Companion.ActionType type: Int, value: String? = null) {
+    /**
+     * Function:    onActionPerform
+     * Description: Declare sets of actions of formatting buttons
+     * @param type type of action defined in ActionImageView class
+     * @param param param of action if necessary
+     * @see ActionImageView
+     */
+    private fun onActionPerform(@ActionImageView.Companion.ActionType type: Int, param: String? = null) {
         when (type) {
             UNDO -> editor.undo()
             REDO -> editor.redo()
-            SIZE -> editor.fontSize(value!!.toDouble())
-            LINE_HEIGHT -> editor.lineHeight(value!!.toDouble())
-            FORE_COLOR -> editor.foreColor(value!!)
-            BACK_COLOR -> editor.backColor(value!!)
-            FAMILY -> editor.fontName(value!!)
+            SIZE -> editor.fontSize(param!!.toDouble())
+            LINE_HEIGHT -> editor.lineHeight(param!!.toDouble())
+            FORE_COLOR -> editor.foreColor(param!!)
+            BACK_COLOR -> editor.backColor(param!!)
+            FAMILY -> editor.fontName(param!!)
             IMAGE -> imageCallback?.invoke()
             LINK -> {
                 val dialog = editHyperlinkDialog {
@@ -638,9 +643,4 @@ class KRichEditorFragmentLayout(
             editor.updateStyle()
         }
     }
-}
-
-fun ImageView.actionImageViewStyle() {
-    layoutParams.width = dip(40)
-    layoutParams.height = dip(40)
 }
