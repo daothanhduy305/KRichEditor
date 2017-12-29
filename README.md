@@ -1,5 +1,6 @@
-[ ![Download](https://api.bintray.com/packages/ebolo/ebolo-oss/krichtexteditor/images/download.svg) ](https://bintray.com/ebolo/ebolo-oss/krichtexteditor/_latestVersion)
+[ ![Download](https://api.bintray.com/packages/ebolo/ebolo-oss/krichtexteditor/images/download.svg)](https://bintray.com/ebolo/ebolo-oss/krichtexteditor/_latestVersion)
 [![](https://jitpack.io/v/daothanhduy305/KRichEditor.svg)](https://jitpack.io/#daothanhduy305/KRichEditor)
+[![Build Status](https://travis-ci.org/daothanhduy305/KRichEditor.svg?branch=master)](https://travis-ci.org/daothanhduy305/KRichEditor)
 
 # KRichEditor
 
