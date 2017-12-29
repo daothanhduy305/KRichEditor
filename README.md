@@ -59,7 +59,7 @@ Gradle:
 
 ## Screenshot
 
-<img src="ss/1.jpg" width=300/><img src="ss/2.jpg" width=300/><img src="ss/3.jpg" width=300/><img src="ss/4.jpg" width=300/>
+<img src="https://github.com/daothanhduy305/KRichEditor/raw/master/ss/1.jpg" width=300/><img src="https://github.com/daothanhduy305/KRichEditor/raw/master/ss/2.jpg" width=300/><img src="https://github.com/daothanhduy305/KRichEditor/raw/master/ss/3.jpg" width=300/><img src="https://github.com/daothanhduy305/KRichEditor/raw/master/ss/4.jpg" width=300/>
 
 ## Usage
 
