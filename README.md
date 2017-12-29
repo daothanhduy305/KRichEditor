@@ -3,7 +3,7 @@
 
 # KRichEditor
 
-A rich text editor (based on [Summernote](https://github.com/summernote/summernote) and [MRichTextEditor](https://github.com/Even201314/MRichEditor/)) ported to Kotlin
+A rich text editor (based on [QuillJs](https://quilljs.com/) and [MRichTextEditor](https://github.com/Even201314/MRichEditor/)) ported to Kotlin
 
 ## Install
 
