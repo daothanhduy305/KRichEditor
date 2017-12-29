@@ -1,10 +1,12 @@
 package com.ebolo.krichtexteditor
 
 import android.os.Build
+import android.util.Log
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import com.ebolo.krichtexteditor.ui.widgets.ActionImageView
 import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.BOLD
+import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.CODE_VIEW
 import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.H1
 import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.H2
 import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.H3
@@ -23,7 +25,7 @@ import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.SUBSCRIPT
 import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.SUPERSCRIPT
 import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.UNDERLINE
 import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.UNORDERED
-import com.ebolo.krichtexteditor.utils.FontStyle
+import com.ebolo.krichtexteditor.utils.QuillFormat
 import com.github.salomonbrys.kotson.fromJson
 import com.google.gson.GsonBuilder
 
@@ -35,12 +37,22 @@ import com.google.gson.GsonBuilder
 
 class RichEditor(private val mWebView: WebView, private val callback: ((type: Int, value: String) -> Unit)?) {
     private val gson by lazy { GsonBuilder().setPrettyPrinting().create() }
-    private var mFontStyle = FontStyle()
+    private var currentFormat = QuillFormat()
     var html: String? = null
 
     private val mFontBlockGroup by lazy { listOf(NORMAL, H1, H2, H3, H4, H5, H6) }
-    private val mTextAlignGroup by lazy { listOf(JUSTIFY_LEFT, JUSTIFY_CENTER, JUSTIFY_RIGHT, JUSTIFY_FULL) }
-    private val mListStyleGroup by lazy{ listOf(ORDERED, UNORDERED) }
+    private val mTextAlignGroup by lazy {
+        mapOf(
+                JUSTIFY_LEFT to "",
+                JUSTIFY_CENTER to "center",
+                JUSTIFY_RIGHT to "right",
+                JUSTIFY_FULL to "justify"
+        )
+    }
+    private val mListStyleGroup by lazy{ mapOf(
+            ORDERED to "ordered",
+            UNORDERED to "bullet"
+    ) }
 
     var placeHolder = "Start writing..."
 
@@ -49,92 +61,78 @@ class RichEditor(private val mWebView: WebView, private val callback: ((type: In
 
     @JavascriptInterface
     fun updateCurrentStyle(currentStyle: String) = try {
+        Log.d("Format", currentStyle)
         updateStyle(gson.fromJson(currentStyle))
     } catch (e: Exception) {} // ignored
 
     @JavascriptInterface
     fun getInitText() = placeHolder
 
-    private fun updateStyle(fontStyle: FontStyle) {
+    @JavascriptInterface
+    fun debugJs(message: String) {
+        Log.d("JS", message)
+    }
+
+    private fun updateStyle(quillFormat: QuillFormat) {
         // Log.d("FontStyle", gson.toJson(fontStyle))
 
-        if (mFontStyle.fontFamily == null || mFontStyle.fontFamily != fontStyle.fontFamily) {
-            if (fontStyle.fontFamily!!.isNotBlank()) {
+        if (currentFormat.isBold != quillFormat.isBold) {
+            notifyFontStyleChange(BOLD, quillFormat.isBold.toString())
+        }
+
+        if (currentFormat.isItalic != quillFormat.isItalic) {
+            notifyFontStyleChange(ITALIC, quillFormat.isItalic.toString())
+        }
+
+        if (currentFormat.isUnderline != quillFormat.isUnderline) {
+            notifyFontStyleChange(UNDERLINE, quillFormat.isUnderline.toString())
+        }
+
+        if (currentFormat.isStrike != quillFormat.isStrike) {
+            notifyFontStyleChange(STRIKETHROUGH, quillFormat.isStrike.toString())
+        }
+
+        if (currentFormat.isCode != quillFormat.isCode) {
+            notifyFontStyleChange(CODE_VIEW, quillFormat.isCode.toString())
+        }
+
+        quillFormat.header = quillFormat.header ?: 0
+
+        if (currentFormat.header != quillFormat.header) {
+            mFontBlockGroup.indices.forEach {
                 notifyFontStyleChange(
-                        ActionImageView.FAMILY,
-                        fontStyle.fontFamily!!
-                                .split(",")[0]
-                                .replace("\"", "")
+                        mFontBlockGroup[it],
+                        (quillFormat.header == it).toString()
                 )
             }
         }
 
-        if (mFontStyle.fontForeColor == null || mFontStyle.fontForeColor == fontStyle.fontForeColor) {
-            if (fontStyle.fontForeColor!!.isNotBlank()) {
-                notifyFontStyleChange(ActionImageView.FORE_COLOR, fontStyle.fontForeColor!!)
-            }
+        if (currentFormat.script != quillFormat.script) {
+            notifyFontStyleChange(SUBSCRIPT, (quillFormat.script == "sub").toString())
+            notifyFontStyleChange(SUPERSCRIPT, (quillFormat.script == "super").toString())
         }
 
-        if (mFontStyle.fontBackColor == null || mFontStyle.fontBackColor != fontStyle.fontBackColor) {
-            if (fontStyle.fontBackColor!!.isNotBlank()) {
-                notifyFontStyleChange(ActionImageView.BACK_COLOR, fontStyle.fontBackColor!!)
-            }
-        }
+        quillFormat.align = quillFormat.align ?: ""
 
-        if (mFontStyle.fontSize != fontStyle.fontSize) {
-            notifyFontStyleChange(ActionImageView.SIZE, fontStyle.fontSize.toString())
-        }
-
-        if (mFontStyle.getTextAlign() != fontStyle.getTextAlign()) {
+        if (currentFormat.align != quillFormat.align) {
             mTextAlignGroup.forEach {
-                notifyFontStyleChange(it, (it == fontStyle.getTextAlign()).toString())
+                notifyFontStyleChange(
+                        it.key,
+                        (quillFormat.align == it.value).toString()
+                )
             }
         }
 
-        if (mFontStyle.getLineHeight() != fontStyle.getLineHeight()) {
-            notifyFontStyleChange(
-                    ActionImageView.LINE_HEIGHT,
-                    fontStyle.getLineHeight().toString()
-            )
-        }
-
-        if (mFontStyle.isBold() != fontStyle.isBold()) {
-            notifyFontStyleChange(BOLD, fontStyle.isBold().toString())
-        }
-
-        if (mFontStyle.isItalic() != fontStyle.isItalic()) {
-            notifyFontStyleChange(ITALIC, fontStyle.isItalic().toString())
-        }
-
-        if (mFontStyle.isUnderline() != fontStyle.isUnderline()) {
-            notifyFontStyleChange(UNDERLINE, fontStyle.isUnderline().toString())
-        }
-
-        if (mFontStyle.isSubscript() != fontStyle.isSubscript()) {
-            notifyFontStyleChange(SUBSCRIPT, fontStyle.isSubscript().toString())
-        }
-
-        if (mFontStyle.isSuperscript() != fontStyle.isSuperscript()) {
-            notifyFontStyleChange(SUPERSCRIPT, fontStyle.isSuperscript().toString())
-        }
-
-        if (mFontStyle.isStrikethrough() != fontStyle.isStrikethrough()) {
-            notifyFontStyleChange(STRIKETHROUGH, fontStyle.isStrikethrough().toString())
-        }
-
-        if (mFontStyle.getFontBlock() != fontStyle.getFontBlock()) {
-            mFontBlockGroup.forEach {
-                notifyFontStyleChange(it, (it == fontStyle.getFontBlock()).toString())
-            }
-        }
-
-        if (mFontStyle.getListStyle() != fontStyle.getListStyle()) {
+        if (currentFormat.list != quillFormat.list) {
             mListStyleGroup.forEach {
-                notifyFontStyleChange(it, (it == fontStyle.getListStyle()).toString())
+                notifyFontStyleChange(
+                        it.key,
+                        (quillFormat.list == it.value).toString()
+                )
             }
         }
 
-        mFontStyle = fontStyle
+        currentFormat = quillFormat
     }
 
     private fun notifyFontStyleChange(
@@ -154,29 +152,19 @@ class RichEditor(private val mWebView: WebView, private val callback: ((type: In
     fun italic() = load("javascript:italic()")
     fun underline() = load("javascript:underline()")
     fun strikethrough() = load("javascript:strikethrough()")
-    fun superscript() = load("javascript:superscript()")
-    fun subscript() = load("javascript:subscript()")
+    fun script(style: String) = load("javascript:script('$style')")
     fun backColor(color: String) = load("javascript:backColor('$color')")
     fun foreColor(color: String) = load("javascript:foreColor('$color')")
     fun fontName(fontName: String) = load("javascript:fontName('$fontName')")
     fun fontSize(foreSize: Double) = load("javascript:fontSize($foreSize)")
 
     // Paragraph
-    fun justifyLeft() = load("javascript:justifyLeft()")
-    fun justifyRight() = load("javascript:justifyRight()")
-    fun justifyCenter() = load("javascript:justifyCenter()")
-    fun justifyFull() = load("javascript:justifyFull()")
+    fun align(style: String) = load("javascript:align('$style')")
     fun insertOrderedList() = load("javascript:insertOrderedList()")
     fun insertUnorderedList() = load("javascript:insertUnorderedList()")
     fun indent() = load("javascript:indent()")
     fun outdent() = load("javascript:outdent()")
-    fun formatPara() = load("javascript:formatPara()")
-    fun formatH1() = load("javascript:formatH1()")
-    fun formatH2() = load("javascript:formatH2()")
-    fun formatH3() = load("javascript:formatH3()")
-    fun formatH4() = load("javascript:formatH4()")
-    fun formatH5() = load("javascript:formatH5()")
-    fun formatH6() = load("javascript:formatH6()")
+    fun header(level: Int) = load("javascript:header($level)")
     fun lineHeight(lineHeight: Double) = load("javascript:lineHeight($lineHeight)")
     fun insertImageUrl(imageUrl: String) = load("javascript:insertImageUrl('$imageUrl')")
     fun insertImageData(fileName: String, base64Str: String) {
@@ -212,20 +200,20 @@ class RichEditor(private val mWebView: WebView, private val callback: ((type: In
             ActionImageView.BOLD -> bold()
             ActionImageView.ITALIC -> italic()
             ActionImageView.UNDERLINE -> underline()
-            ActionImageView.SUBSCRIPT -> subscript()
-            ActionImageView.SUPERSCRIPT -> superscript()
+            ActionImageView.SUBSCRIPT -> script("sub")
+            ActionImageView.SUPERSCRIPT -> script("super")
             ActionImageView.STRIKETHROUGH -> strikethrough()
-            ActionImageView.NORMAL -> formatPara()
-            ActionImageView.H1 -> formatH1()
-            ActionImageView.H2 -> formatH2()
-            ActionImageView.H3 -> formatH3()
-            ActionImageView.H4 -> formatH4()
-            ActionImageView.H5 -> formatH5()
-            ActionImageView.H6 -> formatH6()
-            ActionImageView.JUSTIFY_LEFT -> justifyLeft()
-            ActionImageView.JUSTIFY_CENTER -> justifyCenter()
-            ActionImageView.JUSTIFY_RIGHT -> justifyRight()
-            ActionImageView.JUSTIFY_FULL -> justifyFull()
+            ActionImageView.NORMAL -> header(0)
+            ActionImageView.H1 -> header(1)
+            ActionImageView.H2 -> header(2)
+            ActionImageView.H3 -> header(3)
+            ActionImageView.H4 -> header(4)
+            ActionImageView.H5 -> header(5)
+            ActionImageView.H6 -> header(6)
+            ActionImageView.JUSTIFY_LEFT -> align("")
+            ActionImageView.JUSTIFY_CENTER -> align("center")
+            ActionImageView.JUSTIFY_RIGHT -> align("right")
+            ActionImageView.JUSTIFY_FULL -> align("justify")
             ActionImageView.ORDERED -> insertOrderedList()
             ActionImageView.UNORDERED -> insertUnorderedList()
             ActionImageView.INDENT -> indent()

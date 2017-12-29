@@ -113,6 +113,10 @@ class KRichEditorFragmentLayout(
                     settings.javaScriptEnabled = true
                     settings.domStorageEnabled = true
                     settings.cacheMode = WebSettings.LOAD_NO_CACHE
+
+                    isFocusable = true
+                    isFocusableInTouchMode = true
+
                     editor = RichEditor(this) { type, value -> updateActionStates(type, value) }
                     addJavascriptInterface(editor, "KRichEditor")
                     loadUrl("file:///android_asset/richEditor.html")
@@ -237,7 +241,7 @@ class KRichEditorFragmentLayout(
                                     gravity = Gravity.CENTER
                                 }
 
-                                fontSizeTextView = textView("16") {
+                                fontSizeTextView = textView("small") {
                                     textSize = 18f
                                     textColor = ContextCompat.getColor(ui.ctx, R.color.light_blue_500)
                                 }.lparams { topMargin = dip(8) }
@@ -248,11 +252,28 @@ class KRichEditorFragmentLayout(
                             verticalLayout {
                                 gravity = Gravity.CENTER
 
-                                fontFamilyTextView = textView {
-                                    textColor = ContextCompat.getColor(ui.ctx, R.color.textPrimary)
-                                    textSize = 18f
-                                    backgroundResource = R.drawable.btn_white_round_rectangle
+                                linearLayout {
+                                    backgroundResource = R.drawable.round_rectangle_white
                                     gravity = Gravity.CENTER
+                                    setPadding(0, dip(16), 0, dip(16))
+
+                                    fun justifyButton(
+                                            @ActionImageView.Companion.ActionType type: Int,
+                                            drawable: Int,
+                                            neighbor: Boolean = false) = menuFormatButtons.put(type, imageView(drawable) {
+                                        padding = dip(10)
+                                        backgroundResource = R.drawable.btn_white_material
+
+                                        onClick { onActionPerform(type) }
+                                    }.lparams {
+                                        if (neighbor) marginStart = dip(16)
+                                    }.apply { actionImageViewStyle() })
+
+                                    justifyButton(JUSTIFY_LEFT, R.drawable.ic_format_align_left)
+                                    justifyButton(JUSTIFY_CENTER, R.drawable.ic_format_align_center, true)
+                                    justifyButton(JUSTIFY_RIGHT, R.drawable.ic_format_align_right, true)
+                                    justifyButton(JUSTIFY_FULL, R.drawable.ic_format_align_justify, true)
+
                                 }.lparams(width = matchParent, height = dip(46))
 
                                 linearLayout {
@@ -317,57 +338,6 @@ class KRichEditorFragmentLayout(
 
                         }.lparams(width = matchParent, height = wrapContent) { topMargin = dip(8) }
 
-                        linearLayout {
-                            backgroundColorResource = R.color.white
-                            padding = dip(16)
-
-                            verticalLayout {
-                                id = R.id.ll_line_height
-                                gravity = Gravity.CENTER
-                                backgroundResource = R.drawable.btn_white_round_rectangle
-
-                                textView(R.string.font_spacing) {
-                                    textSize = 10f
-                                    gravity = Gravity.CENTER
-                                    setPadding(dip(16), 0, dip(16), 0)
-                                }
-
-                                lineHeightTextView = textView("16") {
-                                    textSize = 18f
-                                    textColor = ContextCompat.getColor(ui.ctx, R.color.light_blue_500)
-                                }.lparams { topMargin = dip(8) }
-
-                            }.lparams(width = wrapContent, height = matchParent) { weight = 1f }
-
-                            linearLayout {
-                                backgroundResource = R.drawable.round_rectangle_white
-                                gravity = Gravity.CENTER
-                                setPadding(0, dip(16), 0, dip(16))
-
-                                fun justifyButton(
-                                        @ActionImageView.Companion.ActionType type: Int,
-                                        drawable: Int,
-                                        neighbor: Boolean = false) = menuFormatButtons.put(type, imageView(drawable) {
-                                    padding = dip(10)
-                                    backgroundResource = R.drawable.btn_white_material
-
-                                    onClick { onActionPerform(type) }
-                                }.lparams {
-                                    if (neighbor) marginStart = dip(16)
-                                }.apply { actionImageViewStyle() })
-
-                                justifyButton(JUSTIFY_LEFT, R.drawable.ic_format_align_left)
-                                justifyButton(JUSTIFY_CENTER, R.drawable.ic_format_align_center, true)
-                                justifyButton(JUSTIFY_RIGHT, R.drawable.ic_format_align_right, true)
-                                justifyButton(JUSTIFY_FULL, R.drawable.ic_format_align_justify, true)
-
-                            }.lparams(width = wrapContent, height = wrapContent) {
-                                marginStart = dip(8)
-                                weight = 1f
-                            }
-
-                        }.lparams(width = matchParent, height = wrapContent) { topMargin = dip(8) }
-
                         horizontalScrollView {
                             id = R.id.hsv_action_bar
 
@@ -380,7 +350,7 @@ class KRichEditorFragmentLayout(
                                         previewText: Pair<String, Float>,
                                         text: Int,
                                         neighbor: Boolean = false
-                                ) = verticalLayout {
+                                ) = menuFormatHeadingBlocks.put(type, verticalLayout {
                                     backgroundResource = R.drawable.round_rectangle_white
                                     gravity = Gravity.CENTER
                                     setPadding(0, 0, 0, dip(8))
@@ -406,7 +376,7 @@ class KRichEditorFragmentLayout(
 
                                 }.lparams(width = dip(80), height = matchParent) {
                                     if (neighbor) marginStart = dip(8)
-                                }
+                                })
 
                                 headingBlock(
                                         NORMAL, previewText = "AaBbCcDd" to 10f,
