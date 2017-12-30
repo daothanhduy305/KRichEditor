@@ -31,7 +31,4 @@ class KRichEditorFragment: Fragment() {
 
 fun Context.kRichEditorFragment(
         settings: ((KRichEditorFragmentLayout).() -> Unit)? = null
-): KRichEditorFragment = with (KRichEditorFragment()) {
-    this.settings = settings
-    return this
-}
+): KRichEditorFragment = KRichEditorFragment().apply { this.settings = settings }
