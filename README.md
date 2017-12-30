@@ -1,6 +1,8 @@
+[![API](https://img.shields.io/badge/API-17%2B-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=17)
 [ ![Download](https://api.bintray.com/packages/ebolo/ebolo-oss/krichtexteditor/images/download.svg)](https://bintray.com/ebolo/ebolo-oss/krichtexteditor/_latestVersion)
 [![](https://jitpack.io/v/daothanhduy305/KRichEditor.svg)](https://jitpack.io/#daothanhduy305/KRichEditor)
 [![Build Status](https://travis-ci.org/daothanhduy305/KRichEditor.svg?branch=master)](https://travis-ci.org/daothanhduy305/KRichEditor)
+[![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-KRichEditor-orange.svg?style=flat)](https://android-arsenal.com/details/1/6611)
 
 # KRichEditor
 
@@ -40,8 +42,6 @@ Gradle:
 - Quote
 - Ordered List
 - Unordered List
-- Code
-- Horizontal Rule
 - Link
 - Image
 - Justify Center
@@ -50,7 +50,6 @@ Gradle:
 - Justify Right
 - Subscript
 - Superscript
-- Font Name
 - Font Size
 - Indent
 - Outdent
