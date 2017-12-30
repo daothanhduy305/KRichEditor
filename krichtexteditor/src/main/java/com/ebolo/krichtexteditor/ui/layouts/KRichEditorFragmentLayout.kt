@@ -9,10 +9,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import android.webkit.WebChromeClient
-import android.webkit.WebSettings
-import android.webkit.WebView
-import android.webkit.WebViewClient
+import android.webkit.*
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -62,8 +59,11 @@ import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.UNDO
 import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.UNORDERED
 import com.ebolo.krichtexteditor.ui.widgets.ColorPaletteView
 import com.ebolo.krichtexteditor.ui.widgets.TextEditorWebView
+import com.github.salomonbrys.kotson.fromJson
+import com.google.gson.Gson
 import org.jetbrains.anko.*
 import org.jetbrains.anko.custom.ankoView
+import org.jetbrains.anko.design.longSnackbar
 import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.jetbrains.anko.sdk25.coroutines.onTouch
 import ru.whalemare.sheetmenu.SheetMenu
@@ -95,6 +95,7 @@ class KRichEditorFragmentLayout(
     private lateinit var editorMenu: FrameLayout
     private lateinit var webViewHolder: FrameLayout
     private lateinit var editorToolbar: LinearLayout
+    private lateinit var rootView: LinearLayout
 
     private val fullLayoutParams = LinearLayout.LayoutParams(matchParent, 0, 2f)
     private val halfLayoutParams = LinearLayout.LayoutParams(matchParent, 0, 1f)
@@ -106,7 +107,7 @@ class KRichEditorFragmentLayout(
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun createView(ui: AnkoContext<KRichEditorFragment>) = with(ui) {
-        verticalLayout {
+        rootView = verticalLayout {
             layoutParams = ViewGroup.LayoutParams(matchParent, matchParent)
             weightSum = 2f
 
@@ -568,6 +569,8 @@ class KRichEditorFragmentLayout(
 
             }.lparams(width = matchParent, height = 0) { weight = 1f }
         }
+
+        rootView
     }
 
     /**
@@ -588,10 +591,19 @@ class KRichEditorFragmentLayout(
             FAMILY -> editor.fontName(param!!)
             IMAGE -> imageCallback?.invoke()
             LINK -> {
-                val dialog = editHyperlinkDialog {
-                    onLinkSet { address, text -> editor.createLink(text, address) }
-                }
-                dialog.show(editorFragment.fragmentManager, EditHyperlinkFragment::class.java.simpleName)
+                editor.getSelection( ValueCallback {
+                    val selection = Gson().fromJson<Map<String, Int>>(it)
+                    if (selection["length"]!! > 0) {
+                        if (!editor.selectingLink())
+                            editHyperlinkDialog {
+                                onLinkSet { editor.createLink(it) }
+                            }.show(
+                                    editorFragment.fragmentManager,
+                                    EditHyperlinkFragment::class.java.simpleName
+                            )
+                        else editor.createLink("")
+                    } else longSnackbar(rootView, R.string.link_empty_warning).show()
+                } )
             }
             TABLE -> {
                 val dialog = editTableDialog {

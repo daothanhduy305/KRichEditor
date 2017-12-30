@@ -136,12 +136,8 @@ var insertText = function(text) {
     $('#summernote').summernote('insertText', text);
 };
 
-var createLink = function(linkText, linkUrl) {
-    $('#summernote').summernote('createLink', {
-      text: linkText,
-      url: linkUrl,
-      isNewWindow: false
-    });
+var createLink = function(linkUrl) {
+    quill.format('link', linkUrl)
 };
 
 var unlink = function() {
@@ -185,3 +181,7 @@ var refreshHTML = function(){
 var updateCurrentStyle = function() {
     KRichEditor.updateCurrentStyle(JSON.stringify(quill.getFormat()));
 };
+
+var getSelection = function() {
+    return quill.getSelection();
+}

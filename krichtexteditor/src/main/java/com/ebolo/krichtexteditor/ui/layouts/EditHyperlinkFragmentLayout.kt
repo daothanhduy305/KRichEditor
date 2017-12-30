@@ -1,48 +1,51 @@
 package com.ebolo.krichtexteditor.ui.layouts
 
+import android.support.design.widget.TextInputEditText
 import android.text.InputType
+import android.view.ViewGroup
 import com.ebolo.krichtexteditor.R
 import com.ebolo.krichtexteditor.fragments.EditHyperlinkFragment
 import org.jetbrains.anko.*
+import org.jetbrains.anko.design.textInputEditText
+import org.jetbrains.anko.design.textInputLayout
 import org.jetbrains.anko.sdk25.coroutines.onClick
 
 class EditHyperlinkFragmentLayout: AnkoComponent<EditHyperlinkFragment> {
-    var callback: ((address: String, text: String) -> Unit)? = null
+    var callback: ((address: String) -> Unit)? = null
+
+    private lateinit var addressInput: TextInputEditText
 
     override fun createView(ui: AnkoContext<EditHyperlinkFragment>) = with(ui) {
-        verticalLayout {
-            // Title bar
-            relativeLayout {
-                backgroundColor = R.color.colorPrimary
+        linearLayout {
+            layoutParams = ViewGroup.LayoutParams(matchParent, wrapContent)
+            padding = dip(10)
 
-                textView(R.string.edit_hyperlink) {
-                    textColor = R.color.white
-                }.lparams {
-                    centerInParent()
+            weightSum = 5f
+
+            textInputLayout {
+
+                addressInput = textInputEditText {
+                    inputType = InputType.TYPE_CLASS_TEXT
+                    maxLines = 1
+                    hintResource = R.string.address
                 }
-            }.lparams(width = matchParent, height = dip(48))
 
-            textView(R.string.address)
-
-            val adressInput = editText {
-                inputType = InputType.TYPE_CLASS_TEXT
-                maxLines = 1
-            }.lparams(width = matchParent, height = wrapContent)
-
-            textView(R.string.text_to_display).lparams { topMargin = dip(32) }
-
-            val textInput = editText {
-                inputType = InputType.TYPE_CLASS_TEXT
-                maxLines = 1
-            }.lparams(width = matchParent, height = wrapContent)
+            }.lparams(width = dip(0), height = wrapContent) { weight = 4f }
 
             button(R.string.ok) {
-                backgroundResource = R.drawable.btn_colored_primary
-                textColor = R.color.white
+                onClick {
+                    val urlValue = addressInput.text.toString()
+                    if (urlValue.startsWith("http://", true)
+                            || urlValue.startsWith("https://", true)) {
+                        callback?.invoke(addressInput.text.toString())
+                        ui.owner.dismiss()
+                    }
+                    else toast(ui.ctx.getString(R.string.link_missing_protocol))
 
-                onClick { callback?.invoke(adressInput.text.toString(), textInput.text.toString()) }
-            }.lparams(width = matchParent, height = wrapContent) {
-                topMargin = dip(32)
+                }
+            }.lparams(width = dip(0), height = wrapContent) {
+                marginStart = dip(10)
+                weight = 1f
             }
         }
     }

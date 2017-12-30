@@ -3,6 +3,7 @@ package com.ebolo.krichtexteditor
 import android.os.Build
 import android.util.Log
 import android.webkit.JavascriptInterface
+import android.webkit.ValueCallback
 import android.webkit.WebView
 import com.ebolo.krichtexteditor.ui.widgets.ActionImageView
 import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.BOLD
@@ -36,7 +37,10 @@ import com.google.gson.GsonBuilder
  * Ported by ebolo(daothanhduy305) on 21/12/2017
  */
 
-class RichEditor(private val mWebView: WebView, private val callback: ((type: Int, value: String) -> Unit)?) {
+class RichEditor(
+        private val mWebView: WebView,
+        private val styleUpdatedCallback: ((type: Int, value: String) -> Unit)?
+) {
     private val gson by lazy { GsonBuilder().setPrettyPrinting().create() }
     private var currentFormat = QuillFormat()
     var html: String? = null
@@ -143,7 +147,7 @@ class RichEditor(private val mWebView: WebView, private val callback: ((type: In
     private fun notifyFontStyleChange(
             @ActionImageView.Companion.ActionType type: Int,
             value: String
-    ) { callback?.invoke(type, value) }
+    ) { styleUpdatedCallback?.invoke(type, value) }
 
     // Start of Js wrapper
     fun undo() = load("javascript:undo()")
@@ -181,7 +185,7 @@ class RichEditor(private val mWebView: WebView, private val callback: ((type: In
         load("javascript:insertImageUrl('$imageUrl')")
     }
     fun insertText(text: String) = load("javascript:insertText('$text')")
-    fun createLink(linkText: String, linkUrl: String) = load("javascript:createLink('$linkText','$linkUrl')")
+    fun createLink(linkUrl: String) = load("javascript:createLink('$linkUrl')")
     fun unlink() = load("javascript:unlink()")
     fun codeView() = load("javascript:codeView()")
     fun insertTable(colCount: Int, rowCount: Int) = load("javascript:insertTable('${colCount}x$rowCount')")
@@ -190,11 +194,12 @@ class RichEditor(private val mWebView: WebView, private val callback: ((type: In
     fun formatBlockCode() = load("javascript:formatBlock('pre')")
     fun insertHtml(html: String) = load("javascript:pasteHTML('$html')")
     fun updateStyle() = load("javascript:updateCurrentStyle()")
-    // fun refreshHtml(callback: RichEditorCallback) = load("javascript:refreshHTML()")
+    fun getSelection(callBack: ValueCallback<String>? = null) = load("javascript:getSelection()", callBack)
+    // fun refreshHtml(styleUpdatedCallback: RichEditorCallback) = load("javascript:refreshHTML()")
 
-    private fun load(trigger: String) {
+    private fun load(trigger: String, callBack: ValueCallback<String>? = null) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            this.mWebView.evaluateJavascript(trigger, null)
+            this.mWebView.evaluateJavascript(trigger, callBack)
         } else {
             this.mWebView.loadUrl(trigger)
         }
@@ -229,4 +234,6 @@ class RichEditor(private val mWebView: WebView, private val callback: ((type: In
             ActionImageView.CODE_VIEW -> codeView()
         }
     }
+
+    fun selectingLink() = !currentFormat.link.isNullOrBlank()
 }

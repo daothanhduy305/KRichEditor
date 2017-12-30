@@ -27,4 +27,6 @@
     <string name="font_size_normal">normal</string>
     <string name="font_size_large">large</string>
     <string name="font_size_huge">huge</string>
+    <string name="link_empty_warning">Select text first!</string>
+    <string name="link_missing_protocol">Missing protocol (http or https)!</string>
 </resources>

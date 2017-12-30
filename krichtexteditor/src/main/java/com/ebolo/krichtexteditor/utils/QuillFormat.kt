@@ -13,4 +13,5 @@ class QuillFormat {
     @SerializedName("list") var list: String? = null
     @SerializedName("code") var isCode: Boolean? = null
     @SerializedName("size") var size: String? = null
+    @SerializedName("link") var link: String? = null
 }
