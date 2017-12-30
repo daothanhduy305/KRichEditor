@@ -259,6 +259,7 @@ class KRichEditorFragmentLayout(
                                 fontSizeTextView = textView("normal") {
                                     textSize = 18f
                                     textColor = ContextCompat.getColor(ui.ctx, R.color.light_blue_500)
+                                    gravity = Gravity.CENTER
 
                                     onClick {
                                         //val menu = PopupMenu(ui.ctx, this@textView)

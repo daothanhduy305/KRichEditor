@@ -81,6 +81,7 @@ var fontName = function(fontName) {
 
 var fontSize = function(fontSize) {
     quill.format('size', fontSize);
+    updateCurrentStyle();
 };
 
 var align = function(style) {
