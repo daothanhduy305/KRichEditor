@@ -158,8 +158,8 @@ class RichEditor(private val mWebView: WebView, private val callback: ((type: In
     fun underline() = load("javascript:underline()")
     fun strikethrough() = load("javascript:strikethrough()")
     fun script(style: String) = load("javascript:script('$style')")
-    fun backColor(color: String) = load("javascript:backColor('$color')")
-    fun foreColor(color: String) = load("javascript:foreColor('$color')")
+    fun backColor(color: String) = load("javascript:background('$color')")
+    fun foreColor(color: String) = load("javascript:color('$color')")
     fun fontName(fontName: String) = load("javascript:fontName('$fontName')")
     fun fontSize(size: String) = load("javascript:fontSize('$size')")
 

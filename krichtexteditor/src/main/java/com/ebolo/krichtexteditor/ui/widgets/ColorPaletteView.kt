@@ -35,8 +35,7 @@ class ColorPaletteView(context: Context): HorizontalScrollView(context) {
             require(!value.isBlank()) { return }
             field = value.toUpperCase()
 
-            val currentSelectedView = colorViews[field]
-            currentSelectedView!!.isSelected = true
+            colorViews.forEach { it.value.isSelected = it.key == field }
         }
 
     private var mOnColorChangeListener: ((String) -> Unit)? = null

@@ -67,12 +67,12 @@ var script = function(style) {
     updateCurrentStyle();
 };
 
-var backColor = function(color) {
-    $('#summernote').summernote('backColor', color);
+var background = function(color) {
+    quill.format('background', color);
 };
 
-var foreColor = function(color) {
-    $('#summernote').summernote('foreColor', color);
+var color = function(color) {
+    quill.format('color', color);
 };
 
 var fontName = function(fontName) {

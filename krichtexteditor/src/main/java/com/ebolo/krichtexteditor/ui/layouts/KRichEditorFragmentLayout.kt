@@ -355,8 +355,9 @@ class KRichEditorFragmentLayout(
                                 gravity = Gravity.CENTER
                                 backgroundResource = R.drawable.round_rectangle_white
 
-                                textColorPalette = ankoView(::ColorPaletteView, 0){}
-                                        .lparams(width = matchParent, height = wrapContent)
+                                textColorPalette = ankoView(::ColorPaletteView, 0){
+                                    onColorChange { onActionPerform(FORE_COLOR, this.selectedColor) }
+                                }.lparams(width = matchParent, height = wrapContent)
 
                             }.lparams(width = matchParent, height = wrapContent) { topMargin = dip(8) }
 
@@ -371,6 +372,8 @@ class KRichEditorFragmentLayout(
                                 highlightColorPalette = ankoView(::ColorPaletteView, 0) {
                                     backgroundResource = R.drawable.round_rectangle_white
                                     gravity = android.view.Gravity.CENTER
+
+                                    onColorChange { onActionPerform(BACK_COLOR, this.selectedColor) }
                                 }.lparams(width = wrapContent, height = wrapContent) { weight = 1f }
 
                             }.lparams(width = matchParent, height = wrapContent) { topMargin = dip(8) }
