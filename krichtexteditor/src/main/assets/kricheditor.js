@@ -10,8 +10,12 @@ var initEditor = function(){
         placeholder: initText
     };
     quill = new Quill('#editor', config);
-    quill.on('editor-change', function() {
+    quill.on('selection-change', function(range, oldRange, source) {
+      if (range) {
         updateCurrentStyle();
+      } else {
+        console.log('Cursor not in the editor');
+      }
     });
     quill.focus();
 };
@@ -41,35 +45,35 @@ function bold() {
         var isBold = quill.getFormat().bold;
         quill.format('bold', !isBold, "api");
     } );
-}
+};
 
 function italic() {
     format( function() {
         var isItalic = quill.getFormat().italic;
         quill.format('italic', !isItalic, "api");
     } );
-}
+};
 
 function underline() {
     format( function() {
         var isUnderline = quill.getFormat().underline;
         quill.format('underline', !isUnderline, "api");
     } );
-}
+};
 
 function strikethrough() {
     format( function() {
         var isStrike = quill.getFormat().strike;
         quill.format('strike', !isStrike, "api");
     } );
-}
+};
 
 function script(style) {
     format( function() {
         if (quill.getFormat().script === style) quill.format('script', '');
         else quill.format('script', style);
     } );
-}
+};
 
 var background = function(color) {
     quill.format('background', color);
@@ -91,7 +95,7 @@ var fontSize = function(fontSize) {
 var align = function(style) {
     quill.format('align', style);
     updateCurrentStyle();
-}
+};
 
 var insertOrderedList = function() {
     if (quill.getFormat().list === 'ordered') quill.format('list', false);
@@ -140,30 +144,15 @@ var createLink = function(linkUrl) {
     quill.format('link', linkUrl)
 };
 
-var insertText = function(text) {
-    $('#summernote').summernote('editor.insertText', text);
-};
-
 function codeView() {
     format( function() {
         var isCode = quill.getFormat().code;
         quill.format('code', !isCode, "api");
     } );
-}
+};
 
 var insertTable = function(dim){
     $('#summernote').summernote('insertTable', dim);
-};
-
-var pasteHTML = function(html){
-    $('#summernote').summernote('code',html);
-    keepLastIndex(document.getElementsByClassName('note-editable panel-body')[0]);
-};
-
-function keepLastIndex(obj) {
-    var range = window.getSelection();
-    range.selectAllChildren(obj);
-    range.collapseToEnd();
 };
 
 var updateCurrentStyle = function() {
