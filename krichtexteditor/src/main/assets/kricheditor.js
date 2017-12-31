@@ -3,13 +3,11 @@ var quill;
 var initEditor = function(){
     var initText = KRichEditor.getInitText();
     var config = {
-        debug: 'info',
         theme: 'snow',
         modules: {
             toolbar: false
         },
-        placeholder: initText,
-        strict: false
+        placeholder: initText
     };
     quill = new Quill('#editor', config);
     quill.on('editor-change', function() {
@@ -38,35 +36,40 @@ var enable = function() {
     quill.enable();
 };
 
-var bold = function() {
-    var isBold = quill.getFormat().bold;
-    quill.format('bold', !isBold);
-    updateCurrentStyle();
-};
+function bold() {
+    format( function() {
+        var isBold = quill.getFormat().bold;
+        quill.format('bold', !isBold, "api");
+    } );
+}
 
-var italic = function() {
-    var isItalic = quill.getFormat().italic;
-    quill.format('italic', !isItalic);
-    updateCurrentStyle();
-};
+function italic() {
+    format( function() {
+        var isItalic = quill.getFormat().italic;
+        quill.format('italic', !isItalic, "api");
+    } );
+}
 
-var underline = function() {
-    var isUnderline = quill.getFormat().underline;
-    quill.format('underline', !isUnderline);
-    updateCurrentStyle();
-};
+function underline() {
+    format( function() {
+        var isUnderline = quill.getFormat().underline;
+        quill.format('underline', !isUnderline, "api");
+    } );
+}
 
-var strikethrough = function() {
-    var isStrike = quill.getFormat().strike;
-    quill.format('strike', !isStrike);
-    updateCurrentStyle();
-};
+function strikethrough() {
+    format( function() {
+        var isStrike = quill.getFormat().strike;
+        quill.format('strike', !isStrike, "api");
+    } );
+}
 
-var script = function(style) {
-    if (quill.getFormat().script === style) quill.format('script', '');
-    else quill.format('script', style);
-    updateCurrentStyle();
-};
+function script(style) {
+    format( function() {
+        if (quill.getFormat().script === style) quill.format('script', '');
+        else quill.format('script', style);
+    } );
+}
 
 var background = function(color) {
     quill.format('background', color);
@@ -141,12 +144,12 @@ var insertText = function(text) {
     $('#summernote').summernote('editor.insertText', text);
 };
 
-var codeView = function(){
-    if (quill.getFormat().code) quill.format('code', false);
-    else quill.format('code', true);
-    updateCurrentStyle();
-
-};
+function codeView() {
+    format( function() {
+        var isCode = quill.getFormat().code;
+        quill.format('code', !isCode, "api");
+    } );
+}
 
 var insertTable = function(dim){
     $('#summernote').summernote('insertTable', dim);
@@ -169,8 +172,16 @@ var updateCurrentStyle = function() {
 
 var getSelection = function() {
     return quill.getSelection();
-}
+};
 
 var getHtml = function() {
     return quill.root.innerHTML;
-}
+};
+
+function format(formatFunction) {
+    quill.enable(false);
+    formatFunction();
+    updateCurrentStyle();
+    quill.enable(true);
+    quill.focus();
+};
