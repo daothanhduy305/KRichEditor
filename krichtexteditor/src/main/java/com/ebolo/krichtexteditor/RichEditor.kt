@@ -137,9 +137,7 @@ class RichEditor {
             }
         }
 
-        if (currentFormat.size != quillFormat.size) {
-            notifyFontStyleChange(SIZE, quillFormat.size ?: "normal")
-        }
+        notifyFontStyleChange(SIZE, quillFormat.size)
 
         currentFormat = quillFormat
     }
@@ -184,14 +182,12 @@ class RichEditor {
         };base64,$base64Str"
         load("javascript:insertImageUrl('$imageUrl')")
     }
-    fun insertText(text: String) = load("javascript:insertText('$text')")
     fun createLink(linkUrl: String) = load("javascript:createLink('$linkUrl')")
     fun codeView() = load("javascript:codeView()")
     fun insertTable(colCount: Int, rowCount: Int) = load("javascript:insertTable('${colCount}x$rowCount')")
     fun insertHorizontalRule() = load("javascript:insertHorizontalRule()")
     fun formatBlockquote() = load("javascript:formatBlock('blockquote')")
     fun formatBlockCode() = load("javascript:formatBlock('pre')")
-    fun insertHtml(html: String) = load("javascript:pasteHTML('$html')")
     fun updateStyle() = load("javascript:updateCurrentStyle()")
     fun getSelection(callBack: ValueCallback<String>? = null) = load("javascript:getSelection()", callBack)
     fun getHtml(callBack: ValueCallback<String>) = load("javascript:getHtml()", callBack)
