@@ -70,10 +70,9 @@ import ru.whalemare.sheetmenu.SheetMenu
 import java.util.regex.Pattern
 
 
-class KRichEditorFragmentLayout(
-        private val editorFragment: KRichEditorFragment
-) : AnkoComponent<KRichEditorFragment> {
-    private lateinit var editor: RichEditor
+class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
+    lateinit var editorFragment: KRichEditorFragment
+    lateinit var editor: RichEditor
     var imageCallback: (() -> Unit)? = null
     private val formatButtonIds = listOf(
             BOLD, ITALIC, UNDERLINE, SUBSCRIPT, SUPERSCRIPT,
@@ -107,6 +106,9 @@ class KRichEditorFragmentLayout(
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun createView(ui: AnkoContext<KRichEditorFragment>) = with(ui) {
+        this@KRichEditorFragmentLayout.editorFragment = ui.owner
+        this@KRichEditorFragmentLayout.editor = editorFragment.editor
+
         rootView = verticalLayout {
             layoutParams = ViewGroup.LayoutParams(matchParent, matchParent)
             weightSum = 2f
@@ -126,10 +128,10 @@ class KRichEditorFragmentLayout(
                     isFocusable = true
                     isFocusableInTouchMode = true
 
-                    editor = RichEditor(this) {
-                        type, value -> updateActionStates(type, value)
-                    }.apply {
-                        this.placeHolder = this@KRichEditorFragmentLayout.placeHolder
+                    editor.apply {
+                        mWebView = this@ankoView
+                        styleUpdatedCallback = { type, value -> updateActionStates(type, value) }
+                        placeHolder = this@KRichEditorFragmentLayout.placeHolder
                     }
                     addJavascriptInterface(editor, "KRichEditor")
                     loadUrl("file:///android_asset/richEditor.html")

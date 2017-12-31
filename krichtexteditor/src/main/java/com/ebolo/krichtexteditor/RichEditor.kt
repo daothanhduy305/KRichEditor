@@ -37,10 +37,7 @@ import com.google.gson.GsonBuilder
  * Ported by ebolo(daothanhduy305) on 21/12/2017
  */
 
-class RichEditor(
-        private val mWebView: WebView,
-        private val styleUpdatedCallback: ((type: Int, value: String) -> Unit)?
-) {
+class RichEditor {
     private val gson by lazy { GsonBuilder().setPrettyPrinting().create() }
     private var currentFormat = QuillFormat()
     var html: String? = null
@@ -60,6 +57,9 @@ class RichEditor(
     ) }
 
     lateinit var placeHolder: String
+
+    var mWebView: WebView? = null
+    var styleUpdatedCallback: ((type: Int, value: String) -> Unit)? = null
 
     @JavascriptInterface
     fun returnHtml(html: String) { this.html = html }
@@ -186,7 +186,6 @@ class RichEditor(
     }
     fun insertText(text: String) = load("javascript:insertText('$text')")
     fun createLink(linkUrl: String) = load("javascript:createLink('$linkUrl')")
-    fun unlink() = load("javascript:unlink()")
     fun codeView() = load("javascript:codeView()")
     fun insertTable(colCount: Int, rowCount: Int) = load("javascript:insertTable('${colCount}x$rowCount')")
     fun insertHorizontalRule() = load("javascript:insertHorizontalRule()")
@@ -195,13 +194,13 @@ class RichEditor(
     fun insertHtml(html: String) = load("javascript:pasteHTML('$html')")
     fun updateStyle() = load("javascript:updateCurrentStyle()")
     fun getSelection(callBack: ValueCallback<String>? = null) = load("javascript:getSelection()", callBack)
-    // fun refreshHtml(styleUpdatedCallback: RichEditorCallback) = load("javascript:refreshHTML()")
+    fun getHtml(callBack: ValueCallback<String>) = load("javascript:getHtml()", callBack)
 
     private fun load(trigger: String, callBack: ValueCallback<String>? = null) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            this.mWebView.evaluateJavascript(trigger, callBack)
+            this.mWebView?.evaluateJavascript(trigger, callBack)
         } else {
-            this.mWebView.loadUrl(trigger)
+            this.mWebView?.loadUrl(trigger)
         }
     }
 

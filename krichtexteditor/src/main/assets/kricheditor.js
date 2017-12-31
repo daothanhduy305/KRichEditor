@@ -3,12 +3,13 @@ var quill;
 var initEditor = function(){
     var initText = KRichEditor.getInitText();
     var config = {
-        "theme": "snow",
-        "modules": {
-            "toolbar": false
+        debug: 'info',
+        theme: 'snow',
+        modules: {
+            toolbar: false
         },
-        "placeholder": initText,
-        "strict": false
+        placeholder: initText,
+        strict: false
     };
     quill = new Quill('#editor', config);
     quill.on('editor-change', function() {
@@ -124,10 +125,6 @@ var header = function(level) {
     else quill.format('header', level);
 };
 
-var lineHeight = function(lineHeight) {
-    $('#summernote').summernote('lineHeight', lineHeight);
-};
-
 var insertImageUrl = function(imageUrl) {
     $('#summernote').summernote('insertImage', imageUrl, null);
 };
@@ -138,10 +135,6 @@ var insertText = function(text) {
 
 var createLink = function(linkUrl) {
     quill.format('link', linkUrl)
-};
-
-var unlink = function() {
-    $('#summernote').summernote('unlink');
 };
 
 var insertText = function(text) {
@@ -159,10 +152,6 @@ var insertTable = function(dim){
     $('#summernote').summernote('insertTable', dim);
 };
 
-var insertHorizontalRule = function() {
-    $('#summernote').summernote('insertHorizontalRule');
-};
-
 var pasteHTML = function(html){
     $('#summernote').summernote('code',html);
     keepLastIndex(document.getElementsByClassName('note-editable panel-body')[0]);
@@ -174,14 +163,14 @@ function keepLastIndex(obj) {
     range.collapseToEnd();
 };
 
-var refreshHTML = function(){
-    KRichEditor.returnHtml($('#summernote').summernote('code'));
-};
-
 var updateCurrentStyle = function() {
     KRichEditor.updateCurrentStyle(JSON.stringify(quill.getFormat()));
 };
 
 var getSelection = function() {
     return quill.getSelection();
+}
+
+var getHtml = function() {
+    return quill.root.innerHTML;
 }
