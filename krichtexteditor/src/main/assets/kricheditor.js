@@ -20,152 +20,114 @@ var initEditor = function(){
     quill.focus();
 };
 
-var focus = function(){
-    quill.focus();
-};
-
-var undo = function() {
-    quill.history.undo();
-};
-
-var redo = function() {
-    quill.history.redo();
-};
-
-var disable = function() {
-    quill.disable();
-};
-
-var enable = function() {
-    quill.enable();
-};
+function focus() { quill.focus(); }
+function undo() { quill.history.undo(); }
+function redo() { quill.history.redo(); }
+function disable() { quill.disable(); }
+function enable() { quill.enable(); }
 
 function bold() {
     format( function() {
         var isBold = quill.getFormat().bold;
-        quill.format('bold', !isBold, "api");
+        quill.format('bold', !isBold, 'api');
     } );
-};
+}
 
 function italic() {
     format( function() {
         var isItalic = quill.getFormat().italic;
-        quill.format('italic', !isItalic, "api");
+        quill.format('italic', !isItalic, 'api');
     } );
-};
+}
 
 function underline() {
     format( function() {
         var isUnderline = quill.getFormat().underline;
-        quill.format('underline', !isUnderline, "api");
+        quill.format('underline', !isUnderline, 'api');
     } );
-};
+}
 
 function strikethrough() {
     format( function() {
         var isStrike = quill.getFormat().strike;
-        quill.format('strike', !isStrike, "api");
+        quill.format('strike', !isStrike, 'api');
     } );
-};
+}
 
 function script(style) {
     format( function() {
-        if (quill.getFormat().script === style) quill.format('script', '');
-        else quill.format('script', style);
+        if (quill.getFormat().script === style) quill.format('script', '', 'api');
+        else quill.format('script', style, 'api');
     } );
-};
+}
 
-var background = function(color) {
-    quill.format('background', color);
-};
-
-var color = function(color) {
-    quill.format('color', color);
-};
+function background(newColor) { quill.format('background', newColor, 'api'); }
+function color(newColor) { quill.format('color', newColor, 'api'); }
 
 var fontName = function(fontName) {
     $('#summernote').summernote('fontName', fontName);
 };
 
-var fontSize = function(fontSize) {
-    quill.format('size', fontSize);
+function fontSize(size) {
+    quill.format('size', size, 'api');
     updateCurrentStyle();
-};
+}
 
-var align = function(style) {
-    quill.format('align', style);
+function align(style) {
+    quill.format('align', style, 'api');
     updateCurrentStyle();
-};
+}
 
-var insertOrderedList = function() {
-    if (quill.getFormat().list === 'ordered') quill.format('list', false);
-    else quill.format('list', 'ordered');
+function insertOrderedList() {
+    if (quill.getFormat().list === 'ordered') quill.format('list', false, 'api');
+    else quill.format('list', 'ordered', 'api');
+}
 
-};
+function insertUnorderedList() {
+    if (quill.getFormat().list === 'bullet') quill.format('list', false, 'api');
+    else quill.format('list', 'bullet', 'api');
+}
 
-var insertUnorderedList = function() {
-    if (quill.getFormat().list === 'bullet') quill.format('list', false);
-        else quill.format('list', 'bullet');
-};
+function indent() { quill.format('indent', '+1', 'api'); }
+function outdent() { quill.format('indent', '-1', 'api'); }
 
-var indent = function() {
-    quill.format('indent', '+1');
-};
-
-var outdent = function() {
-    quill.format('indent', '-1');
-};
-
-var formatBlock = function(tagName) {
+function formatBlock(tagName) {
     if (tagName === 'blockquote') {
         var isQuoted = quill.getFormat().blockquote;
-        quill.format('blockquote', !isQuoted);
+        quill.format('blockquote', !isQuoted, 'api');
     } else {
         var isCodeBlock = quill.getFormat()['code-block'];
-        quill.format('code-block', !isCodeBlock);
+        quill.format('code-block', !isCodeBlock, 'api');
     }
-};
+}
 
-var header = function(level) {
+function header(level) {
     var headerLevel = quill.getFormat().header;
-    if (headerLevel && headerLevel == level) quill.format('header', 0);
-    else quill.format('header', level);
-};
+    if (headerLevel && headerLevel == level) quill.format('header', 0, 'api');
+    else quill.format('header', level, 'api');
+}
 
 var insertImageUrl = function(imageUrl) {
     $('#summernote').summernote('insertImage', imageUrl, null);
 };
 
-var insertText = function(text) {
-    $('#summernote').summernote('insertText', text);
-};
-
-var createLink = function(linkUrl) {
-    quill.format('link', linkUrl)
-};
+function createLink(linkUrl) { quill.format('link', linkUrl, 'api'); }
 
 function codeView() {
     format( function() {
         var isCode = quill.getFormat().code;
         quill.format('code', !isCode, "api");
     } );
-};
+}
 
 var insertTable = function(dim){
     $('#summernote').summernote('insertTable', dim);
 };
 
-var updateCurrentStyle = function() {
-    KRichEditor.updateCurrentStyle(JSON.stringify(quill.getFormat()));
-};
-
-var getSelection = function() {
-    return quill.getSelection();
-};
-
-var getHtml = function() {
-    return quill.root.innerHTML;
-};
+function updateCurrentStyle() { KRichEditor.updateCurrentStyle(JSON.stringify(quill.getFormat())); }
+function getStyle() { return quill.getStyle(); }
+function getSelection() { return quill.getSelection(); }
+function getHtml() { return quill.root.innerHTML; }
 
 function format(formatFunction) {
     quill.enable(false);
@@ -173,4 +135,4 @@ function format(formatFunction) {
     updateCurrentStyle();
     quill.enable(true);
     quill.focus();
-};
+}

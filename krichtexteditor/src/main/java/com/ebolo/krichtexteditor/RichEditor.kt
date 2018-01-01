@@ -78,6 +78,10 @@ class RichEditor {
         Log.d("JS", message)
     }
 
+    fun updateStyle() = getStyle( ValueCallback {
+        try { updateStyle(gson.fromJson(it)) } catch (e: Exception) {} // ignored
+    } )
+
     private fun updateStyle(quillFormat: QuillFormat) {
         // Log.d("FontStyle", gson.toJson(fontStyle))
 
@@ -188,8 +192,8 @@ class RichEditor {
     fun insertHorizontalRule() = load("javascript:insertHorizontalRule()")
     fun formatBlockquote() = load("javascript:formatBlock('blockquote')")
     fun formatBlockCode() = load("javascript:formatBlock('pre')")
-    fun updateStyle() = load("javascript:updateCurrentStyle()")
-    fun getSelection(callBack: ValueCallback<String>? = null) = load("javascript:getSelection()", callBack)
+    fun getSelection(callback: ValueCallback<String>? = null) = load("javascript:getSelection()", callback)
+    fun getStyle(callback: ValueCallback<String>? = null) = load("javascript:getStyle()", callback)
     fun getHtml(callBack: ValueCallback<String>) = load("javascript:getHtml()", callBack)
 
     private fun load(trigger: String, callBack: ValueCallback<String>? = null) {

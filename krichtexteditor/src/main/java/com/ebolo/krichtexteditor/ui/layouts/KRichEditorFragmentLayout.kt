@@ -10,7 +10,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.webkit.*
-import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -65,7 +64,6 @@ import org.jetbrains.anko.*
 import org.jetbrains.anko.custom.ankoView
 import org.jetbrains.anko.design.longSnackbar
 import org.jetbrains.anko.sdk25.coroutines.onClick
-import org.jetbrains.anko.sdk25.coroutines.onTouch
 import ru.whalemare.sheetmenu.SheetMenu
 import java.util.regex.Pattern
 
@@ -91,10 +89,12 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
     private lateinit var lineHeightTextView: TextView
     private lateinit var textColorPalette: ColorPaletteView
     private lateinit var highlightColorPalette: ColorPaletteView
-    private lateinit var editorMenu: FrameLayout
-    private lateinit var webViewHolder: FrameLayout
+    private lateinit var editorMenu: LinearLayout
+    private lateinit var webViewHolder: LinearLayout
     private lateinit var editorToolbar: LinearLayout
     private lateinit var rootView: LinearLayout
+
+    private lateinit var menuButton: ImageView
 
     private val fullLayoutParams = LinearLayout.LayoutParams(matchParent, 0, 2f)
     private val halfLayoutParams = LinearLayout.LayoutParams(matchParent, 0, 1f)
@@ -113,13 +113,11 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
             layoutParams = ViewGroup.LayoutParams(matchParent, matchParent)
             weightSum = 2f
 
-            webViewHolder = frameLayout {
+            webViewHolder = verticalLayout {
 
                 webView = ankoView(::TextEditorWebView, 0) {
                     webViewClient = WebViewClient()
                     webChromeClient = WebChromeClient()
-
-                    onTouch { _, _ -> hideEditorMenu() }
 
                     settings.javaScriptEnabled = true
                     settings.domStorageEnabled = true
@@ -144,27 +142,11 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
                 backgroundColorResource = R.color.editor_toolbar_bg_color
                 gravity = CENTER_VERTICAL
 
-                imageView(R.drawable.ic_action) {
+                menuButton = imageView(R.drawable.ic_action) {
                     id = R.id.iv_action
                     padding = dip(10)
 
-                    var isShown = false
-
-                    onClick {
-                        isShown = !isShown
-                        when {
-                            isShown -> {
-                                // Hide soft keyboard if is shown
-                                val imm = ui.ctx
-                                        .getSystemService(Context.INPUT_METHOD_SERVICE)
-                                        as InputMethodManager
-                                imm.hideSoftInputFromWindow(view.windowToken, 0)
-
-                                showEditorMenu()
-                            }
-                            else -> { hideEditorMenu() }
-                        }
-                    }
+                    onClick { toggleMenuEditor() }
                 }.apply { actionImageViewStyle() }
 
                 // Separator
@@ -235,7 +217,7 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
             }.lparams(width = matchParent, height = wrapContent)
 
             // Editor menu
-            editorMenu = frameLayout {
+            editorMenu = verticalLayout {
                 visibility = View.GONE
 
                 scrollView {
@@ -679,20 +661,35 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
         } else null
     }
 
+    private fun hideKeyboard() = with(
+            editorFragment.context
+                    .getSystemService(Context.INPUT_METHOD_SERVICE)
+                    as InputMethodManager
+    ) {
+        hideSoftInputFromWindow(editorFragment.activity.currentFocus.windowToken, 0)
+    }
+
     fun hideEditorMenu() {
-        // Make the webview to own the whole space
-        if (editorMenu.visibility != View.GONE) {
-            webViewHolder.layoutParams = fullLayoutParams
-            editorMenu.visibility = View.GONE
-        }
+        editor.enable()
+        menuButton.setColorFilter(ContextCompat.getColor(editorFragment.context, buttonDeactivatedColorId))
+        webViewHolder.layoutParams = fullLayoutParams
+        editorMenu.visibility = View.GONE
     }
 
     private fun showEditorMenu() {
-        // Share the space among webview and editor menu
-        if (editorMenu.visibility != View.VISIBLE) {
-            webViewHolder.layoutParams = halfLayoutParams
-            editorMenu.visibility = View.VISIBLE
-            editor.updateStyle()
+        hideKeyboard()
+        editor.disable()
+        menuButton.setColorFilter(ContextCompat.getColor(editorFragment.context, buttonActivatedColorId))
+
+        webViewHolder.layoutParams = halfLayoutParams
+        editorMenu.visibility = View.VISIBLE
+        editor.updateStyle()
+    }
+
+    private fun toggleMenuEditor() {
+        when (editorMenu.visibility) {
+            View.VISIBLE -> hideEditorMenu()
+            else -> showEditorMenu()
         }
     }
 }
