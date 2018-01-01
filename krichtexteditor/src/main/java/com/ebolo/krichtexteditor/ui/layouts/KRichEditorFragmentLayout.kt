@@ -18,7 +18,6 @@ import com.ebolo.krichtexteditor.RichEditor
 import com.ebolo.krichtexteditor.fragments.EditHyperlinkFragment
 import com.ebolo.krichtexteditor.fragments.KRichEditorFragment
 import com.ebolo.krichtexteditor.fragments.editHyperlinkDialog
-import com.ebolo.krichtexteditor.fragments.editTableDialog
 import com.ebolo.krichtexteditor.ui.actionImageViewStyle
 import com.ebolo.krichtexteditor.ui.widgets.ActionImageView
 import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.BACK_COLOR
@@ -41,7 +40,6 @@ import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.JUSTIFY_CE
 import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.JUSTIFY_FULL
 import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.JUSTIFY_LEFT
 import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.JUSTIFY_RIGHT
-import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.LINE
 import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.LINE_HEIGHT
 import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.LINK
 import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.NORMAL
@@ -52,7 +50,6 @@ import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.SIZE
 import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.STRIKETHROUGH
 import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.SUBSCRIPT
 import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.SUPERSCRIPT
-import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.TABLE
 import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.UNDERLINE
 import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.UNDO
 import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.UNORDERED
@@ -77,7 +74,7 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
             STRIKETHROUGH, JUSTIFY_LEFT, JUSTIFY_CENTER,
             JUSTIFY_RIGHT, JUSTIFY_FULL, ORDERED,
             UNORDERED, NORMAL, H1, H2, H3, H4, H5, H6,
-            INDENT, OUTDENT, BLOCK_QUOTE, BLOCK_CODE, LINE, CODE_VIEW
+            INDENT, OUTDENT, BLOCK_QUOTE, BLOCK_CODE, /*LINE,*/ CODE_VIEW
     )
     private lateinit var barFormatButtons: Map<Int, ImageView>
     private val menuFormatButtons = mutableMapOf<Int, ImageView>()
@@ -192,13 +189,13 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
                             onClick { onActionPerform(LINK) }
                         }.apply { actionImageViewStyle() }
 
-                        imageView(R.drawable.ic_table) {
+                        /*imageView(R.drawable.ic_table) {
                             id = R.id.iv_action_table
                             padding = dip(11)
                             backgroundResource = R.drawable.btn_colored_material
 
                             onClick { onActionPerform(TABLE) }
-                        }.apply { actionImageViewStyle() }
+                        }.apply { actionImageViewStyle() }*/
 
                         // Add format buttons
                         barFormatButtons = formatButtonIds.map { type ->
@@ -540,7 +537,7 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
 
                                 insertButton(R.drawable.ic_insert_photo, R.id.iv_action_insert_image)
                                 insertButton(R.drawable.ic_insert_link, R.id.iv_action_insert_link)
-                                insertButton(R.drawable.ic_table, R.id.iv_action_table)
+                                // insertButton(R.drawable.ic_table, R.id.iv_action_table)
                                 insertButton(R.drawable.ic_code_review, R.id.iv_action_code_view)
 
                             }.lparams(width = matchParent, height = wrapContent) { topMargin = dip(8) }
@@ -589,12 +586,12 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
                     } else longSnackbar(rootView, R.string.link_empty_warning).show()
                 } )
             }
-            TABLE -> {
+            /*TABLE -> {
                 val dialog = editTableDialog {
                     onTableSet { row, column -> editor.insertTable(column, row) }
                 }
                 dialog.show(editorFragment.fragmentManager, EditHyperlinkFragment::class.java.simpleName)
-            }
+            }*/
             in formatButtonIds -> {
                 barFormatButtons[type]?.performClick()
             }

@@ -6,6 +6,7 @@ import com.ebolo.krichtexteditor.fragments.EditTableFragment
 import org.jetbrains.anko.*
 import org.jetbrains.anko.sdk25.coroutines.onClick
 
+@Deprecated(message = "Not officially supported yet")
 class EditTableFragmentLayout: AnkoComponent<EditTableFragment> {
     var callback: ((row: Int, column: Int) -> Unit)? = null
 

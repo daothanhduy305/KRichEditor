@@ -14,6 +14,7 @@ import org.jetbrains.anko.AnkoContext
  * Ported by ebolo(daothanhduy305) on 21/12/2017
  */
 
+@Deprecated(message = "Not officially supported yet")
 class EditTableFragment: DialogFragment() {
     private var callback: ((row: Int, column: Int) -> Unit)? = null
 
