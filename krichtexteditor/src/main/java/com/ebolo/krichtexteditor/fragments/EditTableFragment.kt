@@ -33,6 +33,7 @@ class EditTableFragment: DialogFragment() {
     }
 }
 
+@Deprecated(message = "Not officially supported yet")
 fun editTableDialog(setup: EditTableFragment.() -> Unit): EditTableFragment {
     val dialog = EditTableFragment()
     setup.invoke(dialog)
