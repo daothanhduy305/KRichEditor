@@ -526,7 +526,7 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
                                 gravity = Gravity.CENTER
                                 padding = dip(8)
 
-                                fun insertButton(drawable: Int, id: Int) =
+                                fun insertButton(@ActionImageView.Companion.ActionType type: Int, drawable: Int) =
                                         themedImageView(
                                                 drawable,
                                                 R.style.ActionImageView
@@ -534,12 +534,14 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
                                             this.id = id
                                             backgroundResource = R.drawable.btn_white_material
                                             padding = dip(8)
+
+                                            onClick { onActionPerform(type) }
                                         }.lparams { weight = 1f }.apply { actionImageViewStyle() }
 
-                                insertButton(R.drawable.ic_insert_photo, R.id.iv_action_insert_image)
-                                insertButton(R.drawable.ic_insert_link, R.id.iv_action_insert_link)
+                                insertButton(IMAGE, R.drawable.ic_insert_photo)
+                                insertButton(LINK, R.drawable.ic_insert_link)
                                 // insertButton(R.drawable.ic_table, R.id.iv_action_table)
-                                insertButton(R.drawable.ic_code_review, R.id.iv_action_code_view)
+                                insertButton(CODE_VIEW, R.drawable.ic_code_review)
 
                             }.lparams(width = matchParent, height = wrapContent) { topMargin = dip(8) }
 
