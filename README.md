@@ -18,13 +18,17 @@ Add to root Gradle:
           jcenter()
           ...
           maven { url 'http://dl.bintray.com/ebolo/ebolo-oss' }
+          // maven { url 'https://jitpack.io' } // For latest SNAPSHOT
           ...
       }
     }
 
 Gradle:
 
-    implementation 'com.ebolo:krichtexteditor:0.0.1'
+    implementation 'com.ebolo:krichtexteditor:0.0.2'
+    // implementation 'com.github.daothanhduy305:KRichEditor:-SNAPSHOT'
+    // For latest SNAPSHOT with Jitpack
+    // Just retry syncing if the first one fails
 
 ## Features
 
@@ -76,9 +80,21 @@ Kotlin advanced - you can customize it, too:
 
 - To change activated/deactivated state colors:
 
-        formatButtonActivatedColor = R.color.customActivatedColor
-        formatButtonDeactivatedColor = R.color.customDeactivatedColor
-        
+        buttonActivatedColorId = R.color.customActivatedColor
+        buttonDeactivatedColorId = R.color.customDeactivatedColor
+
+- To set placeholder string:
+
+        placeHolder = "New cool text..."
+
+- To set image callback:
+
+        imageCallback = {
+            // Do your stuffs here
+
+            "Returning URL"
+        }
+
 - ...more to come...
 
 ## License
