@@ -75,6 +75,12 @@ Kotlin advanced - you can customize it, too:
     val editorFragment = kRichEditorFragment {
         // Customization block
     }
+    
+To retrieve HTML code:
+
+    editorFragment.editor.getHtml( ValueCallback {
+            do_something_with(it)
+    } )
         
 ## Customizations
 
