@@ -120,10 +120,6 @@ function codeView() {
     } );
 }
 
-var insertTable = function(dim){
-    $('#summernote').summernote('insertTable', dim);
-};
-
 function updateCurrentStyle() { KRichEditor.updateCurrentStyle(JSON.stringify(quill.getFormat())); }
 function getStyle() { return quill.getStyle(); }
 function getSelection() { return quill.getSelection(); }
