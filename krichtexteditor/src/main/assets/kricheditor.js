@@ -61,9 +61,6 @@ function script(style) {
     } );
 }
 
-function background(newColor) { quill.format('background', newColor, 'api'); }
-function color(newColor) { quill.format('color', newColor, 'api'); }
-
 var fontName = function(fontName) {
     $('#summernote').summernote('fontName', fontName);
 };
@@ -88,9 +85,6 @@ function insertUnorderedList() {
     else quill.format('list', 'bullet', 'api');
 }
 
-function indent() { quill.format('indent', '+1', 'api'); }
-function outdent() { quill.format('indent', '-1', 'api'); }
-
 function formatBlock(tagName) {
     if (tagName === 'blockquote') {
         var isQuoted = quill.getFormat().blockquote;
@@ -107,12 +101,6 @@ function header(level) {
     else quill.format('header', level, 'api');
 }
 
-var insertImageUrl = function(imageUrl) {
-    $('#summernote').summernote('insertImage', imageUrl, null);
-};
-
-function createLink(linkUrl) { quill.format('link', linkUrl, 'api'); }
-
 function codeView() {
     format( function() {
         var isCode = quill.getFormat().code;
@@ -120,6 +108,12 @@ function codeView() {
     } );
 }
 
+function background(newColor) { quill.format('background', newColor, 'api'); }
+function color(newColor) { quill.format('color', newColor, 'api'); }
+function indent() { quill.format('indent', '+1', 'api'); }
+function outdent() { quill.format('indent', '-1', 'api'); }
+function createLink(linkUrl) { quill.format('link', linkUrl, 'api'); }
+function insertEmbed(index, type, value) { quill.insertEmbed(index, type, value, 'api'); }
 function updateCurrentStyle() { KRichEditor.updateCurrentStyle(JSON.stringify(quill.getFormat())); }
 function getStyle() { return quill.getStyle(); }
 function getSelection() { return quill.getSelection(); }

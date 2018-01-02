@@ -61,6 +61,7 @@ import org.jetbrains.anko.*
 import org.jetbrains.anko.custom.ankoView
 import org.jetbrains.anko.design.longSnackbar
 import org.jetbrains.anko.sdk25.coroutines.onClick
+import org.jetbrains.anko.support.v4.toast
 import ru.whalemare.sheetmenu.SheetMenu
 import java.util.regex.Pattern
 
@@ -68,7 +69,7 @@ import java.util.regex.Pattern
 class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
     lateinit var editorFragment: KRichEditorFragment
     lateinit var editor: RichEditor
-    var imageCallback: (() -> Unit)? = null
+    var imageCallback: (() -> String)? = null
     private val formatButtonIds = listOf(
             BOLD, ITALIC, UNDERLINE, SUBSCRIPT, SUPERSCRIPT,
             STRIKETHROUGH, JUSTIFY_LEFT, JUSTIFY_CENTER,
@@ -570,7 +571,15 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
             FORE_COLOR -> editor.foreColor(param!!)
             BACK_COLOR -> editor.backColor(param!!)
             FAMILY -> editor.fontName(param!!)
-            IMAGE -> imageCallback?.invoke()
+            IMAGE -> { when (imageCallback) {
+                null -> editorFragment.toast("Image handler not implemented!")
+                else -> editor.getSelection( ValueCallback {
+                    try {
+                        val selection = Gson().fromJson<Map<String, Int>>(it)
+                        editor.insertImage(selection["index"]!!, imageCallback!!.invoke())
+                    } catch (e: Exception) { editorFragment.toast("Something went wrong!") }
+                } )
+            } }
             LINK -> {
                 editor.getSelection( ValueCallback {
                     val selection = Gson().fromJson<Map<String, Int>>(it)

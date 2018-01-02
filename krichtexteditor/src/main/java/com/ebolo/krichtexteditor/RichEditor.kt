@@ -177,18 +177,18 @@ class RichEditor {
     fun outdent() = load("javascript:outdent()")
     fun header(level: Int) = load("javascript:header($level)")
     fun lineHeight(lineHeight: Double) = load("javascript:lineHeight($lineHeight)")
-    fun insertImageUrl(imageUrl: String) = load("javascript:insertImageUrl('$imageUrl')")
-    fun insertImageData(fileName: String, base64Str: String) {
+    /*fun insertImageData(fileName: String, base64Str: String) {
         val imageUrl = "data:image/${
         fileName.split("\\.".toRegex())
                 .dropLastWhile { it.isEmpty() }
                 .toTypedArray()[1]
         };base64,$base64Str"
         load("javascript:insertImageUrl('$imageUrl')")
-    }
+    }*/
+    fun insertImage(index: Int, url: String) = load("javascript:insertEmbed($index, 'image', '$url')")
     fun createLink(linkUrl: String) = load("javascript:createLink('$linkUrl')")
     fun codeView() = load("javascript:codeView()")
-    fun insertTable(colCount: Int, rowCount: Int) = load("javascript:insertTable('${colCount}x$rowCount')")
+    // fun insertTable(colCount: Int, rowCount: Int) = load("javascript:insertTable('${colCount}x$rowCount')")
     fun insertHorizontalRule() = load("javascript:insertHorizontalRule()")
     fun formatBlockquote() = load("javascript:formatBlock('blockquote')")
     fun formatBlockCode() = load("javascript:formatBlock('pre')")
