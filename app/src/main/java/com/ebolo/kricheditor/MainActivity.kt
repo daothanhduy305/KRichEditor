@@ -13,7 +13,13 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         MainActivityLayout().setContentView(this)
 
-        val editorFragment = kRichEditorFragment()
+        val editorFragment = kRichEditorFragment {
+            // This is just a dummy callback
+            imageCallback = {
+                "https://beebom-redkapmedia.netdna-ssl.com/wp-content/uploads/2016/01/" +
+                        "Reverse-Image-Search-Engines-Apps-And-Its-Uses-2016.jpg"
+            }
+        }
 
         supportFragmentManager
                 .beginTransaction()
