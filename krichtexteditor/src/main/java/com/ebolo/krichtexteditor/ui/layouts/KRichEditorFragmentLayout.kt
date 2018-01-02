@@ -69,7 +69,6 @@ import java.util.regex.Pattern
 class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
     lateinit var editorFragment: KRichEditorFragment
     lateinit var editor: RichEditor
-    var imageCallback: (() -> String)? = null
     private val formatButtonIds = listOf(
             BOLD, ITALIC, UNDERLINE, SUBSCRIPT, SUPERSCRIPT,
             STRIKETHROUGH, JUSTIFY_LEFT, JUSTIFY_CENTER,
@@ -101,6 +100,7 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
     var buttonActivatedColorId: Int = R.color.colorAccent
     var buttonDeactivatedColorId: Int = R.color.tintColor
     var placeHolder = "Start writing..."
+    var imageCallback: (() -> String)? = null
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun createView(ui: AnkoContext<KRichEditorFragment>) = with(ui) {
