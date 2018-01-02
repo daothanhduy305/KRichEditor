@@ -115,7 +115,7 @@ function outdent() { quill.format('indent', '-1', 'api'); }
 function createLink(linkUrl) { quill.format('link', linkUrl, 'api'); }
 function insertEmbed(index, type, value) { quill.insertEmbed(index, type, value, 'api'); }
 function updateCurrentStyle() { KRichEditor.updateCurrentStyle(JSON.stringify(quill.getFormat())); }
-function getStyle() { return quill.getStyle(); }
+function getStyle() { return quill.getFormat(); }
 function getSelection() { return quill.getSelection(); }
 function getHtml() { return quill.root.innerHTML; }
 
