@@ -197,12 +197,10 @@ class RichEditor {
 
     private fun getHtml(callBack: ValueCallback<String>) = load("javascript:getHtml()", callBack)
     fun getHtml(callback: ((html: String) -> Unit)? = null) = getHtml( ValueCallback { html ->
-        callback?.invoke(let {
-            val escapedData = html
-                    .replace(oldValue = "\\u003C", newValue = "<")
-                    .replace(oldValue = "\\\"", newValue = "\"")
-            escapedData.substring(startIndex = 1, endIndex = escapedData.length - 1)
-        })
+        val escapedData = html
+                .replace(oldValue = "\\u003C", newValue = "<")
+                .replace(oldValue = "\\\"", newValue = "\"")
+        callback?.invoke(escapedData.substring(startIndex = 1, endIndex = escapedData.length - 1))
     } )
 
     private fun load(trigger: String, callBack: ValueCallback<String>? = null) {
