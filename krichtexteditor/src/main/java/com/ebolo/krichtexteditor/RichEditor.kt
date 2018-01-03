@@ -194,7 +194,11 @@ class RichEditor {
     fun formatBlockCode() = load("javascript:formatBlock('pre')")
     fun getSelection(callback: ValueCallback<String>? = null) = load("javascript:getSelection()", callback)
     fun getStyle(callback: ValueCallback<String>? = null) = load("javascript:getStyle()", callback)
-    fun getHtml(callBack: ValueCallback<String>) = load("javascript:getHtml()", callBack)
+
+    private fun getHtml(callBack: ValueCallback<String>) = load("javascript:getHtml()", callBack)
+    fun getHtml(callback: ((html: String) -> Unit)? = null) = getHtml( ValueCallback {
+        callback?.invoke(it.replace("\\u003C", "<"))
+    } )
 
     private fun load(trigger: String, callBack: ValueCallback<String>? = null) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {

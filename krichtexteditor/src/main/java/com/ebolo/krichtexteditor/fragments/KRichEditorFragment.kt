@@ -6,14 +6,13 @@ import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.webkit.ValueCallback
 import com.ebolo.krichtexteditor.RichEditor
 import com.ebolo.krichtexteditor.ui.layouts.KRichEditorFragmentLayout
 import org.jetbrains.anko.AnkoContext
 
 class KRichEditorFragment: Fragment() {
     private lateinit var layout: KRichEditorFragmentLayout
-    private val editor = RichEditor()
+    val editor = RichEditor()
     var settings: ((KRichEditorFragmentLayout).() -> Unit)? = null
 
     override fun onCreateView(
@@ -29,10 +28,6 @@ class KRichEditorFragment: Fragment() {
         super.onResume()
         layout.hideEditorMenu()
     }
-
-    fun getHtml(callback: ((html: String) -> Unit)? = null) = editor.getHtml( ValueCallback {
-        callback?.invoke(it.replace("\\u003C", "<"))
-    } )
 }
 
 fun Context.kRichEditorFragment(
