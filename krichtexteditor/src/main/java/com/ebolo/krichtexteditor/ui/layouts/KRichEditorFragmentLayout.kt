@@ -141,7 +141,6 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
                 gravity = CENTER_VERTICAL
 
                 menuButton = imageView(R.drawable.ic_action) {
-                    id = R.id.iv_action
                     padding = dip(10)
 
                     onClick { toggleMenuEditor() }
@@ -153,13 +152,10 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
                 }.lparams(width = dip(0.5f), height = dip(24))
 
                 horizontalScrollView {
-                    id = R.id.hsv_action_bar
-
                     // Inner Toolbar holder
                     linearLayout {
 
                         imageView( R.drawable.ic_undo) {
-                            id = R.id.iv_action_undo
                             padding = dip(8)
                             backgroundResource = R.drawable.btn_colored_material
 
@@ -167,7 +163,6 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
                         }.apply { actionImageViewStyle() }
 
                         imageView(R.drawable.ic_redo) {
-                            id = R.id.iv_action_redo
                             padding = dip(8)
                             backgroundResource = R.drawable.btn_colored_material
 
@@ -175,7 +170,6 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
                         }.apply { actionImageViewStyle() }
 
                         imageView(R.drawable.ic_insert_photo) {
-                            id = R.id.iv_action_insert_image
                             padding = dip(8)
                             backgroundResource = R.drawable.btn_colored_material
 
@@ -183,7 +177,6 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
                         }.apply { actionImageViewStyle() }
 
                         imageView(R.drawable.ic_insert_link) {
-                            id = R.id.iv_action_insert_link
                             padding = dip(8)
                             backgroundResource = R.drawable.btn_colored_material
 
@@ -230,7 +223,6 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
 
                             // Font size box
                             verticalLayout {
-                                id = R.id.ll_font_size
                                 gravity = Gravity.CENTER
                                 backgroundResource = R.drawable.btn_white_round_rectangle
 
@@ -346,7 +338,6 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
                             }.lparams(width = matchParent, height = wrapContent) { topMargin = dip(8) }
 
                             textView(R.string.font_highlight_color) {
-                                id = R.id.textView
                                 textSize = 10f
                             }.lparams(width = matchParent, height = wrapContent) { topMargin = dip(16) }
 
@@ -366,8 +357,6 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
 
                         // Third box: headings
                         horizontalScrollView {
-                            id = R.id.hsv_action_bar
-
                             linearLayout {
                                 padding = dip(16)
                                 backgroundColorResource = R.color.white

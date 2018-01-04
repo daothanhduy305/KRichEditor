@@ -14,12 +14,10 @@ class FontSettingItemLayout: AnkoComponent<ViewGroup> {
             padding = dip(16)
 
             textView("10.5") {
-                id = R.id.tv_content
                 gravity = CENTER_VERTICAL
             }
 
             imageView(R.drawable.ic_insert_photo) {
-                id = R.id.iv_selected
             }.lparams(width = dip(24), height = dip(24)) { marginStart = dip(8) }
         }
     }
