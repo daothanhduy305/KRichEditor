@@ -203,6 +203,11 @@ class RichEditor {
         callback?.invoke(escapedData.substring(startIndex = 1, endIndex = escapedData.length - 1))
     } )
 
+    private fun getText(callback: ValueCallback<String>) = load("javascript:getText()", callback)
+    fun getText(callback: ((text: String) -> Unit)?) = getText( ValueCallback {
+        callback?.invoke(it.substring(1, it.length - 1))
+    } )
+
     private fun load(trigger: String, callBack: ValueCallback<String>? = null) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             this.mWebView?.evaluateJavascript(trigger, callBack)

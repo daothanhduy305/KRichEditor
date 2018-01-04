@@ -41,12 +41,23 @@ class MainActivity : AppCompatActivity() {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
-            R.id.action_done -> {
+            R.id.action_html -> {
                 editorFragment.editor.getHtml { html ->
                     runOnUiThread {
                         alert(
                                 message = html,
                                 title = "HTML"
+                        ).show()
+                    }
+                }
+                true
+            }
+            R.id.action_text -> {
+                editorFragment.editor.getText {
+                    runOnUiThread {
+                        alert(
+                                message = it,
+                                title = "Text"
                         ).show()
                     }
                 }

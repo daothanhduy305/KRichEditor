@@ -118,6 +118,7 @@ function updateCurrentStyle() { KRichEditor.updateCurrentStyle(JSON.stringify(qu
 function getStyle() { return quill.getFormat(); }
 function getSelection() { return quill.getSelection(); }
 function getHtml() { return quill.root.innerHTML; }
+function getText() { return quill.getText(); }
 
 function format(formatFunction) {
     quill.enable(false);

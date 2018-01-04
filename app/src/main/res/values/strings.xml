@@ -2,4 +2,6 @@
     <string name="app_name">KRichEditor</string>
     <string name="action_settings">Settings</string>
     <string name="action_done">Done</string>
+    <string name="action_html">Show HTML</string>
+    <string name="action_text">Show text</string>
 </resources>

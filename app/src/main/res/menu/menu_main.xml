@@ -3,7 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.ebolo.kricheditor.MainActivity">
     <item
-        android:id="@+id/action_done"
-        android:title="@string/action_done"
-        app:showAsAction="always" />
+        android:id="@+id/action_html"
+        android:title="@string/action_html"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_text"
+        android:title="@string/action_text"
+        app:showAsAction="never" />
 </menu>
