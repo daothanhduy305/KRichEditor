@@ -126,7 +126,9 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
 
                     editor.apply {
                         mWebView = this@ankoView
-                        styleUpdatedCallback = { type, value -> updateActionStates(type, value) }
+                        styleUpdatedCallback = { type, value -> ui.ctx.runOnUiThread {
+                            updateActionStates(type, value)
+                        } }
                         placeHolder = this@KRichEditorFragmentLayout.placeHolder
                     }
                     addJavascriptInterface(editor, "KRichEditor")
@@ -197,7 +199,7 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
                                 padding = dip(9)
                                 backgroundResource = R.drawable.btn_colored_material
 
-                                onClick { editor.command(type) }
+                                onClick { editor.command(type, editorMenu.visibility != View.VISIBLE) }
                             }.apply { actionImageViewStyle() }
                         }.toMap()
 

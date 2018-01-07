@@ -159,18 +159,18 @@ class RichEditor {
     fun enable() = load("javascript:enable()")
 
     // Font
-    fun bold() = load("javascript:bold()")
-    fun italic() = load("javascript:italic()")
-    fun underline() = load("javascript:underline()")
-    fun strikethrough() = load("javascript:strikethrough()")
-    fun script(style: String) = load("javascript:script('$style')")
+    fun bold(state: Boolean = true) = load("javascript:bold($state)")
+    fun italic(state: Boolean = true) = load("javascript:italic($state)")
+    fun underline(state: Boolean = true) = load("javascript:underline($state)")
+    fun strikethrough(state: Boolean = true) = load("javascript:strikethrough($state)")
+    fun script(style: String, state: Boolean = true) = load("javascript:script('$style', $state)")
     fun backColor(color: String) = load("javascript:background('$color')")
     fun foreColor(color: String) = load("javascript:color('$color')")
     fun fontName(fontName: String) = load("javascript:fontName('$fontName')")
     fun fontSize(size: String) = load("javascript:fontSize('$size')")
 
     // Paragraph
-    fun align(style: String) = load("javascript:align('$style')")
+    fun align(style: String, state: Boolean = true) = load("javascript:align('$style', $state)")
     fun insertOrderedList() = load("javascript:insertOrderedList()")
     fun insertUnorderedList() = load("javascript:insertUnorderedList()")
     fun indent() = load("javascript:indent()")
@@ -216,14 +216,14 @@ class RichEditor {
         }
     }
 
-    fun command(@ActionImageView.Companion.ActionType mActionType: Int) {
+    fun command(@ActionImageView.Companion.ActionType mActionType: Int, state: Boolean = true) {
         when (mActionType) {
-            ActionImageView.BOLD -> bold()
-            ActionImageView.ITALIC -> italic()
-            ActionImageView.UNDERLINE -> underline()
-            ActionImageView.SUBSCRIPT -> script("sub")
-            ActionImageView.SUPERSCRIPT -> script("super")
-            ActionImageView.STRIKETHROUGH -> strikethrough()
+            ActionImageView.BOLD -> bold(state)
+            ActionImageView.ITALIC -> italic(state)
+            ActionImageView.UNDERLINE -> underline(state)
+            ActionImageView.SUBSCRIPT -> script("sub", state)
+            ActionImageView.SUPERSCRIPT -> script("super", state)
+            ActionImageView.STRIKETHROUGH -> strikethrough(state)
             ActionImageView.NORMAL -> header(0)
             ActionImageView.H1 -> header(1)
             ActionImageView.H2 -> header(2)
@@ -231,10 +231,10 @@ class RichEditor {
             ActionImageView.H4 -> header(4)
             ActionImageView.H5 -> header(5)
             ActionImageView.H6 -> header(6)
-            ActionImageView.JUSTIFY_LEFT -> align("")
-            ActionImageView.JUSTIFY_CENTER -> align("center")
-            ActionImageView.JUSTIFY_RIGHT -> align("right")
-            ActionImageView.JUSTIFY_FULL -> align("justify")
+            ActionImageView.JUSTIFY_LEFT -> align("", state)
+            ActionImageView.JUSTIFY_CENTER -> align("center", state)
+            ActionImageView.JUSTIFY_RIGHT -> align("right", state)
+            ActionImageView.JUSTIFY_FULL -> align("justify", state)
             ActionImageView.ORDERED -> insertOrderedList()
             ActionImageView.UNORDERED -> insertUnorderedList()
             ActionImageView.INDENT -> indent()

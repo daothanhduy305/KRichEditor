@@ -26,39 +26,39 @@ function redo() { quill.history.redo(); }
 function disable() { quill.disable(); }
 function enable() { quill.enable(); }
 
-function bold() {
+function bold(state) {
     format( function() {
         var isBold = quill.getFormat().bold;
         quill.format('bold', !isBold, 'api');
-    } );
+    }, state );
 }
 
-function italic() {
+function italic(state) {
     format( function() {
         var isItalic = quill.getFormat().italic;
         quill.format('italic', !isItalic, 'api');
-    } );
+    }, state );
 }
 
-function underline() {
+function underline(state) {
     format( function() {
         var isUnderline = quill.getFormat().underline;
         quill.format('underline', !isUnderline, 'api');
-    } );
+    }, state );
 }
 
-function strikethrough() {
+function strikethrough(state) {
     format( function() {
         var isStrike = quill.getFormat().strike;
         quill.format('strike', !isStrike, 'api');
-    } );
+    }, state );
 }
 
-function script(style) {
+function script(style, state) {
     format( function() {
         if (quill.getFormat().script === style) quill.format('script', '', 'api');
         else quill.format('script', style, 'api');
-    } );
+    }, state );
 }
 
 var fontName = function(fontName) {
@@ -66,13 +66,11 @@ var fontName = function(fontName) {
 };
 
 function fontSize(size) {
-    quill.format('size', size, 'api');
-    updateCurrentStyle();
+    format( function() { quill.format('size', size, 'api'); }, false );
 }
 
-function align(style) {
-    quill.format('align', style, 'api');
-    updateCurrentStyle();
+function align(style, state) {
+    format( function() { quill.format('size', size, 'api'); }, state );
 }
 
 function insertOrderedList() {
@@ -101,11 +99,11 @@ function header(level) {
     else quill.format('header', level, 'api');
 }
 
-function codeView() {
+function codeView(state) {
     format( function() {
         var isCode = quill.getFormat().code;
         quill.format('code', !isCode, "api");
-    } );
+    }, state );
 }
 
 function background(newColor) { quill.format('background', newColor, 'api'); }
@@ -120,10 +118,12 @@ function getSelection() { return quill.getSelection(); }
 function getHtml() { return quill.root.innerHTML; }
 function getText() { return quill.getText(); }
 
-function format(formatFunction) {
-    quill.enable(false);
+function format(formatFunction, state) {
+    quill.disable();
     formatFunction();
+    if (state) {
+        quill.enable();
+        quill.focus();
+    }
     updateCurrentStyle();
-    quill.enable(true);
-    quill.focus();
 }
