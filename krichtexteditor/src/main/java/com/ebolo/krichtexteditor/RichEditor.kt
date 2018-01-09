@@ -205,7 +205,7 @@ class RichEditor {
 
     private fun getText(callback: ValueCallback<String>) = load("javascript:getText()", callback)
     fun getText(callback: ((text: String) -> Unit)?) = getText( ValueCallback {
-        callback?.invoke(it.substring(1, it.length - 1))
+        callback?.invoke(it.substring(1, it.length - 1).replace("\\n", "\n"))
     } )
 
     private fun load(trigger: String, callBack: ValueCallback<String>? = null) {
