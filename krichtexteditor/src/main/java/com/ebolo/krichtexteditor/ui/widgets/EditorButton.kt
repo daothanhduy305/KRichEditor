@@ -1,10 +1,9 @@
 package com.ebolo.krichtexteditor.ui.widgets
 
-import android.content.Context
 import android.support.annotation.IntRange
 import com.ebolo.krichtexteditor.R
 
-class ActionImageView(private val context: Context, val type: Int) {
+class EditorButton(val type: Int) {
     companion object {
         const val NONE = 0
 

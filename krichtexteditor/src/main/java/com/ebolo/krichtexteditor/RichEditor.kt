@@ -5,28 +5,28 @@ import android.util.Log
 import android.webkit.JavascriptInterface
 import android.webkit.ValueCallback
 import android.webkit.WebView
-import com.ebolo.krichtexteditor.ui.widgets.ActionImageView
-import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.BOLD
-import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.CODE_VIEW
-import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.H1
-import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.H2
-import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.H3
-import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.H4
-import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.H5
-import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.H6
-import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.ITALIC
-import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.JUSTIFY_CENTER
-import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.JUSTIFY_FULL
-import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.JUSTIFY_LEFT
-import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.JUSTIFY_RIGHT
-import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.NORMAL
-import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.ORDERED
-import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.SIZE
-import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.STRIKETHROUGH
-import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.SUBSCRIPT
-import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.SUPERSCRIPT
-import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.UNDERLINE
-import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.UNORDERED
+import com.ebolo.krichtexteditor.ui.widgets.EditorButton
+import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.BOLD
+import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.CODE_VIEW
+import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.H1
+import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.H2
+import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.H3
+import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.H4
+import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.H5
+import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.H6
+import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.ITALIC
+import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.JUSTIFY_CENTER
+import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.JUSTIFY_FULL
+import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.JUSTIFY_LEFT
+import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.JUSTIFY_RIGHT
+import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.NORMAL
+import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.ORDERED
+import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.SIZE
+import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.STRIKETHROUGH
+import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.SUBSCRIPT
+import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.SUPERSCRIPT
+import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.UNDERLINE
+import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.UNORDERED
 import com.ebolo.krichtexteditor.utils.QuillFormat
 import com.github.salomonbrys.kotson.fromJson
 import com.google.gson.GsonBuilder
@@ -147,7 +147,7 @@ class RichEditor {
     }
 
     private fun notifyFontStyleChange(
-            @ActionImageView.Companion.ActionType type: Int,
+            @EditorButton.Companion.ActionType type: Int,
             value: String
     ) { styleUpdatedCallback?.invoke(type, value) }
 
@@ -216,33 +216,33 @@ class RichEditor {
         }
     }
 
-    fun command(@ActionImageView.Companion.ActionType mActionType: Int, state: Boolean = true) {
+    fun command(@EditorButton.Companion.ActionType mActionType: Int, state: Boolean = true) {
         when (mActionType) {
-            ActionImageView.BOLD -> bold(state)
-            ActionImageView.ITALIC -> italic(state)
-            ActionImageView.UNDERLINE -> underline(state)
-            ActionImageView.SUBSCRIPT -> script("sub", state)
-            ActionImageView.SUPERSCRIPT -> script("super", state)
-            ActionImageView.STRIKETHROUGH -> strikethrough(state)
-            ActionImageView.NORMAL -> header(0)
-            ActionImageView.H1 -> header(1)
-            ActionImageView.H2 -> header(2)
-            ActionImageView.H3 -> header(3)
-            ActionImageView.H4 -> header(4)
-            ActionImageView.H5 -> header(5)
-            ActionImageView.H6 -> header(6)
-            ActionImageView.JUSTIFY_LEFT -> align("", state)
-            ActionImageView.JUSTIFY_CENTER -> align("center", state)
-            ActionImageView.JUSTIFY_RIGHT -> align("right", state)
-            ActionImageView.JUSTIFY_FULL -> align("justify", state)
-            ActionImageView.ORDERED -> insertOrderedList()
-            ActionImageView.UNORDERED -> insertUnorderedList()
-            ActionImageView.INDENT -> indent()
-            ActionImageView.OUTDENT -> outdent()
-            ActionImageView.LINE -> insertHorizontalRule()
-            ActionImageView.BLOCK_QUOTE -> formatBlockquote()
-            ActionImageView.BLOCK_CODE -> formatBlockCode()
-            ActionImageView.CODE_VIEW -> codeView()
+            EditorButton.BOLD -> bold(state)
+            EditorButton.ITALIC -> italic(state)
+            EditorButton.UNDERLINE -> underline(state)
+            EditorButton.SUBSCRIPT -> script("sub", state)
+            EditorButton.SUPERSCRIPT -> script("super", state)
+            EditorButton.STRIKETHROUGH -> strikethrough(state)
+            EditorButton.NORMAL -> header(0)
+            EditorButton.H1 -> header(1)
+            EditorButton.H2 -> header(2)
+            EditorButton.H3 -> header(3)
+            EditorButton.H4 -> header(4)
+            EditorButton.H5 -> header(5)
+            EditorButton.H6 -> header(6)
+            EditorButton.JUSTIFY_LEFT -> align("", state)
+            EditorButton.JUSTIFY_CENTER -> align("center", state)
+            EditorButton.JUSTIFY_RIGHT -> align("right", state)
+            EditorButton.JUSTIFY_FULL -> align("justify", state)
+            EditorButton.ORDERED -> insertOrderedList()
+            EditorButton.UNORDERED -> insertUnorderedList()
+            EditorButton.INDENT -> indent()
+            EditorButton.OUTDENT -> outdent()
+            EditorButton.LINE -> insertHorizontalRule()
+            EditorButton.BLOCK_QUOTE -> formatBlockquote()
+            EditorButton.BLOCK_CODE -> formatBlockCode()
+            EditorButton.CODE_VIEW -> codeView()
         }
     }
 

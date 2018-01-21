@@ -22,41 +22,41 @@ import com.ebolo.krichtexteditor.fragments.EditHyperlinkFragment
 import com.ebolo.krichtexteditor.fragments.KRichEditorFragment
 import com.ebolo.krichtexteditor.fragments.editHyperlinkDialog
 import com.ebolo.krichtexteditor.ui.actionImageViewStyle
-import com.ebolo.krichtexteditor.ui.widgets.ActionImageView
-import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.BACK_COLOR
-import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.BLOCK_CODE
-import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.BLOCK_QUOTE
-import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.BOLD
-import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.CODE_VIEW
-import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.FAMILY
-import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.FORE_COLOR
-import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.H1
-import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.H2
-import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.H3
-import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.H4
-import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.H5
-import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.H6
-import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.IMAGE
-import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.INDENT
-import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.ITALIC
-import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.JUSTIFY_CENTER
-import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.JUSTIFY_FULL
-import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.JUSTIFY_LEFT
-import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.JUSTIFY_RIGHT
-import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.LINE_HEIGHT
-import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.LINK
-import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.NORMAL
-import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.ORDERED
-import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.OUTDENT
-import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.REDO
-import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.SIZE
-import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.STRIKETHROUGH
-import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.SUBSCRIPT
-import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.SUPERSCRIPT
-import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.UNDERLINE
-import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.UNDO
-import com.ebolo.krichtexteditor.ui.widgets.ActionImageView.Companion.UNORDERED
 import com.ebolo.krichtexteditor.ui.widgets.ColorPaletteView
+import com.ebolo.krichtexteditor.ui.widgets.EditorButton
+import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.BACK_COLOR
+import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.BLOCK_CODE
+import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.BLOCK_QUOTE
+import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.BOLD
+import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.CODE_VIEW
+import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.FAMILY
+import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.FORE_COLOR
+import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.H1
+import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.H2
+import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.H3
+import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.H4
+import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.H5
+import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.H6
+import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.IMAGE
+import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.INDENT
+import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.ITALIC
+import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.JUSTIFY_CENTER
+import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.JUSTIFY_FULL
+import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.JUSTIFY_LEFT
+import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.JUSTIFY_RIGHT
+import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.LINE_HEIGHT
+import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.LINK
+import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.NORMAL
+import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.ORDERED
+import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.OUTDENT
+import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.REDO
+import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.SIZE
+import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.STRIKETHROUGH
+import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.SUBSCRIPT
+import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.SUPERSCRIPT
+import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.UNDERLINE
+import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.UNDO
+import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.UNORDERED
 import com.ebolo.krichtexteditor.ui.widgets.TextEditorWebView
 import com.github.salomonbrys.kotson.fromJson
 import com.google.gson.Gson
@@ -79,7 +79,7 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
             STRIKETHROUGH, JUSTIFY_LEFT, JUSTIFY_CENTER,
             JUSTIFY_RIGHT, JUSTIFY_FULL, ORDERED,
             UNORDERED, NORMAL, H1, H2, H3, H4, H5, H6,
-            INDENT, OUTDENT, BLOCK_QUOTE, BLOCK_CODE, /*LINE,*/ CODE_VIEW
+            INDENT, OUTDENT, BLOCK_QUOTE, BLOCK_CODE, CODE_VIEW
     )
     private lateinit var barFormatButtons: Map<Int, ImageView>
     private val menuFormatButtons = mutableMapOf<Int, ImageView>()
@@ -201,7 +201,7 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
 
                         // Add format buttons
                         barFormatButtons = formatButtonIds.map { type ->
-                            type to imageView(ActionImageView.actionButtonDrawables[type]!!) {
+                            type to imageView(EditorButton.actionButtonDrawables[type]!!) {
                                 padding = dip(9)
                                 backgroundResource = R.drawable.btn_colored_material
 
@@ -276,7 +276,7 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
                                     setPadding(16, dip(6), 16, dip(6))
 
                                     fun justifyButton(
-                                            @ActionImageView.Companion.ActionType type: Int,
+                                            @EditorButton.Companion.ActionType type: Int,
                                             drawable: Int,
                                             neighbor: Boolean = false) = menuFormatButtons.put(type, imageView(drawable) {
                                         padding = dip(8)
@@ -301,7 +301,7 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
                                     setPadding(dip(16), dip(6), dip(16), dip(6))
 
                                     fun formatButton(
-                                            @ActionImageView.Companion.ActionType type: Int,
+                                            @EditorButton.Companion.ActionType type: Int,
                                             drawable: Int
                                     ) = menuFormatButtons.put(type, imageView(drawable) {
                                         padding = dip(8)
@@ -370,7 +370,7 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
                                 backgroundColorResource = R.color.white
 
                                 fun headingBlock(
-                                        @ActionImageView.Companion.ActionType type: Int,
+                                        @EditorButton.Companion.ActionType type: Int,
                                         previewText: Pair<String, Float>,
                                         text: Int,
                                         neighbor: Boolean = false
@@ -523,7 +523,7 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
                                 gravity = Gravity.CENTER
                                 padding = dip(8)
 
-                                fun insertButton(@ActionImageView.Companion.ActionType type: Int, drawable: Int) =
+                                fun insertButton(@EditorButton.Companion.ActionType type: Int, drawable: Int) =
                                         themedImageView(
                                                 drawable,
                                                 R.style.ActionImageView
@@ -557,11 +557,11 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
     /**
      * Function:    onActionPerform
      * Description: Declare sets of actions of formatting buttons
-     * @param type type of action defined in ActionImageView class
+     * @param type type of action defined in EditorButton class
      * @param param param of action if necessary
-     * @see ActionImageView
+     * @see EditorButton
      */
-    private fun onActionPerform(@ActionImageView.Companion.ActionType type: Int, param: String? = null) {
+    private fun onActionPerform(@EditorButton.Companion.ActionType type: Int, param: String? = null) {
         when (type) {
             UNDO -> editor.undo()
             REDO -> editor.redo()
@@ -606,12 +606,12 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
         }
     }
 
-    private fun updateActionStates(@ActionImageView.Companion.ActionType type: Int, value: String) {
+    private fun updateActionStates(@EditorButton.Companion.ActionType type: Int, value: String) {
         updateActionStateToolbar(type, value)
         updateActionStateMenu(type, value)
     }
 
-    private fun updateActionStateMenu(@ActionImageView.Companion.ActionType type: Int, value: String) {
+    private fun updateActionStateMenu(@EditorButton.Companion.ActionType type: Int, value: String) {
         // if (editorMenu.visibility == View.VISIBLE)
         when (type) {
             FAMILY -> fontFamilyTextView.text = value
@@ -645,7 +645,7 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
 
     }
 
-    private fun updateActionStateToolbar(@ActionImageView.Companion.ActionType type: Int, value: String) {
+    private fun updateActionStateToolbar(@EditorButton.Companion.ActionType type: Int, value: String) {
         if (type in formatButtonIds) {
             // Log.d("Toolbar", "Type = $type, value = $value")
             barFormatButtons[type]?.setColorFilter(ContextCompat.getColor(editorFragment.ctx,
