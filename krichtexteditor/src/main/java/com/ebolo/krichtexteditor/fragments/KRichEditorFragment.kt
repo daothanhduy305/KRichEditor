@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import com.ebolo.krichtexteditor.RichEditor
 import com.ebolo.krichtexteditor.ui.layouts.KRichEditorFragmentLayout
 import org.jetbrains.anko.AnkoContext
+import org.jetbrains.anko.support.v4.ctx
 
 class KRichEditorFragment: Fragment() {
     private lateinit var layout: KRichEditorFragmentLayout
@@ -16,12 +17,12 @@ class KRichEditorFragment: Fragment() {
     var settings: ((KRichEditorFragmentLayout).() -> Unit)? = null
 
     override fun onCreateView(
-            inflater: LayoutInflater?,
+            inflater: LayoutInflater,
             container: ViewGroup?,
             savedInstanceState: Bundle?
-    ): View {
+    ): View? {
         layout = KRichEditorFragmentLayout().apply { settings?.invoke(this) }
-        return layout.createView(AnkoContext.Companion.create(context, this))
+        return layout.createView(AnkoContext.Companion.create(ctx, this))
     }
 
     override fun onResume() {

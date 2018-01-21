@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import com.ebolo.krichtexteditor.ui.layouts.EditHyperlinkFragmentLayout
 import org.jetbrains.anko.AnkoContext
 import org.jetbrains.anko.matchParent
+import org.jetbrains.anko.support.v4.ctx
 import org.jetbrains.anko.wrapContent
 
 /**
@@ -20,14 +21,14 @@ class EditHyperlinkFragment: DialogFragment() {
     private var callback: ((address: String) -> Unit)? = null
 
     override fun onCreateView(
-            inflater: LayoutInflater?,
+            inflater: LayoutInflater,
             container: ViewGroup?,
             savedInstanceState: Bundle?
-    ): View {
+    ): View? {
         val layout = EditHyperlinkFragmentLayout().apply {
             this.callback = this@EditHyperlinkFragment.callback
         }
-        return layout.createView(AnkoContext.Companion.create(context, this))
+        return layout.createView(AnkoContext.Companion.create(ctx, this))
     }
 
     override fun onStart() {
