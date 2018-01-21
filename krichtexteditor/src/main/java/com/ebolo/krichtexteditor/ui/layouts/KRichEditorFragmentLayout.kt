@@ -9,7 +9,10 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import android.webkit.*
+import android.webkit.ValueCallback
+import android.webkit.WebChromeClient
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -61,6 +64,8 @@ import org.jetbrains.anko.*
 import org.jetbrains.anko.custom.ankoView
 import org.jetbrains.anko.design.longSnackbar
 import org.jetbrains.anko.sdk25.coroutines.onClick
+import org.jetbrains.anko.support.v4.act
+import org.jetbrains.anko.support.v4.ctx
 import org.jetbrains.anko.support.v4.toast
 import ru.whalemare.sheetmenu.SheetMenu
 import java.util.regex.Pattern
@@ -119,7 +124,9 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
 
                     settings.javaScriptEnabled = true
                     settings.domStorageEnabled = true
-                    settings.cacheMode = WebSettings.LOAD_NO_CACHE
+                    // settings.cacheMode = WebSettings.LOAD_NO_CACHE
+
+                    loadUrl("file:///android_asset/richEditor.html")
 
                     isFocusable = true
                     isFocusableInTouchMode = true
@@ -132,7 +139,6 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
                         placeHolder = this@KRichEditorFragmentLayout.placeHolder
                     }
                     addJavascriptInterface(editor, "KRichEditor")
-                    loadUrl("file:///android_asset/richEditor.html")
                 }.lparams(width = matchParent, height = matchParent)
 
             }.lparams(width = matchParent, height = 0) { weight = 2f }
@@ -627,7 +633,7 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
                 }
                 else -> {
                     menuFormatButtons[type]?.setColorFilter(ContextCompat.getColor(
-                            editorFragment.context,
+                            editorFragment.ctx,
                             when {
                                 value.toBoolean() -> buttonActivatedColorId
                                 else -> buttonDeactivatedColorId
@@ -642,7 +648,7 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
     private fun updateActionStateToolbar(@ActionImageView.Companion.ActionType type: Int, value: String) {
         if (type in formatButtonIds) {
             // Log.d("Toolbar", "Type = $type, value = $value")
-            barFormatButtons[type]?.setColorFilter(ContextCompat.getColor(editorFragment.context,
+            barFormatButtons[type]?.setColorFilter(ContextCompat.getColor(editorFragment.ctx,
                     when {
                         value.toBoolean() -> buttonActivatedColorId
                         else -> buttonDeactivatedColorId
@@ -661,16 +667,16 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
     }
 
     private fun hideKeyboard() = with(
-            editorFragment.context
+            editorFragment.ctx
                     .getSystemService(Context.INPUT_METHOD_SERVICE)
                     as InputMethodManager
     ) {
-        hideSoftInputFromWindow(editorFragment.activity.currentFocus.windowToken, 0)
+        hideSoftInputFromWindow(editorFragment.act.currentFocus.windowToken, 0)
     }
 
     fun hideEditorMenu() {
         editor.enable()
-        menuButton.setColorFilter(ContextCompat.getColor(editorFragment.context, buttonDeactivatedColorId))
+        menuButton.setColorFilter(ContextCompat.getColor(editorFragment.ctx, buttonDeactivatedColorId))
         webViewHolder.layoutParams = fullLayoutParams
         editorMenu.visibility = View.GONE
     }
@@ -678,7 +684,7 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
     private fun showEditorMenu() {
         hideKeyboard()
         editor.disable()
-        menuButton.setColorFilter(ContextCompat.getColor(editorFragment.context, buttonActivatedColorId))
+        menuButton.setColorFilter(ContextCompat.getColor(editorFragment.ctx, buttonActivatedColorId))
 
         webViewHolder.layoutParams = halfLayoutParams
         editorMenu.visibility = View.VISIBLE

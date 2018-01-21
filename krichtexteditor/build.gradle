@@ -6,11 +6,11 @@ apply plugin: 'org.jetbrains.dokka-android'
 apply plugin: 'maven-publish'
 
 android {
-    compileSdkVersion 26
+    compileSdkVersion 27
 
     defaultConfig {
         minSdkVersion 17
-        targetSdkVersion 26
+        targetSdkVersion 27
         versionCode 1
         versionName "0.0.2"
 
@@ -28,8 +28,8 @@ android {
 }
 
 ext {
-    android_compat_version = '26.1.0'
-    anko_version = '0.10.3'
+    android_compat_version = '27.0.2'
+    anko_version = '0.10.4'
 }
 
 dependencies {
