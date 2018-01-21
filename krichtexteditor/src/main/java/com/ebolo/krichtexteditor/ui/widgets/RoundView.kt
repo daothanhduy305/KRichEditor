@@ -5,7 +5,6 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.view.View
-import com.ebolo.krichtexteditor.R
 import org.jetbrains.anko.backgroundColor
 
 /**
@@ -19,9 +18,7 @@ class RoundView(context: Context): View(context) {
     private var bgColor = 0xFFFFFF
 
     init {
-        val ta = context.obtainStyledAttributes(null, R.styleable.roundView)
-        backgroundColor = ta.getColor(R.styleable.roundView_backgroundColor, Color.WHITE)
-        ta.recycle()
+        backgroundColor = Color.WHITE
 
         mPaint = Paint(Paint.ANTI_ALIAS_FLAG)
         mPaint.strokeWidth = 4f
