@@ -118,10 +118,10 @@ function getSelection() { return quill.getSelection(); }
 function getHtml() { return quill.root.innerHTML; }
 function getText() { return quill.getText(); }
 
-function format(formatFunction, state) {
+function format(formatFunction, reFocus) {
     quill.disable();
     formatFunction();
-    if (state) {
+    if (reFocus) {
         quill.enable();
         quill.focus();
     }

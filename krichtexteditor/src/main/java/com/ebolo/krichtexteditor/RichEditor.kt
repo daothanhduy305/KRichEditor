@@ -216,14 +216,21 @@ class RichEditor {
         }
     }
 
-    fun command(@EditorButton.Companion.ActionType mActionType: Int, state: Boolean = true) {
+    /**
+     * Function:    command
+     * Description: A bridge between Jvm api and JS api
+     * @param   mActionType type of calling action
+     * @param   reFocus     we disable the editor as a workaround when menu is shown,
+     *                      by setting this to true would make the editor have the focus again
+     */
+    fun command(@EditorButton.Companion.ActionType mActionType: Int, reFocus: Boolean = true) {
         when (mActionType) {
-            EditorButton.BOLD -> bold(state)
-            EditorButton.ITALIC -> italic(state)
-            EditorButton.UNDERLINE -> underline(state)
-            EditorButton.SUBSCRIPT -> script("sub", state)
-            EditorButton.SUPERSCRIPT -> script("super", state)
-            EditorButton.STRIKETHROUGH -> strikethrough(state)
+            EditorButton.BOLD -> bold(reFocus)
+            EditorButton.ITALIC -> italic(reFocus)
+            EditorButton.UNDERLINE -> underline(reFocus)
+            EditorButton.SUBSCRIPT -> script("sub", reFocus)
+            EditorButton.SUPERSCRIPT -> script("super", reFocus)
+            EditorButton.STRIKETHROUGH -> strikethrough(reFocus)
             EditorButton.NORMAL -> header(0)
             EditorButton.H1 -> header(1)
             EditorButton.H2 -> header(2)
@@ -231,10 +238,10 @@ class RichEditor {
             EditorButton.H4 -> header(4)
             EditorButton.H5 -> header(5)
             EditorButton.H6 -> header(6)
-            EditorButton.JUSTIFY_LEFT -> align("", state)
-            EditorButton.JUSTIFY_CENTER -> align("center", state)
-            EditorButton.JUSTIFY_RIGHT -> align("right", state)
-            EditorButton.JUSTIFY_FULL -> align("justify", state)
+            EditorButton.JUSTIFY_LEFT -> align("", reFocus)
+            EditorButton.JUSTIFY_CENTER -> align("center", reFocus)
+            EditorButton.JUSTIFY_RIGHT -> align("right", reFocus)
+            EditorButton.JUSTIFY_FULL -> align("justify", reFocus)
             EditorButton.ORDERED -> insertOrderedList()
             EditorButton.UNORDERED -> insertUnorderedList()
             EditorButton.INDENT -> indent()
