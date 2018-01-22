@@ -149,29 +149,29 @@ class RichEditor {
     }
 
     // Start of Js wrapper
-    fun undo() = load("javascript:undo()")
-    fun redo() = load("javascript:redo()")
+    private fun undo() = load("javascript:undo()")
+    private fun redo() = load("javascript:redo()")
     fun focus() = load("javascript:focus()")
     fun disable() = load("javascript:disable()")
     fun enable() = load("javascript:enable()")
 
     // Font
-    fun bold(state: Boolean = true) = load("javascript:bold($state)")
-    fun italic(state: Boolean = true) = load("javascript:italic($state)")
-    fun underline(state: Boolean = true) = load("javascript:underline($state)")
-    fun strikethrough(state: Boolean = true) = load("javascript:strikethrough($state)")
-    fun script(style: String, state: Boolean = true) = load("javascript:script('$style', $state)")
-    fun backColor(color: String) = load("javascript:background('$color')")
-    fun foreColor(color: String) = load("javascript:color('$color')")
-    fun fontSize(size: String) = load("javascript:fontSize('$size')")
+    private fun bold(state: Boolean = true) = load("javascript:bold($state)")
+    private fun italic(state: Boolean = true) = load("javascript:italic($state)")
+    private fun underline(state: Boolean = true) = load("javascript:underline($state)")
+    private fun strikethrough(state: Boolean = true) = load("javascript:strikethrough($state)")
+    private fun script(style: String, state: Boolean = true) = load("javascript:script('$style', $state)")
+    private fun backColor(color: String) = load("javascript:background('$color')")
+    private fun foreColor(color: String) = load("javascript:color('$color')")
+    private fun fontSize(size: String) = load("javascript:fontSize('$size')")
 
     // Paragraph
-    fun align(style: String, state: Boolean = true) = load("javascript:align('$style', $state)")
-    fun insertOrderedList() = load("javascript:insertOrderedList()")
-    fun insertUnorderedList() = load("javascript:insertUnorderedList()")
-    fun indent() = load("javascript:indent()")
-    fun outdent() = load("javascript:outdent()")
-    fun header(level: Int) = load("javascript:header($level)")
+    private fun align(style: String, state: Boolean = true) = load("javascript:align('$style', $state)")
+    private fun insertOrderedList() = load("javascript:insertOrderedList()")
+    private fun insertUnorderedList() = load("javascript:insertUnorderedList()")
+    private fun indent() = load("javascript:indent()")
+    private fun outdent() = load("javascript:outdent()")
+    private fun header(level: Int) = load("javascript:header($level)")
     fun lineHeight(lineHeight: Double) = load("javascript:lineHeight($lineHeight)")
     /*fun insertImageData(fileName: String, base64Str: String) {
         val imageUrl = "data:image/${
@@ -181,15 +181,15 @@ class RichEditor {
         };base64,$base64Str"
         load("javascript:insertImageUrl('$imageUrl')")
     }*/
-    fun insertImage(index: Int, url: String) = load("javascript:insertEmbed($index, 'image', '$url')")
-    fun createLink(linkUrl: String) = load("javascript:createLink('$linkUrl')")
-    fun codeView() = load("javascript:codeView()")
+    private fun insertImage(index: Int, url: String) = load("javascript:insertEmbed($index, 'image', '$url')")
+    private fun createLink(linkUrl: String) = load("javascript:createLink('$linkUrl')")
+    private fun codeView() = load("javascript:codeView()")
     // fun insertTable(colCount: Int, rowCount: Int) = load("javascript:insertTable('${colCount}x$rowCount')")
-    fun insertHorizontalRule() = load("javascript:insertHorizontalRule()")
-    fun formatBlockquote() = load("javascript:formatBlock('blockquote')")
-    fun formatBlockCode() = load("javascript:formatBlock('pre')")
+    private fun insertHorizontalRule() = load("javascript:insertHorizontalRule()")
+    private fun formatBlockquote() = load("javascript:formatBlock('blockquote')")
+    private fun formatBlockCode() = load("javascript:formatBlock('pre')")
     fun getSelection(callback: ValueCallback<String>? = null) = load("javascript:getSelection()", callback)
-    fun getStyle(callback: ValueCallback<String>? = null) = load("javascript:getStyle()", callback)
+    private fun getStyle(callback: ValueCallback<String>? = null) = load("javascript:getStyle()", callback)
 
     private fun getHtml(callBack: ValueCallback<String>) = load("javascript:getHtml()", callBack)
     fun getHtml(callback: ((html: String) -> Unit)? = null) = getHtml( ValueCallback { html ->
@@ -254,6 +254,9 @@ class RichEditor {
             EditorButton.IMAGE -> try {
                 insertImage(options[0] as Int, options[1] as String)
             } catch (e: Exception) { mWebView.context.toast("Wrong param(s)!") }
+            EditorButton.SIZE -> fontSize(options[0] as String)
+            EditorButton.FORE_COLOR -> foreColor(options[0] as String)
+            EditorButton.BACK_COLOR -> backColor(options[0] as String)
         }
     }
 

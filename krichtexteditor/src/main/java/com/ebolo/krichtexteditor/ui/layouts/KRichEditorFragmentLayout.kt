@@ -127,6 +127,26 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
     override fun createView(ui: AnkoContext<KRichEditorFragment>) = with(ui) {
         val editor = ui.owner.editor
         // Preparation
+        fun hideMenu(){
+            editor.enable()
+            menuButton.setColorFilter(ContextCompat.getColor(ui.ctx, buttonDeactivatedColorId))
+            webViewHolder.layoutParams = fullLayoutParams
+            editorMenu.visibility = View.GONE
+        }
+
+        fun showMenu() {
+            // Hide Keyboard
+            with(ui.ctx.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager) {
+                hideSoftInputFromWindow(ui.owner.act.currentFocus.windowToken, 0)
+            }
+            editor.disable()
+            menuButton.setColorFilter(ContextCompat.getColor(ui.ctx, buttonActivatedColorId))
+
+            webViewHolder.layoutParams = halfLayoutParams
+            editorMenu.visibility = View.VISIBLE
+            editor.updateStyle()
+        }
+
         /**
          * Function:    onMenuButtonClicked
          * Description: Declare sets of actions of formatting buttonsLayout
@@ -136,9 +156,9 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
          */
         fun onMenuButtonClicked(@EditorButton.Companion.ActionType type: Int, param: String? = null) {
             when (type) {
-                SIZE -> editor.fontSize(param!!)
-                FORE_COLOR -> editor.foreColor(param!!)
-                BACK_COLOR -> editor.backColor(param!!)
+                SIZE -> editor.command(SIZE, false, param!!)
+                FORE_COLOR -> editor.command(FORE_COLOR, false, param!!)
+                BACK_COLOR -> editor.command(BACK_COLOR, false, param!!)
                 IMAGE -> { when (imageCallback) {
                     null -> ui.owner.toast("Image handler not implemented!")
                     else -> editor.getSelection( ValueCallback {
@@ -152,14 +172,18 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
                     editor.getSelection( ValueCallback {
                         val selection = Gson().fromJson<Map<String, Int>>(it)
                         if (selection["length"]!! > 0) {
-                            if (!editor.selectingLink())
+                            if (!editor.selectingLink()) {
                                 editHyperlinkDialog {
-                                    onLinkSet { editor.command(LINK, false, it) }
+                                    onLinkSet {
+                                        hideMenu()
+                                        editor.command(LINK, true, it)
+                                    }
                                 }.show(
                                         ui.owner.fragmentManager,
                                         EditHyperlinkFragment::class.java.simpleName
                                 )
-                            else editor.createLink("")
+                            }
+                            else editor.command(LINK, editorMenu.visibility != View.VISIBLE ,"")
                         } else longSnackbar(rootView, R.string.link_empty_warning).show()
                     } )
                 }
@@ -209,23 +233,8 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
                     onClick {
                         // Toggle editor menu
                         when (editorMenu.visibility) {
-                            View.VISIBLE -> {
-                                editor.enable()
-                                menuButton.setColorFilter(ContextCompat.getColor(ui.ctx, buttonDeactivatedColorId))
-                                webViewHolder.layoutParams = fullLayoutParams
-                                editorMenu.visibility = View.GONE
-                            }
-                            else -> {
-                                with(ui.ctx.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager) {
-                                    hideSoftInputFromWindow(ui.owner.act.currentFocus.windowToken, 0)
-                                }
-                                editor.disable()
-                                menuButton.setColorFilter(ContextCompat.getColor(ui.ctx, buttonActivatedColorId))
-
-                                webViewHolder.layoutParams = halfLayoutParams
-                                editorMenu.visibility = View.VISIBLE
-                                editor.updateStyle()
-                            }
+                            View.VISIBLE -> hideMenu()
+                            else -> showMenu()
                         }
                     }
                 }.apply { actionImageViewStyle() }
