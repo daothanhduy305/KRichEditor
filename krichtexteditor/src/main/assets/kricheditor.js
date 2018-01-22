@@ -70,7 +70,7 @@ function fontSize(size) {
 }
 
 function align(style, state) {
-    format( function() { quill.format('size', size, 'api'); }, state );
+    format( function() { quill.format('align', style, 'api'); }, state );
 }
 
 function insertOrderedList() {
