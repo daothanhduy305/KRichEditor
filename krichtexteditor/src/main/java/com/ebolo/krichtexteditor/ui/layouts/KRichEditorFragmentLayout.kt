@@ -16,8 +16,8 @@ import android.webkit.WebViewClient
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import com.bitbucket.eventbus.EventBus
 import com.ebolo.krichtexteditor.R
-import com.ebolo.krichtexteditor.RichEditor
 import com.ebolo.krichtexteditor.fragments.EditHyperlinkFragment
 import com.ebolo.krichtexteditor.fragments.KRichEditorFragment
 import com.ebolo.krichtexteditor.fragments.editHyperlinkDialog
@@ -29,7 +29,6 @@ import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.BLOCK_CODE
 import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.BLOCK_QUOTE
 import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.BOLD
 import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.CODE_VIEW
-import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.FAMILY
 import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.FORE_COLOR
 import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.H1
 import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.H2
@@ -44,20 +43,19 @@ import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.JUSTIFY_CENTE
 import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.JUSTIFY_FULL
 import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.JUSTIFY_LEFT
 import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.JUSTIFY_RIGHT
-import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.LINE_HEIGHT
 import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.LINK
 import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.NORMAL
 import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.ORDERED
 import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.OUTDENT
-import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.REDO
 import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.SIZE
 import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.STRIKETHROUGH
 import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.SUBSCRIPT
 import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.SUPERSCRIPT
 import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.UNDERLINE
-import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.UNDO
 import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.UNORDERED
+import com.ebolo.krichtexteditor.ui.widgets.EditorToolbar
 import com.ebolo.krichtexteditor.ui.widgets.TextEditorWebView
+import com.ebolo.krichtexteditor.utils.rgbToHex
 import com.github.salomonbrys.kotson.fromJson
 import com.google.gson.Gson
 import org.jetbrains.anko.*
@@ -65,30 +63,18 @@ import org.jetbrains.anko.custom.ankoView
 import org.jetbrains.anko.design.longSnackbar
 import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.jetbrains.anko.support.v4.act
-import org.jetbrains.anko.support.v4.ctx
+import org.jetbrains.anko.support.v4.onUiThread
 import org.jetbrains.anko.support.v4.toast
 import ru.whalemare.sheetmenu.SheetMenu
-import java.util.regex.Pattern
 
 
 class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
-    lateinit var editorFragment: KRichEditorFragment
-    lateinit var editor: RichEditor
-    private val formatButtonIds = listOf(
-            BOLD, ITALIC, UNDERLINE, SUBSCRIPT, SUPERSCRIPT,
-            STRIKETHROUGH, JUSTIFY_LEFT, JUSTIFY_CENTER,
-            JUSTIFY_RIGHT, JUSTIFY_FULL, ORDERED,
-            UNORDERED, NORMAL, H1, H2, H3, H4, H5, H6,
-            INDENT, OUTDENT, BLOCK_QUOTE, BLOCK_CODE, CODE_VIEW
-    )
-    private lateinit var barFormatButtons: Map<Int, ImageView>
+    private val eventBus by lazy { EventBus.getInstance() }
     private val menuFormatButtons = mutableMapOf<Int, ImageView>()
     private val menuFormatHeadingBlocks = mutableMapOf<Int, View>()
 
     private lateinit var webView: WebView
-    private lateinit var fontFamilyTextView: TextView
     private lateinit var fontSizeTextView: TextView
-    private lateinit var lineHeightTextView: TextView
     private lateinit var textColorPalette: ColorPaletteView
     private lateinit var highlightColorPalette: ColorPaletteView
     private lateinit var editorMenu: LinearLayout
@@ -102,16 +88,86 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
     private val halfLayoutParams = LinearLayout.LayoutParams(matchParent, 0, 1f)
 
     // Customizable settings
-    var buttonActivatedColorId: Int = R.color.colorAccent
-    var buttonDeactivatedColorId: Int = R.color.tintColor
     var placeHolder = "Start writing..."
     var imageCallback: (() -> String)? = null
 
+    // Default buttons layout
+    var buttonsLayout = listOf(
+            EditorButton.UNDO,
+            EditorButton.REDO,
+            EditorButton.IMAGE,
+            EditorButton.LINK,
+            EditorButton.BOLD,
+            EditorButton.ITALIC,
+            EditorButton.UNDERLINE,
+            EditorButton.SUBSCRIPT,
+            EditorButton.SUPERSCRIPT,
+            EditorButton.STRIKETHROUGH,
+            EditorButton.JUSTIFY_LEFT,
+            EditorButton.JUSTIFY_CENTER,
+            EditorButton.JUSTIFY_RIGHT,
+            EditorButton.JUSTIFY_FULL,
+            EditorButton.ORDERED,
+            EditorButton.UNORDERED,
+            EditorButton.NORMAL,
+            EditorButton.H1,
+            EditorButton.H2,
+            EditorButton.H3,
+            EditorButton.H4,
+            EditorButton.H5,
+            EditorButton.H6,
+            EditorButton.INDENT,
+            EditorButton.OUTDENT,
+            EditorButton.BLOCK_QUOTE,
+            EditorButton.BLOCK_CODE,
+            EditorButton.CODE_VIEW
+    )
+
     @SuppressLint("SetJavaScriptEnabled")
     override fun createView(ui: AnkoContext<KRichEditorFragment>) = with(ui) {
-        this@KRichEditorFragmentLayout.editorFragment = ui.owner
-        this@KRichEditorFragmentLayout.editor = editorFragment.editor
+        val editor = ui.owner.editor
+        // Preparation
+        /**
+         * Function:    onMenuButtonClicked
+         * Description: Declare sets of actions of formatting buttonsLayout
+         * @param type type of action defined in EditorButton class
+         * @param param param of action if necessary
+         * @see EditorButton
+         */
+        fun onMenuButtonClicked(@EditorButton.Companion.ActionType type: Int, param: String? = null) {
+            when (type) {
+                SIZE -> editor.fontSize(param!!)
+                FORE_COLOR -> editor.foreColor(param!!)
+                BACK_COLOR -> editor.backColor(param!!)
+                IMAGE -> { when (imageCallback) {
+                    null -> ui.owner.toast("Image handler not implemented!")
+                    else -> editor.getSelection( ValueCallback {
+                        try {
+                            val selection = Gson().fromJson<Map<String, Int>>(it)
+                            editor.command(IMAGE, false, selection["index"]!!, imageCallback!!.invoke())
+                        } catch (e: Exception) { ui.owner.toast("Something went wrong!") }
+                    } )
+                } }
+                LINK -> {
+                    editor.getSelection( ValueCallback {
+                        val selection = Gson().fromJson<Map<String, Int>>(it)
+                        if (selection["length"]!! > 0) {
+                            if (!editor.selectingLink())
+                                editHyperlinkDialog {
+                                    onLinkSet { editor.command(LINK, false, it) }
+                                }.show(
+                                        ui.owner.fragmentManager,
+                                        EditHyperlinkFragment::class.java.simpleName
+                                )
+                            else editor.createLink("")
+                        } else longSnackbar(rootView, R.string.link_empty_warning).show()
+                    } )
+                }
+                else -> editor.command(type, false)
+            }
+        }
 
+        // Start constructing views
         rootView = verticalLayout {
             layoutParams = ViewGroup.LayoutParams(matchParent, matchParent)
             weightSum = 2f
@@ -133,10 +189,9 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
 
                     editor.apply {
                         mWebView = this@ankoView
-                        styleUpdatedCallback = { type, value -> ui.ctx.runOnUiThread {
-                            updateActionStates(type, value)
-                        } }
                         placeHolder = this@KRichEditorFragmentLayout.placeHolder
+
+
                     }
                     addJavascriptInterface(editor, "KRichEditor")
                 }.lparams(width = matchParent, height = matchParent)
@@ -151,7 +206,28 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
                 menuButton = imageView(R.drawable.ic_action) {
                     padding = dip(10)
 
-                    onClick { toggleMenuEditor() }
+                    onClick {
+                        // Toggle editor menu
+                        when (editorMenu.visibility) {
+                            View.VISIBLE -> {
+                                editor.enable()
+                                menuButton.setColorFilter(ContextCompat.getColor(ui.ctx, buttonDeactivatedColorId))
+                                webViewHolder.layoutParams = fullLayoutParams
+                                editorMenu.visibility = View.GONE
+                            }
+                            else -> {
+                                with(ui.ctx.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager) {
+                                    hideSoftInputFromWindow(ui.owner.act.currentFocus.windowToken, 0)
+                                }
+                                editor.disable()
+                                menuButton.setColorFilter(ContextCompat.getColor(ui.ctx, buttonActivatedColorId))
+
+                                webViewHolder.layoutParams = halfLayoutParams
+                                editorMenu.visibility = View.VISIBLE
+                                editor.updateStyle()
+                            }
+                        }
+                    }
                 }.apply { actionImageViewStyle() }
 
                 // Separator
@@ -159,59 +235,12 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
                     backgroundColor = 0x9e9e9e.opaque
                 }.lparams(width = dip(0.5f), height = dip(24))
 
-                horizontalScrollView {
-                    // Inner Toolbar holder
-                    linearLayout {
-
-                        imageView( R.drawable.ic_undo) {
-                            padding = dip(8)
-                            backgroundResource = R.drawable.btn_colored_material
-
-                            onClick { onActionPerform(UNDO) }
-                        }.apply { actionImageViewStyle() }
-
-                        imageView(R.drawable.ic_redo) {
-                            padding = dip(8)
-                            backgroundResource = R.drawable.btn_colored_material
-
-                            onClick { onActionPerform(REDO) }
-                        }.apply { actionImageViewStyle() }
-
-                        imageView(R.drawable.ic_insert_photo) {
-                            padding = dip(8)
-                            backgroundResource = R.drawable.btn_colored_material
-
-                            onClick { onActionPerform(IMAGE) }
-                        }.apply { actionImageViewStyle() }
-
-                        imageView(R.drawable.ic_insert_link) {
-                            padding = dip(8)
-                            backgroundResource = R.drawable.btn_colored_material
-
-                            onClick { onActionPerform(LINK) }
-                        }.apply { actionImageViewStyle() }
-
-                        /*imageView(R.drawable.ic_table) {
-                            id = R.id.iv_action_table
-                            padding = dip(11)
-                            backgroundResource = R.drawable.btn_colored_material
-
-                            onClick { onActionPerform(TABLE) }
-                        }.apply { actionImageViewStyle() }*/
-
-                        // Add format buttons
-                        barFormatButtons = formatButtonIds.map { type ->
-                            type to imageView(EditorButton.actionButtonDrawables[type]!!) {
-                                padding = dip(9)
-                                backgroundResource = R.drawable.btn_colored_material
-
-                                onClick { editor.command(type, editorMenu.visibility != View.VISIBLE) }
-                            }.apply { actionImageViewStyle() }
-                        }.toMap()
-
-                    }.lparams(width = wrapContent, height = dip(40))
-
-                }.lparams(width = matchParent, height = dip(40))
+                EditorToolbar(editor, buttonsLayout).apply {
+                    if (LINK in buttonsLayout)
+                        linkButtonAction = { onMenuButtonClicked(LINK) }
+                    if (IMAGE in buttonsLayout)
+                        imageButtonAction = { onMenuButtonClicked(IMAGE) }
+                }.createToolbar(this)
 
             }.lparams(width = matchParent, height = wrapContent)
 
@@ -252,7 +281,7 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
                                             showIcons = false // true, by default
 
                                             click = MenuItem.OnMenuItemClickListener {
-                                                onActionPerform(SIZE,  when (it.itemId) {
+                                                onMenuButtonClicked(SIZE,  when (it.itemId) {
                                                     R.id.font_size_small -> "small"
                                                     R.id.font_size_large -> "large"
                                                     R.id.font_size_huge -> "huge"
@@ -269,7 +298,7 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
                             verticalLayout {
                                 gravity = Gravity.CENTER
 
-                                // Justify(alignment) buttons
+                                // Justify(alignment) buttonsLayout
                                 linearLayout {
                                     backgroundResource = R.drawable.round_rectangle_white
                                     gravity = Gravity.CENTER
@@ -282,7 +311,7 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
                                         padding = dip(8)
                                         backgroundResource = R.drawable.btn_white_material
 
-                                        onClick { onActionPerform(type) }
+                                        onClick { onMenuButtonClicked(type) }
                                     }.lparams {
                                         if (neighbor) marginStart = dip(16)
                                     }.apply { actionImageViewStyle() })
@@ -307,7 +336,7 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
                                         padding = dip(8)
                                         backgroundResource = R.drawable.btn_white_material
 
-                                        onClick { onActionPerform(type) }
+                                        onClick { onMenuButtonClicked(type) }
                                     }
                                             .lparams { weight = 1f }
                                             .apply { actionImageViewStyle() })
@@ -340,7 +369,7 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
                                 backgroundResource = R.drawable.round_rectangle_white
 
                                 textColorPalette = ankoView(::ColorPaletteView, 0){
-                                    onColorChange { onActionPerform(FORE_COLOR, this.selectedColor) }
+                                    onColorChange { onMenuButtonClicked(FORE_COLOR, this.selectedColor) }
                                 }.lparams(width = matchParent, height = wrapContent)
 
                             }.lparams(width = matchParent, height = wrapContent) { topMargin = dip(8) }
@@ -356,7 +385,7 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
                                     backgroundResource = R.drawable.round_rectangle_white
                                     gravity = android.view.Gravity.CENTER
 
-                                    onColorChange { onActionPerform(BACK_COLOR, this.selectedColor) }
+                                    onColorChange { onMenuButtonClicked(BACK_COLOR, this.selectedColor) }
                                 }.lparams(width = wrapContent, height = wrapContent) { weight = 1f }
 
                             }.lparams(width = matchParent, height = wrapContent) { topMargin = dip(8) }
@@ -379,7 +408,7 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
                                     gravity = Gravity.CENTER
                                     setPadding(0, 0, 0, dip(8))
 
-                                    onClick { onActionPerform(type) }
+                                    onClick { onMenuButtonClicked(type) }
 
                                     textView(previewText.first) {
                                         maxLines = 1
@@ -443,7 +472,7 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
 
                         /**
                          * Inner function:  additionalFormatBox
-                         * Description:     Create a box with 4 buttons divided into two
+                         * Description:     Create a box with 4 buttonsLayout divided into two
                          *                  smaller ones.
                          * Param pattern:   a pair mapping ActionType Int to Drawable Res Id
                          * @param item1 first button
@@ -476,7 +505,7 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
                                                     backgroundResource = R.drawable.btn_white_material
                                                     padding = dip(10)
 
-                                                    onClick { onActionPerform(item.first) }
+                                                    onClick { onMenuButtonClicked(item.first) }
                                                 }
                                                         .lparams { if (isSecond) marginStart = dip(32) }
                                                         .apply { actionImageViewStyle() }
@@ -508,7 +537,7 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
                                 item4 = BLOCK_CODE to R.drawable.ic_code_block
                         )
 
-                        // Sixth box: insert buttons - image, link, table, code
+                        // Sixth box: insert buttonsLayout - image, link, table, code
                         verticalLayout {
                             backgroundColorResource = R.color.white
                             padding = dip(16)
@@ -532,7 +561,7 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
                                             backgroundResource = R.drawable.btn_white_material
                                             padding = dip(8)
 
-                                            onClick { onActionPerform(type) }
+                                            onClick { onMenuButtonClicked(type) }
                                         }.lparams { weight = 1f }.apply { actionImageViewStyle() }
 
                                 insertButton(IMAGE, R.drawable.ic_insert_photo)
@@ -551,150 +580,58 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
             }.lparams(width = matchParent, height = 0) { weight = 1f }
         }
 
-        rootView
-    }
-
-    /**
-     * Function:    onActionPerform
-     * Description: Declare sets of actions of formatting buttons
-     * @param type type of action defined in EditorButton class
-     * @param param param of action if necessary
-     * @see EditorButton
-     */
-    private fun onActionPerform(@EditorButton.Companion.ActionType type: Int, param: String? = null) {
-        when (type) {
-            UNDO -> editor.undo()
-            REDO -> editor.redo()
-            SIZE -> editor.fontSize(param!!)
-            LINE_HEIGHT -> editor.lineHeight(param!!.toDouble())
-            FORE_COLOR -> editor.foreColor(param!!)
-            BACK_COLOR -> editor.backColor(param!!)
-            FAMILY -> editor.fontName(param!!)
-            IMAGE -> { when (imageCallback) {
-                null -> editorFragment.toast("Image handler not implemented!")
-                else -> editor.getSelection( ValueCallback {
-                    try {
-                        val selection = Gson().fromJson<Map<String, Int>>(it)
-                        editor.insertImage(selection["index"]!!, imageCallback!!.invoke())
-                    } catch (e: Exception) { editorFragment.toast("Something went wrong!") }
-                } )
-            } }
-            LINK -> {
-                editor.getSelection( ValueCallback {
-                    val selection = Gson().fromJson<Map<String, Int>>(it)
-                    if (selection["length"]!! > 0) {
-                        if (!editor.selectingLink())
-                            editHyperlinkDialog {
-                                onLinkSet { editor.createLink(it) }
-                            }.show(
-                                    editorFragment.fragmentManager,
-                                    EditHyperlinkFragment::class.java.simpleName
-                            )
-                        else editor.createLink("")
-                    } else longSnackbar(rootView, R.string.link_empty_warning).show()
-                } )
-            }
-            /*TABLE -> {
-                val dialog = editTableDialog {
-                    onTableSet { row, column -> editor.insertTable(column, row) }
-                }
-                dialog.show(editorFragment.fragmentManager, EditHyperlinkFragment::class.java.simpleName)
-            }*/
-            in formatButtonIds -> {
-                barFormatButtons[type]?.performClick()
-            }
+        // Setup ui handlers for editor menu
+        eventBus.on("style_$SIZE") {
+            ui.owner.onUiThread { fontSizeTextView.text = (it as String) }
         }
-    }
 
-    private fun updateActionStates(@EditorButton.Companion.ActionType type: Int, value: String) {
-        updateActionStateToolbar(type, value)
-        updateActionStateMenu(type, value)
-    }
+        eventBus.on("style_$FORE_COLOR") {
+            val selectedColor = rgbToHex(it as String)
+            if (selectedColor != null)
+                ui.owner.onUiThread { textColorPalette.selectedColor = selectedColor }
+        }
 
-    private fun updateActionStateMenu(@EditorButton.Companion.ActionType type: Int, value: String) {
-        // if (editorMenu.visibility == View.VISIBLE)
-        when (type) {
-            FAMILY -> fontFamilyTextView.text = value
-            SIZE -> fontSizeTextView.text = value
-            FORE_COLOR, BACK_COLOR -> {
-                val selectedColor = rgbToHex(value)
-                if (selectedColor != null) {
-                    if (type == FORE_COLOR) textColorPalette.selectedColor = selectedColor
-                    else highlightColorPalette.selectedColor = selectedColor
-                }
-            }
-            LINE_HEIGHT -> lineHeightTextView.text = value
-            in formatButtonIds -> when (type) {
-                NORMAL, H1, H2, H3, H4, H5, H6 -> {
-                    menuFormatHeadingBlocks[type]?.backgroundResource = when {
-                        value.toBoolean() -> R.drawable.round_rectangle_blue
+        eventBus.on("style_$BACK_COLOR") {
+            val selectedColor = rgbToHex(it as String)
+            if (selectedColor != null)
+                ui.owner.onUiThread { highlightColorPalette.selectedColor = selectedColor }
+        }
+
+        listOf(NORMAL, H1, H2, H3, H4, H5, H6).forEach { style ->
+            eventBus.on("style_$style") {
+                val state = it as Boolean
+                ui.owner.onUiThread {
+                    menuFormatHeadingBlocks[style]?.backgroundResource = when {
+                        state -> R.drawable.round_rectangle_blue
                         else -> R.drawable.round_rectangle_white
                     }
                 }
-                else -> {
-                    menuFormatButtons[type]?.setColorFilter(ContextCompat.getColor(
-                            editorFragment.ctx,
+            }
+        }
+
+        listOf(
+                BOLD, ITALIC, UNDERLINE, STRIKETHROUGH, JUSTIFY_CENTER, JUSTIFY_FULL, JUSTIFY_LEFT,
+                JUSTIFY_RIGHT, SUBSCRIPT, SUPERSCRIPT, CODE_VIEW, BLOCK_CODE, BLOCK_QUOTE
+        ).forEach { style ->
+            eventBus.on("style_$style") {
+                val state = it as Boolean
+                ui.owner.onUiThread {
+                    menuFormatButtons[style]?.setColorFilter(ContextCompat.getColor(
+                            ui.ctx,
                             when {
-                                value.toBoolean() -> buttonActivatedColorId
+                                state -> buttonActivatedColorId
                                 else -> buttonDeactivatedColorId
                             }
-                    ))
+                    ) )
                 }
             }
         }
 
+        rootView
     }
 
-    private fun updateActionStateToolbar(@EditorButton.Companion.ActionType type: Int, value: String) {
-        if (type in formatButtonIds) {
-            // Log.d("Toolbar", "Type = $type, value = $value")
-            barFormatButtons[type]?.setColorFilter(ContextCompat.getColor(editorFragment.ctx,
-                    when {
-                        value.toBoolean() -> buttonActivatedColorId
-                        else -> buttonDeactivatedColorId
-                    }
-            ))
-        }
-    }
-
-    private fun rgbToHex(rgb: String): String? {
-        val c = Pattern.compile("rgb *\\( *([0-9]+), *([0-9]+), *([0-9]+) *\\)")
-        val m = c.matcher(rgb)
-        return if (m.matches()) {
-            String.format("#%02x%02x%02x", Integer.valueOf(m.group(1)),
-                    Integer.valueOf(m.group(2)), Integer.valueOf(m.group(3)))
-        } else null
-    }
-
-    private fun hideKeyboard() = with(
-            editorFragment.ctx
-                    .getSystemService(Context.INPUT_METHOD_SERVICE)
-                    as InputMethodManager
-    ) {
-        hideSoftInputFromWindow(editorFragment.act.currentFocus.windowToken, 0)
-    }
-
-    fun hideEditorMenu() {
-        editor.enable()
-        menuButton.setColorFilter(ContextCompat.getColor(editorFragment.ctx, buttonDeactivatedColorId))
-        webViewHolder.layoutParams = fullLayoutParams
-        editorMenu.visibility = View.GONE
-    }
-
-    private fun showEditorMenu() {
-        hideKeyboard()
-        editor.disable()
-        menuButton.setColorFilter(ContextCompat.getColor(editorFragment.ctx, buttonActivatedColorId))
-
-        webViewHolder.layoutParams = halfLayoutParams
-        editorMenu.visibility = View.VISIBLE
-        editor.updateStyle()
-    }
-
-    private fun toggleMenuEditor() {
-        when (editorMenu.visibility) {
-            View.VISIBLE -> hideEditorMenu()
-            else -> showEditorMenu()
-        }
+    companion object {
+        var buttonActivatedColorId: Int = R.color.colorAccent
+        var buttonDeactivatedColorId: Int = R.color.tintColor
     }
 }

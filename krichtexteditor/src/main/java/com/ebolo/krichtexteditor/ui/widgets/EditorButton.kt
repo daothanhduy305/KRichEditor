@@ -65,6 +65,10 @@ class EditorButton(val type: Int) {
 
         val actionButtonDrawables by lazy {
             mapOf(
+                    UNDO to R.drawable.ic_undo,
+                    REDO to R.drawable.ic_redo,
+                    IMAGE to R.drawable.ic_insert_photo,
+                    LINK to R.drawable.ic_insert_link,
                     BOLD to R.drawable.ic_format_bold,
                     ITALIC to R.drawable.ic_format_italic,
                     UNDERLINE to R.drawable.ic_format_underlined,

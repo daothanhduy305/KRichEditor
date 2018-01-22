@@ -5,6 +5,7 @@ import android.util.Log
 import android.webkit.JavascriptInterface
 import android.webkit.ValueCallback
 import android.webkit.WebView
+import com.bitbucket.eventbus.EventBus
 import com.ebolo.krichtexteditor.ui.widgets.EditorButton
 import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.BOLD
 import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.CODE_VIEW
@@ -30,6 +31,7 @@ import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.UNORDERED
 import com.ebolo.krichtexteditor.utils.QuillFormat
 import com.github.salomonbrys.kotson.fromJson
 import com.google.gson.GsonBuilder
+import org.jetbrains.anko.toast
 
 /**
  * Rich Editor = Rich Editor Action + Rich Editor Callback
@@ -58,8 +60,8 @@ class RichEditor {
 
     lateinit var placeHolder: String
 
-    var mWebView: WebView? = null
-    var styleUpdatedCallback: ((type: Int, value: String) -> Unit)? = null
+    lateinit var mWebView: WebView
+    var styleUpdatedCallback: ((type: Int, value: Any) -> Unit)? = null
 
     @JavascriptInterface
     fun returnHtml(html: String) { this.html = html }
@@ -79,65 +81,58 @@ class RichEditor {
     }
 
     fun updateStyle() = getStyle( ValueCallback {
-        try { updateStyle(gson.fromJson(it)) } catch (e: Exception) {} // ignored
+        try {
+            val updatedStyle = gson.fromJson<QuillFormat>(it)
+            updateStyle(updatedStyle)
+            EventBus.getInstance().post("style_update", gson.fromJson(it))
+        } catch (e: Exception) {} // ignored
     } )
 
     private fun updateStyle(quillFormat: QuillFormat) {
         // Log.d("FontStyle", gson.toJson(fontStyle))
 
         if (currentFormat.isBold != quillFormat.isBold) {
-            notifyFontStyleChange(BOLD, quillFormat.isBold.toString())
+            notifyFontStyleChange(BOLD, quillFormat.isBold ?: false)
         }
 
         if (currentFormat.isItalic != quillFormat.isItalic) {
-            notifyFontStyleChange(ITALIC, quillFormat.isItalic.toString())
+            notifyFontStyleChange(ITALIC, quillFormat.isItalic ?: false)
         }
 
         if (currentFormat.isUnderline != quillFormat.isUnderline) {
-            notifyFontStyleChange(UNDERLINE, quillFormat.isUnderline.toString())
+            notifyFontStyleChange(UNDERLINE, quillFormat.isUnderline ?: false)
         }
 
         if (currentFormat.isStrike != quillFormat.isStrike) {
-            notifyFontStyleChange(STRIKETHROUGH, quillFormat.isStrike.toString())
+            notifyFontStyleChange(STRIKETHROUGH, quillFormat.isStrike?: false)
         }
 
         if (currentFormat.isCode != quillFormat.isCode) {
-            notifyFontStyleChange(CODE_VIEW, quillFormat.isCode.toString())
+            notifyFontStyleChange(CODE_VIEW, quillFormat.isCode ?: false)
         }
 
         quillFormat.header = quillFormat.header ?: 0
 
         if (currentFormat.header != quillFormat.header) {
             mFontBlockGroup.indices.forEach {
-                notifyFontStyleChange(
-                        mFontBlockGroup[it],
-                        (quillFormat.header == it).toString()
-                )
+                notifyFontStyleChange(mFontBlockGroup[it], (quillFormat.header == it))
             }
         }
 
         if (currentFormat.script != quillFormat.script) {
-            notifyFontStyleChange(SUBSCRIPT, (quillFormat.script == "sub").toString())
-            notifyFontStyleChange(SUPERSCRIPT, (quillFormat.script == "super").toString())
+            notifyFontStyleChange(SUBSCRIPT, (quillFormat.script == "sub"))
+            notifyFontStyleChange(SUPERSCRIPT, (quillFormat.script == "super"))
         }
 
         quillFormat.align = quillFormat.align ?: ""
 
         if (currentFormat.align != quillFormat.align) {
-            mTextAlignGroup.forEach {
-                notifyFontStyleChange(
-                        it.key,
-                        (quillFormat.align == it.value).toString()
-                )
-            }
+            mTextAlignGroup.forEach { notifyFontStyleChange(it.key, (quillFormat.align == it.value)) }
         }
 
         if (currentFormat.list != quillFormat.list) {
             mListStyleGroup.forEach {
-                notifyFontStyleChange(
-                        it.key,
-                        (quillFormat.list == it.value).toString()
-                )
+                notifyFontStyleChange(it.key, (quillFormat.list == it.value))
             }
         }
 
@@ -146,10 +141,12 @@ class RichEditor {
         currentFormat = quillFormat
     }
 
-    private fun notifyFontStyleChange(
-            @EditorButton.Companion.ActionType type: Int,
-            value: String
-    ) { styleUpdatedCallback?.invoke(type, value) }
+    private fun notifyFontStyleChange(@EditorButton.Companion.ActionType type: Int, value: Any) {
+        when (styleUpdatedCallback) {
+            null -> EventBus.getInstance().post("style_$type", value)
+            else -> styleUpdatedCallback!!.invoke(type, value)
+        }
+    }
 
     // Start of Js wrapper
     fun undo() = load("javascript:undo()")
@@ -166,7 +163,6 @@ class RichEditor {
     fun script(style: String, state: Boolean = true) = load("javascript:script('$style', $state)")
     fun backColor(color: String) = load("javascript:background('$color')")
     fun foreColor(color: String) = load("javascript:color('$color')")
-    fun fontName(fontName: String) = load("javascript:fontName('$fontName')")
     fun fontSize(size: String) = load("javascript:fontSize('$size')")
 
     // Paragraph
@@ -210,9 +206,9 @@ class RichEditor {
 
     private fun load(trigger: String, callBack: ValueCallback<String>? = null) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            this.mWebView?.evaluateJavascript(trigger, callBack)
+            this.mWebView.evaluateJavascript(trigger, callBack)
         } else {
-            this.mWebView?.loadUrl(trigger)
+            this.mWebView.loadUrl(trigger)
         }
     }
 
@@ -223,8 +219,10 @@ class RichEditor {
      * @param   reFocus     we disable the editor as a workaround when menu is shown,
      *                      by setting this to true would make the editor have the focus again
      */
-    fun command(@EditorButton.Companion.ActionType mActionType: Int, reFocus: Boolean = true) {
+    fun command(@EditorButton.Companion.ActionType mActionType: Int, reFocus: Boolean = true, vararg options: Any) {
         when (mActionType) {
+            EditorButton.UNDO -> undo()
+            EditorButton.REDO -> redo()
             EditorButton.BOLD -> bold(reFocus)
             EditorButton.ITALIC -> italic(reFocus)
             EditorButton.UNDERLINE -> underline(reFocus)
@@ -250,6 +248,12 @@ class RichEditor {
             EditorButton.BLOCK_QUOTE -> formatBlockquote()
             EditorButton.BLOCK_CODE -> formatBlockCode()
             EditorButton.CODE_VIEW -> codeView()
+            EditorButton.LINK -> try {
+                createLink(options[0] as String)
+            } catch (e: Exception) { mWebView.context.toast("Wrong param(s)!") }
+            EditorButton.IMAGE -> try {
+                insertImage(options[0] as Int, options[1] as String)
+            } catch (e: Exception) { mWebView.context.toast("Wrong param(s)!") }
         }
     }
 

@@ -1,6 +1,5 @@
 package com.ebolo.krichtexteditor.fragments
 
-import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
@@ -24,13 +23,8 @@ class KRichEditorFragment: Fragment() {
         layout = KRichEditorFragmentLayout().apply { settings?.invoke(this) }
         return layout.createView(AnkoContext.Companion.create(ctx, this))
     }
-
-    override fun onResume() {
-        super.onResume()
-        layout.hideEditorMenu()
-    }
 }
 
-fun Context.kRichEditorFragment(
+fun kRichEditorFragment(
         settings: ((KRichEditorFragmentLayout).() -> Unit)? = null
 ): KRichEditorFragment = KRichEditorFragment().apply { this.settings = settings }
