@@ -1,6 +1,9 @@
 package com.ebolo.krichtexteditor
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Build
+import android.util.Base64
 import android.util.Log
 import android.webkit.JavascriptInterface
 import android.webkit.ValueCallback
@@ -30,8 +33,12 @@ import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.UNDERLINE
 import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.UNORDERED
 import com.ebolo.krichtexteditor.utils.QuillFormat
 import com.github.salomonbrys.kotson.fromJson
+import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.toast
+import org.jetbrains.anko.uiThread
+import java.io.ByteArrayOutputStream
 
 /**
  * Rich Editor = Rich Editor Action + Rich Editor Callback
@@ -172,16 +179,18 @@ class RichEditor {
     private fun indent() = load("javascript:indent()")
     private fun outdent() = load("javascript:outdent()")
     private fun header(level: Int) = load("javascript:header($level)")
-    fun lineHeight(lineHeight: Double) = load("javascript:lineHeight($lineHeight)")
-    /*fun insertImageData(fileName: String, base64Str: String) {
-        val imageUrl = "data:image/${
-        fileName.split("\\.".toRegex())
-                .dropLastWhile { it.isEmpty() }
-                .toTypedArray()[1]
-        };base64,$base64Str"
-        load("javascript:insertImageUrl('$imageUrl')")
-    }*/
     private fun insertImage(index: Int, url: String) = load("javascript:insertEmbed($index, 'image', '$url')")
+    private fun insertImageB64(index: Int, path: String) = doAsync {
+        val type = path.split('.').last().toUpperCase()
+        val bitmap = BitmapFactory.decodeFile(path)
+        val stream = ByteArrayOutputStream().apply {
+            bitmap.compress(Bitmap.CompressFormat.WEBP, 100, this)
+        }
+        val encodedImage = Base64.encodeToString(stream.toByteArray(), Base64.NO_WRAP)
+        uiThread {
+            load("javascript:insertEmbed($index, 'image', 'data:image/${type.toLowerCase()};base64, $encodedImage')")
+        }
+    }
     private fun createLink(linkUrl: String) = load("javascript:createLink('$linkUrl')")
     private fun codeView() = load("javascript:codeView()")
     // fun insertTable(colCount: Int, rowCount: Int) = load("javascript:insertTable('${colCount}x$rowCount')")
@@ -251,9 +260,15 @@ class RichEditor {
             EditorButton.LINK -> try {
                 createLink(options[0] as String)
             } catch (e: Exception) { mWebView.context.toast("Wrong param(s)!") }
-            EditorButton.IMAGE -> try {
-                insertImage(options[0] as Int, options[1] as String)
-            } catch (e: Exception) { mWebView.context.toast("Wrong param(s)!") }
+            EditorButton.IMAGE -> getSelection( ValueCallback {
+                try {
+                    val selection = Gson().fromJson<Map<String, Int>>(it)
+                    // Since refocus is not applied here so we would use it to decide between
+                    // BASE64 mode and URL mode
+                    if (reFocus) insertImageB64(selection["index"]!!, options[0] as String)
+                    else insertImage(selection["index"]!!, options[0] as String)
+                } catch (e: Exception) { mWebView.context.toast("Something went wrong! Param?") }
+            } )
             EditorButton.SIZE -> fontSize(options[0] as String)
             EditorButton.FORE_COLOR -> foreColor(options[0] as String)
             EditorButton.BACK_COLOR -> backColor(options[0] as String)

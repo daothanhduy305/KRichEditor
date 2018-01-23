@@ -51,6 +51,8 @@ dependencies {
     implementation "com.android.support:design:$android_compat_version"
     implementation "com.android.support:support-v4:$android_compat_version"
     implementation "com.android.support:support-annotations:$android_compat_version"
+    // Image picker
+    implementation 'com.github.esafirm.android-image-picker:imagepicker:1.12.0'
 }
 
 kotlin {

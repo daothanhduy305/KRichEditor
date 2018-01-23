@@ -1,11 +1,14 @@
 package com.ebolo.kricheditor
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import com.ebolo.krichtexteditor.fragments.KRichEditorFragment
 import com.ebolo.krichtexteditor.fragments.kRichEditorFragment
+import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.IMAGE
+import com.esafirm.imagepicker.features.ImagePicker
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.setContentView
 
@@ -17,11 +20,8 @@ class MainActivity : AppCompatActivity() {
         MainActivityLayout().setContentView(this)
 
         editorFragment = kRichEditorFragment {
-            // This is just a dummy callback
-            imageCallback = {
-                "https://beebom-redkapmedia.netdna-ssl.com/wp-content/uploads/2016/01/" +
-                        "Reverse-Image-Search-Engines-Apps-And-Its-Uses-2016.jpg"
-            }
+            // This is just a demo for image action
+            imageButtonAction = { ImagePicker.create(this@MainActivity).start() }
         }
 
         supportFragmentManager
@@ -65,5 +65,21 @@ class MainActivity : AppCompatActivity() {
             }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (ImagePicker.shouldHandle(requestCode, resultCode, data)) {
+            val image = ImagePicker.getFirstImageOrNull(data)
+            if (image != null) {
+                // The second param (true/false) would not reflect BASE64 mode or not
+                // Normal URL mode would pass the URL
+                editorFragment.editor.command(IMAGE, false, "https://" +
+                        "beebom-redkapmedia.netdna-ssl.com/wp-content/uploads/2016/01/" +
+                        "Reverse-Image-Search-Engines-Apps-And-Its-Uses-2016.jpg")
+                // For BASE64, image file path would be passed instead
+                editorFragment.editor.command(IMAGE, true, image.path)
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data)
     }
 }
