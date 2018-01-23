@@ -89,7 +89,7 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
 
     // Customizable settings
     var placeHolder = "Start writing..."
-    var imageCallback: (() -> String)? = null
+    var imageButtonAction: (() -> Unit)? = null
 
     // Default buttons layout
     var buttonsLayout = listOf(
@@ -159,15 +159,10 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
                 SIZE -> editor.command(SIZE, false, param!!)
                 FORE_COLOR -> editor.command(FORE_COLOR, false, param!!)
                 BACK_COLOR -> editor.command(BACK_COLOR, false, param!!)
-                IMAGE -> { when (imageCallback) {
+                IMAGE -> when (imageButtonAction) {
                     null -> ui.owner.toast("Image handler not implemented!")
-                    else -> editor.getSelection( ValueCallback {
-                        try {
-                            val selection = Gson().fromJson<Map<String, Int>>(it)
-                            editor.command(IMAGE, false, selection["index"]!!, imageCallback!!.invoke())
-                        } catch (e: Exception) { ui.owner.toast("Something went wrong!") }
-                    } )
-                } }
+                    else -> imageButtonAction!!.invoke()
+                }
                 LINK -> {
                     editor.getSelection( ValueCallback {
                         val selection = Gson().fromJson<Map<String, Int>>(it)
