@@ -7,6 +7,7 @@ import android.view.Menu
 import android.view.MenuItem
 import com.ebolo.krichtexteditor.fragments.KRichEditorFragment
 import com.ebolo.krichtexteditor.fragments.kRichEditorFragment
+import com.ebolo.krichtexteditor.ui.widgets.EditorButton
 import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.IMAGE
 import com.esafirm.imagepicker.features.ImagePicker
 import org.jetbrains.anko.alert
@@ -22,6 +23,39 @@ class MainActivity : AppCompatActivity() {
         editorFragment = kRichEditorFragment {
             // This is just a demo for image action
             imageButtonAction = { ImagePicker.create(this@MainActivity).start() }
+            placeHolder = "Write something cool..."
+            // This is relevant to the default layout (full mode)
+            // Customize to your needs
+            buttonsLayout = listOf(
+                    EditorButton.UNDO,
+                    EditorButton.REDO,
+                    EditorButton.IMAGE,
+                    EditorButton.LINK,
+                    EditorButton.BOLD,
+                    EditorButton.ITALIC,
+                    EditorButton.UNDERLINE,
+                    EditorButton.SUBSCRIPT,
+                    EditorButton.SUPERSCRIPT,
+                    EditorButton.STRIKETHROUGH,
+                    EditorButton.JUSTIFY_LEFT,
+                    EditorButton.JUSTIFY_CENTER,
+                    EditorButton.JUSTIFY_RIGHT,
+                    EditorButton.JUSTIFY_FULL,
+                    EditorButton.ORDERED,
+                    EditorButton.UNORDERED,
+                    EditorButton.NORMAL,
+                    EditorButton.H1,
+                    EditorButton.H2,
+                    EditorButton.H3,
+                    EditorButton.H4,
+                    EditorButton.H5,
+                    EditorButton.H6,
+                    EditorButton.INDENT,
+                    EditorButton.OUTDENT,
+                    EditorButton.BLOCK_QUOTE,
+                    EditorButton.BLOCK_CODE,
+                    EditorButton.CODE_VIEW
+            )
         }
 
         supportFragmentManager
@@ -43,23 +77,13 @@ class MainActivity : AppCompatActivity() {
         return when (item.itemId) {
             R.id.action_html -> {
                 editorFragment.editor.getHtml { html ->
-                    runOnUiThread {
-                        alert(
-                                message = html,
-                                title = "HTML"
-                        ).show()
-                    }
+                    runOnUiThread { alert(message = html, title = "HTML").show() }
                 }
                 true
             }
             R.id.action_text -> {
-                editorFragment.editor.getText {
-                    runOnUiThread {
-                        alert(
-                                message = it,
-                                title = "Text"
-                        ).show()
-                    }
+                editorFragment.editor.getText { text ->
+                    runOnUiThread { alert(message = text, title = "Text").show() }
                 }
                 true
             }
