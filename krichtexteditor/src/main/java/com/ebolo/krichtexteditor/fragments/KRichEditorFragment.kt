@@ -5,6 +5,7 @@ import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.ebolo.krichtexteditor.R
 import com.ebolo.krichtexteditor.RichEditor
 import com.ebolo.krichtexteditor.ui.layouts.KRichEditorFragmentLayout
 import com.ebolo.krichtexteditor.ui.widgets.EditorButton
@@ -30,7 +31,9 @@ class KRichEditorFragment: Fragment() {
             this.layout.apply {
                 placeHolder = options.placeHolder
                 imageButtonAction = options.imageButtonAction
-                buttonsLayout = buttonsLayout
+                buttonsLayout = options.buttonsLayout
+                buttonActivatedColorId = options.buttonActivatedColorId
+                buttonDeactivatedColorId = options.buttonDeactivatedColorId
             }
         }
     }
@@ -73,10 +76,16 @@ class Options {
             EditorButton.BLOCK_CODE,
             EditorButton.CODE_VIEW
     )
+    var buttonActivatedColorId: Int = R.color.colorAccent
+    var buttonDeactivatedColorId: Int = R.color.tintColor
 
     fun placeHolder(text: String) = this.apply { placeHolder = text }
 
     fun onImageButtonClicked(action: () -> Unit) = this.apply { imageButtonAction = action }
 
     fun buttonLayout(layout: List<Int>) = this.apply { buttonsLayout = layout }
+
+    fun buttonActivatedColorResource(res: Int) = this.apply { buttonActivatedColorId = res }
+
+    fun buttonDeactivatedColorResource(res: Int) = this.apply { buttonDeactivatedColorId = res }
 }
