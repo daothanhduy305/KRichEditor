@@ -88,4 +88,8 @@ class Options {
     fun buttonActivatedColorResource(res: Int) = this.apply { buttonActivatedColorId = res }
 
     fun buttonDeactivatedColorResource(res: Int) = this.apply { buttonDeactivatedColorId = res }
+
+    companion object {
+        @JvmField val DEFAULT = Options()
+    }
 }
