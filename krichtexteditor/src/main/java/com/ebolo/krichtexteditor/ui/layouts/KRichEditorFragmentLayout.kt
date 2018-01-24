@@ -123,6 +123,9 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
             EditorButton.CODE_VIEW
     )
 
+    var buttonActivatedColorId: Int = R.color.colorAccent
+    var buttonDeactivatedColorId: Int = R.color.tintColor
+
     @SuppressLint("SetJavaScriptEnabled")
     override fun createView(ui: AnkoContext<KRichEditorFragment>) = with(ui) {
         val editor = ui.owner.editor
@@ -243,6 +246,9 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
                         linkButtonAction = { onMenuButtonClicked(LINK) }
                     if (IMAGE in buttonsLayout)
                         imageButtonAction = { onMenuButtonClicked(IMAGE) }
+
+                    buttonActivatedColorId = this@KRichEditorFragmentLayout.buttonActivatedColorId
+                    buttonDeactivatedColorId = this@KRichEditorFragmentLayout.buttonDeactivatedColorId
                 }.createToolbar(this)
 
             }.lparams(width = matchParent, height = wrapContent)
@@ -631,10 +637,5 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
         }
 
         rootView
-    }
-
-    companion object {
-        var buttonActivatedColorId: Int = R.color.colorAccent
-        var buttonDeactivatedColorId: Int = R.color.tintColor
     }
 }

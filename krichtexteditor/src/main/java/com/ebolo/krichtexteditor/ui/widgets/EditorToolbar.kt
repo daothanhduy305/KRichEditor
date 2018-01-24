@@ -7,8 +7,6 @@ import com.bitbucket.eventbus.EventBus
 import com.ebolo.krichtexteditor.R
 import com.ebolo.krichtexteditor.RichEditor
 import com.ebolo.krichtexteditor.ui.actionImageViewStyle
-import com.ebolo.krichtexteditor.ui.layouts.KRichEditorFragmentLayout.Companion.buttonActivatedColorId
-import com.ebolo.krichtexteditor.ui.layouts.KRichEditorFragmentLayout.Companion.buttonDeactivatedColorId
 import org.jetbrains.anko.*
 import org.jetbrains.anko.sdk25.coroutines.onClick
 
@@ -18,7 +16,8 @@ class EditorToolbar(private val editor: RichEditor, private val buttonsLayout: L
 
     private lateinit var buttons: Map<Int, ImageView>
 
-
+    var buttonActivatedColorId: Int = R.color.colorAccent
+    var buttonDeactivatedColorId: Int = R.color.tintColor
 
     fun createToolbar(parent: ViewGroup) = parent.horizontalScrollView {
         linearLayout {
