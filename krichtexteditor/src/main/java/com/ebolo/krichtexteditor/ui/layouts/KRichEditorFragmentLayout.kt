@@ -209,10 +209,9 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
                     editor.apply {
                         mWebView = this@ankoView
                         placeHolder = this@KRichEditorFragmentLayout.placeHolder
-
-
                     }
                     addJavascriptInterface(editor, "KRichEditor")
+
                 }.lparams(width = matchParent, height = matchParent)
 
             }.lparams(width = matchParent, height = 0) { weight = 2f }
