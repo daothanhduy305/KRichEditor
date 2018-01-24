@@ -25,7 +25,7 @@ Add to root Gradle:
 
 Gradle:
 
-    implementation 'com.ebolo:krichtexteditor:0.0.2'
+    implementation 'com.ebolo:krichtexteditor:x.y.z' // See latest version number above
     // implementation 'com.github.daothanhduy305:KRichEditor:-SNAPSHOT'
     // For latest SNAPSHOT with Jitpack
     // Just retry syncing if the first one fails
@@ -64,9 +64,9 @@ Gradle:
 
 <img src="https://github.com/daothanhduy305/KRichEditor/raw/master/ss/1.jpg" width="300"><img src="https://github.com/daothanhduy305/KRichEditor/raw/master/ss/2.jpg" width="300"><img src="https://github.com/daothanhduy305/KRichEditor/raw/master/ss/3.jpg" width="300"><img src="https://github.com/daothanhduy305/KRichEditor/raw/master/ss/4.jpg" width="300">
 
-## Usage
+## Usage - Kotlin
 
-Kotlin simple - simply initialize this from any Context:
+Simply initialize this from any Context:
 
     val editorFragment = kRichEditorFragment()
 
@@ -76,14 +76,6 @@ Kotlin advanced - you can customize it, too:
         // Customization block
     }
     
-To retrieve HTML code:
-
-    editorFragment.editor.getHtml( ValueCallback {
-            do_something_with(it)
-    } )
-        
-## Customizations
-
 - To change activated/deactivated state colors:
 
         buttonActivatedColorId = R.color.customActivatedColor
@@ -93,15 +85,88 @@ To retrieve HTML code:
 
         placeHolder = "New cool text..."
 
-- To set image callback:
+- To set image action (on image button clicked if enabled):
 
-        imageCallback = {
-            // Do your stuffs here
-
-            "Returning URL"
+        imageButtonAction = {
+            // Do your stuffs here (start image picker)
         }
 
+- To customize toolbar layout:
+
+        buttonsLayout = listOf(
+            EditorButton.UNDO,
+            EditorButton.REDO,
+            EditorButton.IMAGE,
+            ...
+        )
+
 - ...more to come...
+    
+To retrieve HTML code:
+
+    editorFragment.editor.getHtml( ValueCallback {
+            do_something_with(it)
+    } )
+       
+To retrieve text:
+
+    editorFragment.editor.getText( ValueCallback {
+            do_something_with(it)
+    } )
+       
+To insert image (e.g: onActivityResult/after uploading with image path (local)/URL):
+
+    editorFragment.editor.command(EditorButton.IMAGE, true (for local path - Base64)/false (for URL), path/URL: String)
+       
+## Usage - Java
+
+To create Instance:
+
+    KRichEditorFragment editorFragment = KRichEditorFragment.getInstance(Options.DEFAULT);
+
+To create options (for customizations):
+
+    Options options = new Options()
+        .placeHolder(String)
+        .onImageButtonClicked(new Function0<Unit>() {
+            @Override
+            public Unit invoke() {
+                // Do your stuffs here (start image picker)
+                return null;
+            }
+        })
+        .buttonLayout(Arrays.asList(
+            EditorButton.UNDO,
+            EditorButton.REDO,
+            EditorButton.IMAGE,
+            ...
+        ))
+        .buttonActivatedColorResource(resId)
+        .buttonDeactivatedColorResource(resId);
+
+To retrieve HTML code:
+
+    editorFragment.getEditor().getHtml(new Function1<String, Unit>() {
+        @Override
+        public Unit invoke(final String html) {
+            // Do something with html
+            return null;
+        }
+    });
+       
+To retrieve text:
+
+    editorFragment.getEditor().getText(new Function1<String, Unit>() {
+        @Override
+        public Unit invoke(final String text) {
+            // Do something with text
+            return null;
+        }
+    });
+       
+To insert image (e.g: onActivityResult/after uploading with image path (local)/URL):
+
+    editorFragment.getEditor().command(EditorButton.IMAGE, true (for local path - Base64)/false (for URL), path/URL: String)
 
 ## License
 
