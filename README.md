@@ -60,6 +60,10 @@ Gradle:
 - Undo
 - Redo
 
+## Bugs/Not working/Not supporting
+
+- RTL languages
+
 ## Screenshot
 
 <img src="https://github.com/daothanhduy305/KRichEditor/raw/master/ss/1.jpg" width="300"><img src="https://github.com/daothanhduy305/KRichEditor/raw/master/ss/2.jpg" width="300"><img src="https://github.com/daothanhduy305/KRichEditor/raw/master/ss/3.jpg" width="300"><img src="https://github.com/daothanhduy305/KRichEditor/raw/master/ss/4.jpg" width="300">
