@@ -80,7 +80,7 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
     private lateinit var editorMenu: LinearLayout
     private lateinit var webViewHolder: LinearLayout
     private lateinit var editorToolbar: LinearLayout
-    private lateinit var rootView: LinearLayout
+    private var rootView: LinearLayout? = null
 
     private lateinit var menuButton: ImageView
 
@@ -127,7 +127,7 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
     var buttonDeactivatedColorId: Int = R.color.tintColor
 
     @SuppressLint("SetJavaScriptEnabled")
-    override fun createView(ui: AnkoContext<KRichEditorFragment>) = with(ui) {
+    override fun createView(ui: AnkoContext<KRichEditorFragment>) = rootView ?: with(ui) {
         val editor = ui.owner.editor
         // Preparation
         fun hideMenu(){
@@ -182,7 +182,7 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
                                 )
                             }
                             else editor.command(LINK, editorMenu.visibility != View.VISIBLE ,"")
-                        } else longSnackbar(rootView, R.string.link_empty_warning).show()
+                        } else longSnackbar(rootView!!, R.string.link_empty_warning).show()
                     } )
                 }
                 else -> editor.command(type, false)
@@ -636,6 +636,6 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
             }
         }
 
-        rootView
+        rootView!!
     }
 }

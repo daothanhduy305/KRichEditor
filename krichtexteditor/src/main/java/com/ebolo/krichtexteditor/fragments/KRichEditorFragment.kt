@@ -41,7 +41,10 @@ class KRichEditorFragment: Fragment() {
 
 fun kRichEditorFragment(
         settings: ((KRichEditorFragmentLayout).() -> Unit)? = null
-): KRichEditorFragment = KRichEditorFragment().apply { this.settings = settings }
+): KRichEditorFragment = KRichEditorFragment().apply {
+    this.settings = settings
+    this.retainInstance = true
+}
 
 class Options {
     var placeHolder: String = "Start writing..."

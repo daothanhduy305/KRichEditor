@@ -20,7 +20,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         MainActivityLayout().setContentView(this)
 
-        editorFragment = kRichEditorFragment {
+        editorFragment = supportFragmentManager.findFragmentByTag("EDITOR") as KRichEditorFragment? ?:
+        kRichEditorFragment {
             // This is just a demo for image action
             imageButtonAction = { ImagePicker.create(this@MainActivity).start() }
             placeHolder = "Write something cool..."
@@ -60,7 +61,7 @@ class MainActivity : AppCompatActivity() {
 
         supportFragmentManager
                 .beginTransaction()
-                .replace(R.id.fragment_holder, editorFragment)
+                .replace(R.id.fragment_holder, editorFragment, "EDITOR")
                 .commit()
     }
 
