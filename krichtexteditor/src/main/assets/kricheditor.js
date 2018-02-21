@@ -117,6 +117,8 @@ function getStyle() { return quill.getFormat(); }
 function getSelection() { return quill.getSelection(); }
 function getHtml() { return quill.root.innerHTML; }
 function getText() { return quill.getText(); }
+function getContents() { return quill.getContents(); }
+function setContents(data) { quill.setContents(data); }
 
 function format(formatFunction, reFocus) {
     quill.disable();

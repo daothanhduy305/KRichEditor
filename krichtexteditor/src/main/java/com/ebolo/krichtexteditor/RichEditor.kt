@@ -213,6 +213,16 @@ class RichEditor {
         callback?.invoke(it.substring(1, it.length - 1).replace("\\n", "\n"))
     } )
 
+    /**
+     * Function:    getContents
+     * Description: Retrieves contents of the editor, with formatting data,
+     *              represented by a Delta object (https://quilljs.com/docs/delta/).
+     */
+    private fun getContents(callback: ValueCallback<String>) = load("javascript:getContents()", callback)
+    fun getContents(callback: ((text: String) -> Unit)?) = getContents( ValueCallback { callback?.invoke(it) } )
+
+    fun setContents(data: String) = load("javascript:setContents('$data')")
+
     private fun load(trigger: String, callBack: ValueCallback<String>? = null) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             this.mWebView.evaluateJavascript(trigger, callBack)
