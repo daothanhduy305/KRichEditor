@@ -98,9 +98,10 @@ class MainActivity : AppCompatActivity() {
             if (image != null) {
                 // The second param (true/false) would not reflect BASE64 mode or not
                 // Normal URL mode would pass the URL
-                editorFragment.editor.command(IMAGE, false, "https://" +
+                /*editorFragment.editor.command(IMAGE, false, "https://" +
                         "beebom-redkapmedia.netdna-ssl.com/wp-content/uploads/2016/01/" +
-                        "Reverse-Image-Search-Engines-Apps-And-Its-Uses-2016.jpg")
+                        "Reverse-Image-Search-Engines-Apps-And-Its-Uses-2016.jpg")*/
+
                 // For BASE64, image file path would be passed instead
                 editorFragment.editor.command(IMAGE, true, image.path)
             }
