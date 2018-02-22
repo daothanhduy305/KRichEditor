@@ -1,13 +1,13 @@
 var quill;
 
 var initEditor = function(){
-    var initText = KRichEditor.getInitText();
+    var placeholderText = KRichEditor.getPlaceHolder();
     var config = {
         theme: 'snow',
         modules: {
             toolbar: false
         },
-        placeholder: initText
+        placeholder: placeholderText
     };
     quill = new Quill('#editor', config);
     quill.on('selection-change', function(range, oldRange, source) {
@@ -17,6 +17,11 @@ var initEditor = function(){
         console.log('Cursor not in the editor');
       }
     });
+    var initContents = KRichEditor.getInitContents();
+    console.log(initContents)
+    if (initContents && initContents != "") {
+        quill.setContents(JSON.parse(initContents))
+    }
     quill.focus();
 };
 

@@ -10,6 +10,7 @@ import com.ebolo.krichtexteditor.fragments.kRichEditorFragment
 import com.ebolo.krichtexteditor.ui.widgets.EditorButton
 import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.IMAGE
 import com.esafirm.imagepicker.features.ImagePicker
+import io.paperdb.Paper
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.setContentView
 
@@ -57,6 +58,8 @@ class MainActivity : AppCompatActivity() {
                     EditorButton.BLOCK_CODE,
                     EditorButton.CODE_VIEW
             )
+            // To support loading last saved contents
+            initContents = Paper.book("demo").read("content", "")
         }
 
         supportFragmentManager
@@ -107,5 +110,10 @@ class MainActivity : AppCompatActivity() {
             }
         }
         super.onActivityResult(requestCode, resultCode, data)
+    }
+
+    override fun onPause() {
+        editorFragment.editor.getContents { content -> Paper.book("demo").write("content", content) }
+        super.onPause()
     }
 }

@@ -126,6 +126,8 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
     var buttonActivatedColorId: Int = R.color.colorAccent
     var buttonDeactivatedColorId: Int = R.color.tintColor
 
+    var initContents: String = ""
+
     @SuppressLint("SetJavaScriptEnabled")
     override fun createView(ui: AnkoContext<KRichEditorFragment>) = rootView ?: with(ui) {
         val editor = ui.owner.editor
@@ -210,6 +212,7 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
                     editor.apply {
                         mWebView = this@ankoView
                         placeHolder = this@KRichEditorFragmentLayout.placeHolder
+                        initContents = this@KRichEditorFragmentLayout.initContents
                     }
                     addJavascriptInterface(editor, "KRichEditor")
 

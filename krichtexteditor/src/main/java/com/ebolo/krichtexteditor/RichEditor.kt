@@ -66,6 +66,9 @@ class RichEditor {
     ) }
 
     lateinit var placeHolder: String
+        @JavascriptInterface get
+    lateinit var initContents: String
+        @JavascriptInterface get
 
     lateinit var mWebView: WebView
     var styleUpdatedCallback: ((type: Int, value: Any) -> Unit)? = null
@@ -78,9 +81,6 @@ class RichEditor {
         Log.d("Format", currentStyle)
         updateStyle(gson.fromJson(currentStyle))
     } catch (e: Exception) {} // ignored
-
-    @JavascriptInterface
-    fun getInitText() = placeHolder
 
     @JavascriptInterface
     fun debugJs(message: String) {
