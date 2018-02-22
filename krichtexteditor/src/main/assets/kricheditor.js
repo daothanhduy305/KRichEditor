@@ -88,6 +88,11 @@ function insertUnorderedList() {
     else quill.format('list', 'bullet', 'api');
 }
 
+function insertCheckList() {
+    if (quill.getFormat().list === 'unchecked') quill.format('list', false, 'api');
+    else quill.format('list', 'unchecked', 'api');
+}
+
 function formatBlock(tagName) {
     if (tagName === 'blockquote') {
         var isQuoted = quill.getFormat().blockquote;

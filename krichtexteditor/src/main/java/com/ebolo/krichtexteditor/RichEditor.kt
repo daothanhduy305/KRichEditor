@@ -171,6 +171,7 @@ class RichEditor {
     private fun align(style: String, state: Boolean = true) = load("javascript:align('$style', $state)")
     private fun insertOrderedList() = load("javascript:insertOrderedList()")
     private fun insertUnorderedList() = load("javascript:insertUnorderedList()")
+    private fun insertCheckList() = load("javascript:insertCheckList()")
     private fun indent() = load("javascript:indent()")
     private fun outdent() = load("javascript:outdent()")
     private fun header(level: Int) = load("javascript:header($level)")
