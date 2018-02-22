@@ -204,8 +204,6 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
                     settings.domStorageEnabled = true
                     // settings.cacheMode = WebSettings.LOAD_NO_CACHE
 
-                    loadUrl("file:///android_asset/richEditor.html")
-
                     isFocusable = true
                     isFocusableInTouchMode = true
 
@@ -214,6 +212,8 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
                         placeHolder = this@KRichEditorFragmentLayout.placeHolder
                     }
                     addJavascriptInterface(editor, "KRichEditor")
+
+                    loadUrl("file:///android_asset/richEditor.html")
 
                 }.lparams(width = matchParent, height = matchParent)
 
