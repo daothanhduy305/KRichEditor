@@ -221,7 +221,7 @@ class RichEditor {
     private fun getContents(callback: ValueCallback<String>) = load("javascript:getContents()", callback)
     fun getContents(callback: ((text: String) -> Unit)?) = getContents( ValueCallback { callback?.invoke(it) } )
 
-    fun setContents(data: String) = load("javascript:setContents('$data')")
+    fun setContents(data: String) = load("javascript:setContents($data)")
 
     private fun load(trigger: String, callBack: ValueCallback<String>? = null) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
