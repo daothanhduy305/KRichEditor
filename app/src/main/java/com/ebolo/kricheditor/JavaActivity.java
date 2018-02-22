@@ -30,50 +30,53 @@ public class JavaActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        editorFragment = KRichEditorFragment.getInstance(
-                new Options()
-                        .placeHolder("Write something cool...")
-                        .onImageButtonClicked(new Function0<Unit>() {
-                            @Override
-                            public Unit invoke() {
-                                ImagePicker.create(JavaActivity.this).start();
-                                return null;
-                            }
-                        })
-                        .buttonLayout( Arrays.asList(
-                                EditorButton.UNDO,
-                                EditorButton.REDO,
-                                EditorButton.IMAGE,
-                                EditorButton.LINK,
-                                EditorButton.BOLD,
-                                EditorButton.ITALIC,
-                                EditorButton.UNDERLINE,
-                                EditorButton.SUBSCRIPT,
-                                EditorButton.SUPERSCRIPT,
-                                EditorButton.STRIKETHROUGH,
-                                EditorButton.JUSTIFY_LEFT,
-                                EditorButton.JUSTIFY_CENTER,
-                                EditorButton.JUSTIFY_RIGHT,
-                                EditorButton.JUSTIFY_FULL,
-                                EditorButton.ORDERED,
-                                EditorButton.UNORDERED,
-                                EditorButton.NORMAL,
-                                EditorButton.H1,
-                                EditorButton.H2,
-                                EditorButton.H3,
-                                EditorButton.H4,
-                                EditorButton.H5,
-                                EditorButton.H6,
-                                EditorButton.INDENT,
-                                EditorButton.OUTDENT,
-                                EditorButton.BLOCK_QUOTE,
-                                EditorButton.BLOCK_CODE,
-                                EditorButton.CODE_VIEW
-                        ) )
-        );
+        editorFragment = (KRichEditorFragment) getSupportFragmentManager().findFragmentByTag("EDITOR");
+
+        if (editorFragment == null)
+            editorFragment = KRichEditorFragment.getInstance(
+                    new Options()
+                            .placeHolder("Write something cool...")
+                            .onImageButtonClicked(new Function0<Unit>() {
+                                @Override
+                                public Unit invoke() {
+                                    ImagePicker.create(JavaActivity.this).start();
+                                    return null;
+                                }
+                            })
+                            .buttonLayout( Arrays.asList(
+                                    EditorButton.UNDO,
+                                    EditorButton.REDO,
+                                    EditorButton.IMAGE,
+                                    EditorButton.LINK,
+                                    EditorButton.BOLD,
+                                    EditorButton.ITALIC,
+                                    EditorButton.UNDERLINE,
+                                    EditorButton.SUBSCRIPT,
+                                    EditorButton.SUPERSCRIPT,
+                                    EditorButton.STRIKETHROUGH,
+                                    EditorButton.JUSTIFY_LEFT,
+                                    EditorButton.JUSTIFY_CENTER,
+                                    EditorButton.JUSTIFY_RIGHT,
+                                    EditorButton.JUSTIFY_FULL,
+                                    EditorButton.ORDERED,
+                                    EditorButton.UNORDERED,
+                                    EditorButton.NORMAL,
+                                    EditorButton.H1,
+                                    EditorButton.H2,
+                                    EditorButton.H3,
+                                    EditorButton.H4,
+                                    EditorButton.H5,
+                                    EditorButton.H6,
+                                    EditorButton.INDENT,
+                                    EditorButton.OUTDENT,
+                                    EditorButton.BLOCK_QUOTE,
+                                    EditorButton.BLOCK_CODE,
+                                    EditorButton.CODE_VIEW
+                            ) )
+            );
 
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fragment_holder, editorFragment)
+                .replace(R.id.fragment_holder, editorFragment, "EDITOR")
                 .commit();
     }
 
@@ -126,9 +129,10 @@ public class JavaActivity extends AppCompatActivity {
             if (image != null) {
                 // The second param (true/false) would not reflect BASE64 mode or not
                 // Normal URL mode would pass the URL
-                editorFragment.getEditor().command(EditorButton.IMAGE, false, "https://" +
+                /*editorFragment.getEditor().command(EditorButton.IMAGE, false, "https://" +
                         "beebom-redkapmedia.netdna-ssl.com/wp-content/uploads/2016/01/" +
-                        "Reverse-Image-Search-Engines-Apps-And-Its-Uses-2016.jpg");
+                        "Reverse-Image-Search-Engines-Apps-And-Its-Uses-2016.jpg");*/
+
                 // For BASE64, image file path would be passed instead
                 editorFragment.getEditor().command(EditorButton.IMAGE, true, image.getPath());
             }
