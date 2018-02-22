@@ -257,6 +257,7 @@ class RichEditor {
             EditorButton.JUSTIFY_FULL -> align("justify", reFocus)
             EditorButton.ORDERED -> insertOrderedList()
             EditorButton.UNORDERED -> insertUnorderedList()
+            EditorButton.CHECK -> insertCheckList()
             EditorButton.INDENT -> indent()
             EditorButton.OUTDENT -> outdent()
             EditorButton.LINE -> insertHorizontalRule()

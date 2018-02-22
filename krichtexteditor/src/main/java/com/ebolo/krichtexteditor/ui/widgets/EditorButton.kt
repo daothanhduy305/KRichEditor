@@ -40,26 +40,27 @@ class EditorButton(val type: Int) {
         // List Style
         const val ORDERED = 23
         const val UNORDERED = 24
+        const val CHECK = 25
 
-        const val INDENT = 25
-        const val OUTDENT = 26
+        const val INDENT = 26
+        const val OUTDENT = 27
 
         // Insert
-        const val IMAGE = 27
-        const val LINK = 28
-        const val TABLE = 29
-        const val LINE = 30
+        const val IMAGE = 28
+        const val LINK = 29
+        const val TABLE = 30
+        const val LINE = 31
 
-        const val BLOCK_QUOTE = 31
-        const val BLOCK_CODE = 32
+        const val BLOCK_QUOTE = 32
+        const val BLOCK_CODE = 33
 
-        const val CODE_VIEW = 33
+        const val CODE_VIEW = 34
 
         // Actions
-        const val UNDO = 34
-        const val REDO = 35
+        const val UNDO = 35
+        const val REDO = 36
 
-        @IntRange(from = 0, to = 35)
+        @IntRange(from = 0, to = 36)
         @Retention(AnnotationRetention.SOURCE)
         annotation class ActionType
 
@@ -90,6 +91,7 @@ class EditorButton(val type: Int) {
                     JUSTIFY_FULL to R.drawable.ic_format_align_justify,
                     ORDERED to R.drawable.ic_format_list_numbered,
                     UNORDERED to R.drawable.ic_format_list_bulleted,
+                    CHECK to R.drawable.ic_format_list_check,
                     LINE to R.drawable.ic_line,
                     BLOCK_CODE to R.drawable.ic_code_block,
                     BLOCK_QUOTE to R.drawable.ic_format_quote,

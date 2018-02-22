@@ -28,6 +28,7 @@ import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.BACK_COLOR
 import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.BLOCK_CODE
 import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.BLOCK_QUOTE
 import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.BOLD
+import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.CHECK
 import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.CODE_VIEW
 import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.FORE_COLOR
 import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.H1
@@ -110,6 +111,7 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
             EditorButton.JUSTIFY_FULL,
             EditorButton.ORDERED,
             EditorButton.UNORDERED,
+            EditorButton.CHECK,
             EditorButton.NORMAL,
             EditorButton.H1,
             EditorButton.H2,
@@ -537,17 +539,17 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
                         }.lparams(width = matchParent, height = wrapContent) { topMargin = dip(8) }
 
                         additionalFormatBox(
-                                item1 = INDENT to R.drawable.ic_format_indent_increase,
-                                item2 = OUTDENT to R.drawable.ic_format_indent_decrease,
-                                item3 = UNORDERED to R.drawable.ic_format_list_bulleted,
-                                item4 = ORDERED to R.drawable.ic_format_list_numbered
-                        )
-
-                        additionalFormatBox(
                                 item1 = SUBSCRIPT to R.drawable.ic_format_subscript,
                                 item2 = SUPERSCRIPT to R.drawable.ic_format_superscript,
                                 item3 = BLOCK_QUOTE to R.drawable.ic_format_quote,
                                 item4 = BLOCK_CODE to R.drawable.ic_code_block
+                        )
+
+                        additionalFormatBox(
+                                item1 = INDENT to R.drawable.ic_format_indent_increase,
+                                item2 = OUTDENT to R.drawable.ic_format_indent_decrease,
+                                item3 = UNORDERED to R.drawable.ic_format_list_bulleted,
+                                item4 = ORDERED to R.drawable.ic_format_list_numbered
                         )
 
                         // Sixth box: insert buttonsLayout - image, link, table, code
@@ -577,6 +579,7 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
                                             onClick { onMenuButtonClicked(type) }
                                         }.lparams { weight = 1f }.apply { actionImageViewStyle() }
 
+                                insertButton(CHECK, R.drawable.ic_format_list_check)
                                 insertButton(IMAGE, R.drawable.ic_insert_photo)
                                 insertButton(LINK, R.drawable.ic_insert_link)
                                 // insertButton(R.drawable.ic_table, R.id.iv_action_table)

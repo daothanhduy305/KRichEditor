@@ -45,6 +45,7 @@ class MainActivity : AppCompatActivity() {
                     EditorButton.JUSTIFY_FULL,
                     EditorButton.ORDERED,
                     EditorButton.UNORDERED,
+                    EditorButton.CHECK,
                     EditorButton.NORMAL,
                     EditorButton.H1,
                     EditorButton.H2,
