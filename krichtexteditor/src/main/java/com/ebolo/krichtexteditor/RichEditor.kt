@@ -78,7 +78,6 @@ class RichEditor {
 
     @JavascriptInterface
     fun updateCurrentStyle(currentStyle: String) = try {
-        Log.d("Format", currentStyle)
         updateStyle(gson.fromJson(currentStyle))
     } catch (e: Exception) {} // ignored
 
@@ -88,11 +87,7 @@ class RichEditor {
     }
 
     fun updateStyle() = getStyle( ValueCallback {
-        try {
-            val updatedStyle = gson.fromJson<QuillFormat>(it)
-            updateStyle(updatedStyle)
-            EventBus.getInstance().post("style_update", gson.fromJson(it))
-        } catch (e: Exception) {} // ignored
+        try { updateStyle(gson.fromJson(it)) } catch (e: Exception) {} // ignored
     } )
 
     private fun updateStyle(quillFormat: QuillFormat) {

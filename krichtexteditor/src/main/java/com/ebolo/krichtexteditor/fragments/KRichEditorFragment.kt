@@ -26,6 +26,16 @@ class KRichEditorFragment: Fragment() {
         return layout.createView(AnkoContext.Companion.create(ctx, this))
     }
 
+    override fun onResume() {
+        layout.setupListeners(this)
+        super.onResume()
+    }
+
+    override fun onPause() {
+        layout.removeListeners()
+        super.onPause()
+    }
+
     companion object {
         @JvmStatic fun getInstance(options: Options) = KRichEditorFragment().apply {
             this.layout.apply {
