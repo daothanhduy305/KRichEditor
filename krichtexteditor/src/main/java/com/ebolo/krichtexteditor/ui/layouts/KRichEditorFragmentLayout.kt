@@ -1,7 +1,9 @@
 package com.ebolo.krichtexteditor.ui.layouts
 
 import android.annotation.SuppressLint
+import android.support.design.widget.TextInputEditText
 import android.support.v4.content.ContextCompat
+import android.text.InputType
 import android.view.Gravity
 import android.view.Gravity.CENTER_VERTICAL
 import android.view.MenuItem
@@ -16,9 +18,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import com.bitbucket.eventbus.EventBus
 import com.ebolo.krichtexteditor.R
-import com.ebolo.krichtexteditor.fragments.EditHyperlinkFragment
 import com.ebolo.krichtexteditor.fragments.KRichEditorFragment
-import com.ebolo.krichtexteditor.fragments.editHyperlinkDialog
 import com.ebolo.krichtexteditor.ui.actionImageViewStyle
 import com.ebolo.krichtexteditor.ui.widgets.ColorPaletteView
 import com.ebolo.krichtexteditor.ui.widgets.EditorButton
@@ -60,6 +60,8 @@ import com.google.gson.Gson
 import org.jetbrains.anko.*
 import org.jetbrains.anko.custom.ankoView
 import org.jetbrains.anko.design.longSnackbar
+import org.jetbrains.anko.design.textInputEditText
+import org.jetbrains.anko.design.textInputLayout
 import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.jetbrains.anko.support.v4.ctx
 import org.jetbrains.anko.support.v4.onUiThread
@@ -161,17 +163,42 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
                         val selection = Gson().fromJson<Map<String, Int>>(it)
                         if (selection["length"]!! > 0) {
                             if (!editor.selectingLink()) {
-                                editHyperlinkDialog {
-                                    onLinkSet {
-                                        hideMenu()
-                                        editor.command(LINK, it)
+                                var addressInput: TextInputEditText? = null
+                                // Setup dialog view
+                                alert {
+                                    customView {
+                                        linearLayout {
+                                            layoutParams = ViewGroup.LayoutParams(matchParent, wrapContent)
+                                            padding = dip(10)
+
+                                            weightSum = 5f
+
+                                            textInputLayout {
+
+                                                addressInput = textInputEditText {
+                                                    inputType = InputType.TYPE_CLASS_TEXT
+                                                    maxLines = 1
+                                                    hintResource = R.string.address
+                                                }
+
+                                            }.lparams(width = dip(0), height = wrapContent) { weight = 4f }
+                                        }
                                     }
-                                }.show(
-                                        ui.owner.fragmentManager,
-                                        EditHyperlinkFragment::class.java.simpleName
-                                )
+
+                                    yesButton {
+                                        val urlValue = addressInput?.text.toString()
+                                        if (urlValue.startsWith("http://", true)
+                                                || urlValue.startsWith("https://", true)) {
+                                            hideMenu()
+                                            editor.command(LINK, urlValue)
+                                        }
+                                        else toast(ui.owner.ctx.getString(R.string.link_missing_protocol))
+                                    }
+
+                                    noButton {  }
+                                }.show()
                             }
-                            else editor.command(LINK, editorMenu.visibility != View.VISIBLE ,"")
+                            else editor.command(LINK,"")
                         } else longSnackbar(rootView!!, R.string.link_empty_warning).show()
                     } )
                 }
