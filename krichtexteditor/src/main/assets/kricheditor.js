@@ -23,6 +23,8 @@ var initEditor = function(){
         quill.setContents(JSON.parse(initContents))
     }
     quill.focus();
+
+    KRichEditor.onInitialized();
 };
 
 function focus() { quill.focus(); }
@@ -31,39 +33,39 @@ function redo() { quill.history.redo(); }
 function disable() { quill.disable(); }
 function enable() { quill.enable(); }
 
-function bold(state) {
+function bold() {
     format( function() {
         var isBold = quill.getFormat().bold;
         quill.format('bold', !isBold, 'api');
-    }, state );
+    } );
 }
 
-function italic(state) {
+function italic() {
     format( function() {
         var isItalic = quill.getFormat().italic;
         quill.format('italic', !isItalic, 'api');
-    }, state );
+    } );
 }
 
-function underline(state) {
+function underline() {
     format( function() {
         var isUnderline = quill.getFormat().underline;
         quill.format('underline', !isUnderline, 'api');
-    }, state );
+    } );
 }
 
-function strikethrough(state) {
+function strikethrough() {
     format( function() {
         var isStrike = quill.getFormat().strike;
         quill.format('strike', !isStrike, 'api');
-    }, state );
+    } );
 }
 
-function script(style, state) {
+function script(style) {
     format( function() {
         if (quill.getFormat().script === style) quill.format('script', '', 'api');
         else quill.format('script', style, 'api');
-    }, state );
+    } );
 }
 
 var fontName = function(fontName) {
@@ -71,11 +73,11 @@ var fontName = function(fontName) {
 };
 
 function fontSize(size) {
-    format( function() { quill.format('size', size, 'api'); }, false );
+    format( function() { quill.format('size', size, 'api'); } );
 }
 
-function align(style, state) {
-    format( function() { quill.format('align', style, 'api'); }, state );
+function align(style) {
+    format( function() { quill.format('align', style, 'api'); } );
 }
 
 function insertOrderedList() {
@@ -109,11 +111,11 @@ function header(level) {
     else quill.format('header', level, 'api');
 }
 
-function codeView(state) {
+function codeView() {
     format( function() {
         var isCode = quill.getFormat().code;
         quill.format('code', !isCode, "api");
-    }, state );
+    } );
 }
 
 function background(newColor) { quill.format('background', newColor, 'api'); }
@@ -130,12 +132,7 @@ function getText() { return quill.getText(); }
 function getContents() { return quill.getContents(); }
 function setContents(data) { quill.setContents(data); }
 
-function format(formatFunction, reFocus) {
-    quill.disable();
+function format(formatFunction) {
     formatFunction();
-    if (reFocus) {
-        quill.enable();
-        quill.focus();
-    }
     updateCurrentStyle();
 }

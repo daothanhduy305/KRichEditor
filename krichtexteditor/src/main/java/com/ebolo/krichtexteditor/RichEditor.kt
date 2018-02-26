@@ -71,6 +71,7 @@ class RichEditor {
         @JavascriptInterface get
 
     lateinit var mWebView: WebView
+    var onInitialized: (() -> Unit)? = null
     var styleUpdatedCallback: ((type: Int, value: Any) -> Unit)? = null
 
     @JavascriptInterface
@@ -82,9 +83,10 @@ class RichEditor {
     } catch (e: Exception) {} // ignored
 
     @JavascriptInterface
-    fun debugJs(message: String) {
-        Log.d("JS", message)
-    }
+    fun debugJs(message: String) = Log.d("JS", message)
+
+    @JavascriptInterface
+    fun onInitialized() = onInitialized?.invoke()
 
     fun updateStyle() = getStyle( ValueCallback {
         try { updateStyle(gson.fromJson(it)) } catch (e: Exception) {} // ignored
@@ -158,17 +160,17 @@ class RichEditor {
     fun enable() = load("javascript:enable()")
 
     // Font
-    private fun bold(state: Boolean = true) = load("javascript:bold($state)")
-    private fun italic(state: Boolean = true) = load("javascript:italic($state)")
-    private fun underline(state: Boolean = true) = load("javascript:underline($state)")
-    private fun strikethrough(state: Boolean = true) = load("javascript:strikethrough($state)")
-    private fun script(style: String, state: Boolean = true) = load("javascript:script('$style', $state)")
+    private fun bold() = load("javascript:bold()")
+    private fun italic() = load("javascript:italic()")
+    private fun underline() = load("javascript:underline()")
+    private fun strikethrough() = load("javascript:strikethrough()")
+    private fun script(style: String) = load("javascript:script('$style')")
     private fun backColor(color: String) = load("javascript:background('$color')")
     private fun foreColor(color: String) = load("javascript:color('$color')")
     private fun fontSize(size: String) = load("javascript:fontSize('$size')")
 
     // Paragraph
-    private fun align(style: String, state: Boolean = true) = load("javascript:align('$style', $state)")
+    private fun align(style: String) = load("javascript:align('$style')")
     private fun insertOrderedList() = load("javascript:insertOrderedList()")
     private fun insertUnorderedList() = load("javascript:insertUnorderedList()")
     private fun insertCheckList() = load("javascript:insertCheckList()")
@@ -234,16 +236,16 @@ class RichEditor {
      * @param   reFocus     we disable the editor as a workaround when menu is shown,
      *                      by setting this to true would make the editor have the focus again
      */
-    fun command(@EditorButton.Companion.ActionType mActionType: Int, reFocus: Boolean = true, vararg options: Any) {
+    fun command(@EditorButton.Companion.ActionType mActionType: Int, vararg options: Any) {
         when (mActionType) {
             EditorButton.UNDO -> undo()
             EditorButton.REDO -> redo()
-            EditorButton.BOLD -> bold(reFocus)
-            EditorButton.ITALIC -> italic(reFocus)
-            EditorButton.UNDERLINE -> underline(reFocus)
-            EditorButton.SUBSCRIPT -> script("sub", reFocus)
-            EditorButton.SUPERSCRIPT -> script("super", reFocus)
-            EditorButton.STRIKETHROUGH -> strikethrough(reFocus)
+            EditorButton.BOLD -> bold()
+            EditorButton.ITALIC -> italic()
+            EditorButton.UNDERLINE -> underline()
+            EditorButton.SUBSCRIPT -> script("sub")
+            EditorButton.SUPERSCRIPT -> script("super")
+            EditorButton.STRIKETHROUGH -> strikethrough()
             EditorButton.NORMAL -> header(0)
             EditorButton.H1 -> header(1)
             EditorButton.H2 -> header(2)
@@ -251,10 +253,10 @@ class RichEditor {
             EditorButton.H4 -> header(4)
             EditorButton.H5 -> header(5)
             EditorButton.H6 -> header(6)
-            EditorButton.JUSTIFY_LEFT -> align("", reFocus)
-            EditorButton.JUSTIFY_CENTER -> align("center", reFocus)
-            EditorButton.JUSTIFY_RIGHT -> align("right", reFocus)
-            EditorButton.JUSTIFY_FULL -> align("justify", reFocus)
+            EditorButton.JUSTIFY_LEFT -> align("")
+            EditorButton.JUSTIFY_CENTER -> align("center")
+            EditorButton.JUSTIFY_RIGHT -> align("right")
+            EditorButton.JUSTIFY_FULL -> align("justify")
             EditorButton.ORDERED -> insertOrderedList()
             EditorButton.UNORDERED -> insertUnorderedList()
             EditorButton.CHECK -> insertCheckList()
@@ -269,11 +271,14 @@ class RichEditor {
             } catch (e: Exception) { mWebView.context.toast("Wrong param(s)!") }
             EditorButton.IMAGE -> getSelection( ValueCallback {
                 try {
-                    val selection = Gson().fromJson<Map<String, Int>>(it)
-                    // Since refocus is not applied here so we would use it to decide between
-                    // BASE64 mode and URL mode
-                    if (reFocus) insertImageB64(selection["index"]!!, options[0] as String)
-                    else insertImage(selection["index"]!!, options[0] as String)
+                    // Check params
+                    if (options.size < 2) mWebView.context.toast("Missing param(s)!")
+                    else {
+                        val selection = Gson().fromJson<Map<String, Int>>(it)
+                        // BASE64 mode and URL mode
+                        if (options[0] as Boolean) insertImageB64(selection["index"]!!, options[1] as String)
+                        else insertImage(selection["index"]!!, options[1] as String)
+                    }
                 } catch (e: Exception) { mWebView.context.toast("Something went wrong! Param?") }
             } )
             EditorButton.SIZE -> fontSize(options[0] as String)
