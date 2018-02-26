@@ -82,9 +82,6 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
 
     private lateinit var menuButton: ImageView
 
-    private val fullLayoutParams = LinearLayout.LayoutParams(matchParent, 0, 2f)
-    private val halfLayoutParams = LinearLayout.LayoutParams(matchParent, 0, 1f)
-
     // Customizable settings
     var placeHolder = "Start writing..."
     var imageButtonAction: (() -> Unit)? = null
