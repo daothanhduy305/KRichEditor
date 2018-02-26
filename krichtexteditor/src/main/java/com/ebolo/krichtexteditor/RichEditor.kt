@@ -23,6 +23,7 @@ import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.JUSTIFY_CENTE
 import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.JUSTIFY_FULL
 import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.JUSTIFY_LEFT
 import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.JUSTIFY_RIGHT
+import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.LINK
 import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.NORMAL
 import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.ORDERED
 import com.ebolo.krichtexteditor.ui.widgets.EditorButton.Companion.SIZE
@@ -78,6 +79,7 @@ class RichEditor {
 
     @JavascriptInterface
     fun updateCurrentStyle(currentStyle: String) = try {
+        Log.d("FontStyle", currentStyle)
         updateStyle(gson.fromJson(currentStyle))
     } catch (e: Exception) {} // ignored
 
@@ -140,6 +142,9 @@ class RichEditor {
         }
 
         notifyFontStyleChange(SIZE, quillFormat.size)
+
+        if (currentFormat.link != quillFormat.link)
+            notifyFontStyleChange(LINK, !quillFormat.link.isNullOrBlank())
 
         currentFormat = quillFormat
     }

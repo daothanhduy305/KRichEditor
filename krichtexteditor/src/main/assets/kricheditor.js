@@ -117,7 +117,11 @@ function background(newColor) { quill.format('background', newColor, 'api'); }
 function color(newColor) { quill.format('color', newColor, 'api'); }
 function indent() { quill.format('indent', '+1', 'api'); }
 function outdent() { quill.format('indent', '-1', 'api'); }
-function createLink(linkUrl) { quill.format('link', linkUrl, 'api'); }
+function createLink(linkUrl) {
+    format( function() {
+        quill.format('link', linkUrl, 'api');
+    } )
+}
 function insertEmbed(index, type, value) { quill.insertEmbed(index, type, value, 'api'); }
 function updateCurrentStyle() { KRichEditor.updateCurrentStyle(JSON.stringify(quill.getFormat())); }
 function getStyle() { return quill.getFormat(); }

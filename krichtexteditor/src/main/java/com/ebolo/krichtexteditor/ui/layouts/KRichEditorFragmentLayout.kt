@@ -594,7 +594,7 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
 
                                         insertButton(CHECK, R.drawable.ic_format_list_check)
                                         insertButton(IMAGE, R.drawable.ic_insert_photo)
-                                        insertButton(LINK, R.drawable.ic_insert_link)
+                                        menuFormatButtons.put(LINK, insertButton(LINK, R.drawable.ic_insert_link))
                                         // insertButton(R.drawable.ic_table, R.id.iv_action_table)
                                         insertButton(CODE_VIEW, R.drawable.ic_code_review)
 
@@ -646,7 +646,7 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
 
         listOf(
                 BOLD, ITALIC, UNDERLINE, STRIKETHROUGH, JUSTIFY_CENTER, JUSTIFY_FULL, JUSTIFY_LEFT,
-                JUSTIFY_RIGHT, SUBSCRIPT, SUPERSCRIPT, CODE_VIEW, BLOCK_CODE, BLOCK_QUOTE
+                JUSTIFY_RIGHT, SUBSCRIPT, SUPERSCRIPT, CODE_VIEW, BLOCK_CODE, BLOCK_QUOTE, LINK
         ).forEach { style ->
             eventBus.on("style", "style_$style") {
                 val state = it as Boolean
