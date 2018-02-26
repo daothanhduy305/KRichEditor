@@ -168,10 +168,8 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
                                 alert {
                                     customView {
                                         linearLayout {
-                                            layoutParams = ViewGroup.LayoutParams(matchParent, wrapContent)
-                                            padding = dip(10)
-
-                                            weightSum = 5f
+                                            horizontalPadding = dip(15)
+                                            topPadding = dip(20)
 
                                             textInputLayout {
 
@@ -181,7 +179,7 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
                                                     hintResource = R.string.address
                                                 }
 
-                                            }.lparams(width = dip(0), height = wrapContent) { weight = 4f }
+                                            }.lparams(width = matchParent, height = wrapContent)
                                         }
                                     }
 
