@@ -19,6 +19,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 
+import io.paperdb.Paper;
+
 public class JavaActivity extends AppCompatActivity {
     private KRichEditorFragment editorFragment;
 
@@ -72,6 +74,15 @@ public class JavaActivity extends AppCompatActivity {
                                     EditorButton.BLOCK_CODE,
                                     EditorButton.CODE_VIEW
                             ) )
+                            .onInitialized(new Runnable() {
+                                @Override
+                                public void run() {
+                                    // Simulate loading saved contents action
+                                    editorFragment.getEditor().setContents(
+                                            Paper.book("demo").read("content", "")
+                                    );
+                                }
+                            })
             );
 
         getSupportFragmentManager().beginTransaction()
@@ -135,5 +146,17 @@ public class JavaActivity extends AppCompatActivity {
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    protected void onPause() {
+        // Simulate saving action
+        editorFragment.getEditor().getContents(new RichEditor.OnContentsReturned() {
+            @Override
+            public void process(@NotNull String contents) {
+                Paper.book("demo").write("content", contents);
+            }
+        });
+        super.onPause();
     }
 }
