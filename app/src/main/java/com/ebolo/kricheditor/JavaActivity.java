@@ -17,7 +17,6 @@ import com.esafirm.imagepicker.model.Image;
 import java.util.Arrays;
 
 import kotlin.Unit;
-import kotlin.jvm.functions.Function0;
 import kotlin.jvm.functions.Function1;
 
 public class JavaActivity extends AppCompatActivity {
@@ -36,11 +35,10 @@ public class JavaActivity extends AppCompatActivity {
             editorFragment = KRichEditorFragment.getInstance(
                     new Options()
                             .placeHolder("Write something cool...")
-                            .onImageButtonClicked(new Function0<Unit>() {
+                            .onImageButtonClicked(new Runnable() {
                                 @Override
-                                public Unit invoke() {
+                                public void run() {
                                     ImagePicker.create(JavaActivity.this).start();
-                                    return null;
                                 }
                             })
                             .buttonLayout( Arrays.asList(

@@ -91,16 +91,19 @@ class Options {
     )
     var buttonActivatedColorId: Int = R.color.colorAccent
     var buttonDeactivatedColorId: Int = R.color.tintColor
+    var onInitialized: (() -> Unit)? = null
 
     fun placeHolder(text: String) = this.apply { placeHolder = text }
 
-    fun onImageButtonClicked(action: () -> Unit) = this.apply { imageButtonAction = action }
+    fun onImageButtonClicked(action: Runnable) = this.apply { imageButtonAction = { action.run() } }
 
     fun buttonLayout(layout: List<Int>) = this.apply { buttonsLayout = layout }
 
     fun buttonActivatedColorResource(res: Int) = this.apply { buttonActivatedColorId = res }
 
     fun buttonDeactivatedColorResource(res: Int) = this.apply { buttonDeactivatedColorId = res }
+
+    fun onInitialized(action: Runnable) = this.apply { onInitialized = { action.run() } }
 
     companion object {
         @JvmField val DEFAULT = Options()
