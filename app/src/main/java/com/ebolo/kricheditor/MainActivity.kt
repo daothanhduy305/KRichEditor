@@ -59,8 +59,8 @@ class MainActivity : AppCompatActivity() {
                     EditorButton.BLOCK_CODE,
                     EditorButton.CODE_VIEW
             )
-            // Simulate loading last saved contents
             onInitialized = {
+                // Simulate loading saved contents action
                 editorFragment.editor.setContents(
                         Paper.book("demo").read("content", "")
                 )
@@ -118,6 +118,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onPause() {
+        // Simulate saving action
         editorFragment.editor.getContents { content -> Paper.book("demo").write("content", content) }
         super.onPause()
     }
