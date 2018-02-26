@@ -202,8 +202,6 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
                     mWebView = this@ankoView
                     placeHolder = this@KRichEditorFragmentLayout.placeHolder
                     initContents = this@KRichEditorFragmentLayout.initContents
-
-                    onInitialized = { rootView.invalidate() }
                 }
                 addJavascriptInterface(editor, "KRichEditor")
 
