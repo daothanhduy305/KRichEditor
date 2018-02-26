@@ -1,14 +1,12 @@
 package com.ebolo.krichtexteditor.ui.layouts
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.support.v4.content.ContextCompat
 import android.view.Gravity
 import android.view.Gravity.CENTER_VERTICAL
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.InputMethodManager
 import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
 import android.webkit.WebView
@@ -63,7 +61,6 @@ import org.jetbrains.anko.*
 import org.jetbrains.anko.custom.ankoView
 import org.jetbrains.anko.design.longSnackbar
 import org.jetbrains.anko.sdk25.coroutines.onClick
-import org.jetbrains.anko.support.v4.act
 import org.jetbrains.anko.support.v4.ctx
 import org.jetbrains.anko.support.v4.onUiThread
 import org.jetbrains.anko.support.v4.toast
@@ -80,7 +77,6 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
     private lateinit var textColorPalette: ColorPaletteView
     private lateinit var highlightColorPalette: ColorPaletteView
     private lateinit var editorMenu: LinearLayout
-    private lateinit var webViewHolder: LinearLayout
     private lateinit var editorToolbar: LinearLayout
     private var rootView: LinearLayout? = null
 
@@ -136,21 +132,12 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
         val editor = ui.owner.editor
         // Preparation
         fun hideMenu(){
-            editor.enable()
             menuButton.setColorFilter(ContextCompat.getColor(ui.ctx, buttonDeactivatedColorId))
-            webViewHolder.layoutParams = fullLayoutParams
             editorMenu.visibility = View.GONE
         }
 
         fun showMenu() {
-            // Hide Keyboard
-            with(ui.ctx.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager) {
-                hideSoftInputFromWindow(ui.owner.act.currentFocus.windowToken, 0)
-            }
-            editor.disable()
             menuButton.setColorFilter(ContextCompat.getColor(ui.ctx, buttonActivatedColorId))
-
-            webViewHolder.layoutParams = halfLayoutParams
             editorMenu.visibility = View.VISIBLE
             editor.updateStyle()
         }
@@ -164,9 +151,9 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
          */
         fun onMenuButtonClicked(@EditorButton.Companion.ActionType type: Int, param: String? = null) {
             when (type) {
-                SIZE -> editor.command(SIZE, false, param!!)
-                FORE_COLOR -> editor.command(FORE_COLOR, false, param!!)
-                BACK_COLOR -> editor.command(BACK_COLOR, false, param!!)
+                SIZE -> editor.command(SIZE, param!!)
+                FORE_COLOR -> editor.command(FORE_COLOR, param!!)
+                BACK_COLOR -> editor.command(BACK_COLOR, param!!)
                 IMAGE -> when (imageButtonAction) {
                     null -> ui.owner.toast("Image handler not implemented!")
                     else -> imageButtonAction!!.invoke()
@@ -179,7 +166,7 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
                                 editHyperlinkDialog {
                                     onLinkSet {
                                         hideMenu()
-                                        editor.command(LINK, true, it)
+                                        editor.command(LINK, it)
                                     }
                                 }.show(
                                         ui.owner.fragmentManager,
@@ -190,410 +177,415 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
                         } else longSnackbar(rootView!!, R.string.link_empty_warning).show()
                     } )
                 }
-                else -> editor.command(type, false)
+                else -> editor.command(type)
             }
         }
 
         // Start constructing views
         rootView = verticalLayout {
+
             layoutParams = ViewGroup.LayoutParams(matchParent, matchParent)
-            weightSum = 2f
 
-            webViewHolder = verticalLayout {
+            webView = ankoView(::TextEditorWebView, 0) {
+                webViewClient = WebViewClient()
+                webChromeClient = WebChromeClient()
 
-                webView = ankoView(::TextEditorWebView, 0) {
-                    webViewClient = WebViewClient()
-                    webChromeClient = WebChromeClient()
+                settings.javaScriptEnabled = true
+                settings.domStorageEnabled = true
+                // settings.cacheMode = WebSettings.LOAD_NO_CACHE
 
-                    settings.javaScriptEnabled = true
-                    settings.domStorageEnabled = true
-                    // settings.cacheMode = WebSettings.LOAD_NO_CACHE
+                isFocusable = true
+                isFocusableInTouchMode = true
 
-                    isFocusable = true
-                    isFocusableInTouchMode = true
+                editor.apply {
+                    mWebView = this@ankoView
+                    placeHolder = this@KRichEditorFragmentLayout.placeHolder
+                    initContents = this@KRichEditorFragmentLayout.initContents
 
-                    editor.apply {
-                        mWebView = this@ankoView
-                        placeHolder = this@KRichEditorFragmentLayout.placeHolder
-                        initContents = this@KRichEditorFragmentLayout.initContents
-                    }
-                    addJavascriptInterface(editor, "KRichEditor")
+                    onInitialized = { rootView.invalidate() }
+                }
+                addJavascriptInterface(editor, "KRichEditor")
 
-                    loadUrl("file:///android_asset/richEditor.html")
+                loadUrl("file:///android_asset/richEditor.html")
 
-                }.lparams(width = matchParent, height = matchParent)
-
-            }.lparams(width = matchParent, height = 0) { weight = 2f }
+            }.lparams(width = matchParent, height = 0) {
+                weight = 1f
+            }
 
             // Outer toolbar holder
-            editorToolbar = linearLayout {
-                backgroundColorResource = R.color.editor_toolbar_bg_color
-                gravity = CENTER_VERTICAL
+            editorToolbar = verticalLayout {
 
-                menuButton = imageView(R.drawable.ic_action) {
-                    padding = dip(10)
+                // Inner toolbar
+                linearLayout {
+                    backgroundColorResource = R.color.editor_toolbar_bg_color
+                    gravity = CENTER_VERTICAL
 
-                    onClick {
-                        // Toggle editor menu
-                        when (editorMenu.visibility) {
-                            View.VISIBLE -> hideMenu()
-                            else -> showMenu()
-                        }
-                    }
-                }.apply { actionImageViewStyle() }
+                    menuButton = imageView(R.drawable.ic_action) {
+                        padding = dip(10)
 
-                // Separator
-                view {
-                    backgroundColor = 0x9e9e9e.opaque
-                }.lparams(width = dip(0.5f), height = dip(24))
-
-                EditorToolbar(editor, buttonsLayout).apply {
-                    if (LINK in buttonsLayout)
-                        linkButtonAction = { onMenuButtonClicked(LINK) }
-                    if (IMAGE in buttonsLayout)
-                        imageButtonAction = { onMenuButtonClicked(IMAGE) }
-
-                    buttonActivatedColorId = this@KRichEditorFragmentLayout.buttonActivatedColorId
-                    buttonDeactivatedColorId = this@KRichEditorFragmentLayout.buttonDeactivatedColorId
-                }.createToolbar(this)
-
-            }.lparams(width = matchParent, height = wrapContent)
-
-            // Editor menu
-            editorMenu = verticalLayout {
-                visibility = View.GONE
-
-                scrollView {
-                    verticalLayout {
-                        backgroundColorResource = R.color.gray_100
-
-                        // First box: font size, alignment, basic text format
-                        linearLayout {
-                            backgroundColorResource = R.color.white
-                            padding = dip(16)
-                            weightSum = 10f
-
-                            // Font size box
-                            verticalLayout {
-                                gravity = Gravity.CENTER
-                                backgroundResource = R.drawable.btn_white_round_rectangle
-
-                                textView(R.string.font_size) {
-                                    textSize = 10f
-                                    gravity = Gravity.CENTER
-                                }
-
-                                fontSizeTextView = textView("normal") {
-                                    textSize = 18f
-                                    textColorResource = R.color.light_blue_500
-                                    gravity = Gravity.CENTER
-
-                                    onClick {
-                                        //val menu = PopupMenu(ui.ctx, this@textView)
-                                        SheetMenu().apply {
-                                            titleId = R.string.font_sizes_title
-                                            menu = R.menu.font_sizes_menu
-                                            showIcons = false // true, by default
-
-                                            click = MenuItem.OnMenuItemClickListener {
-                                                onMenuButtonClicked(SIZE,  when (it.itemId) {
-                                                    R.id.font_size_small -> "small"
-                                                    R.id.font_size_large -> "large"
-                                                    R.id.font_size_huge -> "huge"
-                                                    else -> ""
-                                                } )
-                                                true
-                                            }
-                                        }.show(ui.ctx)
-                                    }
-                                }.lparams { topMargin = dip(8) }
-
-                            }.lparams(width = dip(0), height = dip(100)) { weight = 3f }
-
-                            verticalLayout {
-                                gravity = Gravity.CENTER
-
-                                // Justify(alignment) buttonsLayout
-                                linearLayout {
-                                    backgroundResource = R.drawable.round_rectangle_white
-                                    gravity = Gravity.CENTER
-                                    setPadding(16, dip(6), 16, dip(6))
-
-                                    fun justifyButton(
-                                            @EditorButton.Companion.ActionType type: Int,
-                                            drawable: Int,
-                                            neighbor: Boolean = false) = menuFormatButtons.put(type, imageView(drawable) {
-                                        padding = dip(8)
-                                        backgroundResource = R.drawable.btn_white_material
-
-                                        onClick { onMenuButtonClicked(type) }
-                                    }.lparams {
-                                        if (neighbor) marginStart = dip(16)
-                                    }.apply { actionImageViewStyle() })
-
-                                    justifyButton(JUSTIFY_LEFT, R.drawable.ic_format_align_left)
-                                    justifyButton(JUSTIFY_CENTER, R.drawable.ic_format_align_center, true)
-                                    justifyButton(JUSTIFY_RIGHT, R.drawable.ic_format_align_right, true)
-                                    justifyButton(JUSTIFY_FULL, R.drawable.ic_format_align_justify, true)
-
-                                }.lparams(width = matchParent, height = dip(46))
-
-                                // Basic formats: bold, italic, underline, strike
-                                linearLayout {
-                                    backgroundResource = R.drawable.round_rectangle_white
-                                    gravity = Gravity.CENTER
-                                    setPadding(dip(16), dip(6), dip(16), dip(6))
-
-                                    fun formatButton(
-                                            @EditorButton.Companion.ActionType type: Int,
-                                            drawable: Int
-                                    ) = menuFormatButtons.put(type, imageView(drawable) {
-                                        padding = dip(8)
-                                        backgroundResource = R.drawable.btn_white_material
-
-                                        onClick { onMenuButtonClicked(type) }
-                                    }
-                                            .lparams { weight = 1f }
-                                            .apply { actionImageViewStyle() })
-
-                                    formatButton(BOLD, R.drawable.ic_format_bold)
-                                    formatButton(ITALIC, R.drawable.ic_format_italic)
-                                    formatButton(UNDERLINE, R.drawable.ic_format_underlined)
-                                    formatButton(STRIKETHROUGH, R.drawable.ic_format_strikethrough)
-
-                                }.lparams(width = matchParent, height = dip(46)) { topMargin = dip(8) }
-
-                            }.lparams(width = dip(0), height = dip(100)) {
-                                marginStart = dip(8)
-                                weight = 7f
+                        onClick {
+                            // Toggle editor menu
+                            when (editorMenu.visibility) {
+                                View.VISIBLE -> hideMenu()
+                                else -> showMenu()
                             }
+                        }
+                    }.apply { actionImageViewStyle() }
 
-                        }.lparams(width = matchParent, height = wrapContent)
+                    // Separator
+                    view {
+                        backgroundColor = 0x9e9e9e.opaque
+                    }.lparams(width = dip(0.5f), height = dip(24))
 
-                        // Second box: text color and highlight
+                    EditorToolbar(editor, buttonsLayout).apply {
+                        if (LINK in buttonsLayout)
+                            linkButtonAction = { onMenuButtonClicked(LINK) }
+                        if (IMAGE in buttonsLayout)
+                            imageButtonAction = { onMenuButtonClicked(IMAGE) }
+
+                        buttonActivatedColorId = this@KRichEditorFragmentLayout.buttonActivatedColorId
+                        buttonDeactivatedColorId = this@KRichEditorFragmentLayout.buttonDeactivatedColorId
+                    }.createToolbar(this)
+
+                }.lparams(width = matchParent, height = wrapContent)
+
+                // Editor menu
+                editorMenu = verticalLayout {
+                    visibility = View.GONE
+
+                    scrollView {
                         verticalLayout {
-                            backgroundColorResource = R.color.white
-                            padding = dip(16)
+                            backgroundColorResource = R.color.gray_100
 
-                            textView(R.string.font_color) {
-                                textSize = 10f
-                            }.lparams(width = matchParent)
-
+                            // First box: font size, alignment, basic text format
                             linearLayout {
-                                gravity = Gravity.CENTER
-                                backgroundResource = R.drawable.round_rectangle_white
-
-                                textColorPalette = ankoView(::ColorPaletteView, 0){
-                                    onColorChange { onMenuButtonClicked(FORE_COLOR, this.selectedColor) }
-                                }.lparams(width = matchParent, height = wrapContent)
-
-                            }.lparams(width = matchParent, height = wrapContent) { topMargin = dip(8) }
-
-                            textView(R.string.font_highlight_color) {
-                                textSize = 10f
-                            }.lparams(width = matchParent, height = wrapContent) { topMargin = dip(16) }
-
-                            linearLayout {
-                                gravity = Gravity.CENTER
-
-                                highlightColorPalette = ankoView(::ColorPaletteView, 0) {
-                                    backgroundResource = R.drawable.round_rectangle_white
-                                    gravity = android.view.Gravity.CENTER
-
-                                    onColorChange { onMenuButtonClicked(BACK_COLOR, this.selectedColor) }
-                                }.lparams(width = wrapContent, height = wrapContent) { weight = 1f }
-
-                            }.lparams(width = matchParent, height = wrapContent) { topMargin = dip(8) }
-
-                        }.lparams(width = matchParent, height = wrapContent) { topMargin = dip(8) }
-
-                        // Third box: headings
-                        horizontalScrollView {
-                            linearLayout {
-                                padding = dip(16)
                                 backgroundColorResource = R.color.white
+                                padding = dip(16)
+                                weightSum = 10f
 
-                                fun headingBlock(
-                                        @EditorButton.Companion.ActionType type: Int,
-                                        previewText: Pair<String, Float>,
-                                        text: Int,
-                                        neighbor: Boolean = false
-                                ) = menuFormatHeadingBlocks.put(type, verticalLayout {
-                                    backgroundResource = R.drawable.round_rectangle_white
+                                // Font size box
+                                verticalLayout {
                                     gravity = Gravity.CENTER
-                                    setPadding(0, 0, 0, dip(8))
+                                    backgroundResource = R.drawable.btn_white_round_rectangle
 
-                                    onClick { onMenuButtonClicked(type) }
-
-                                    textView(previewText.first) {
-                                        maxLines = 1
-                                        gravity = Gravity.CENTER
-                                        textSize = previewText.second
-                                    }.lparams(width = wrapContent, height = dip(32))
-
-                                    view {
-                                        backgroundColor = 0xe0e0e0.opaque
-                                    }.lparams(width = matchParent, height = dip(0.5f)) {
-                                        bottomMargin = dip(4)
-                                    }
-
-                                    textView(text) {
+                                    textView(R.string.font_size) {
                                         textSize = 10f
                                         gravity = Gravity.CENTER
                                     }
 
-                                }.lparams(width = dip(80), height = matchParent) {
-                                    if (neighbor) marginStart = dip(8)
-                                })
+                                    fontSizeTextView = textView("normal") {
+                                        textSize = 18f
+                                        textColorResource = R.color.light_blue_500
+                                        gravity = Gravity.CENTER
 
-                                headingBlock(
-                                        NORMAL, previewText = "AaBbCcDd" to 10f,
-                                        text = R.string.font_style_normal
-                                )
+                                        onClick {
+                                            //val menu = PopupMenu(ui.ctx, this@textView)
+                                            SheetMenu().apply {
+                                                titleId = R.string.font_sizes_title
+                                                menu = R.menu.font_sizes_menu
+                                                showIcons = false // true, by default
 
-                                headingBlock(
-                                        H1, previewText = "AaBb" to 18f,
-                                        text = R.string.font_style_heading_1, neighbor = true
-                                )
-
-                                headingBlock(
-                                        H2, previewText = "AaBbC" to 14f,
-                                        text = R.string.font_style_heading_2, neighbor = true
-                                )
-
-                                headingBlock(
-                                        H3, previewText = "AaBbCcD" to 12f,
-                                        text = R.string.font_style_heading_3, neighbor = true
-                                )
-
-                                headingBlock(
-                                        H4, previewText = "AaBbCcDd" to 12f,
-                                        text = R.string.heading_4, neighbor = true
-                                )
-
-                                headingBlock(
-                                        H5, previewText = "AaBbCcDd" to 12f,
-                                        text = R.string.heading_5, neighbor = true
-                                )
-
-                                headingBlock(
-                                        H6, previewText = "AaBbCcDd" to 12f,
-                                        text = R.string.heading_6, neighbor = true
-                                )
-
-                            }.lparams { topMargin = dip(8) }
-
-                        }.lparams(width = matchParent, height = wrapContent)
-
-                        /**
-                         * Inner function:  additionalFormatBox
-                         * Description:     Create a box with 4 buttonsLayout divided into two
-                         *                  smaller ones.
-                         * Param pattern:   a pair mapping ActionType Int to Drawable Res Id
-                         * @param item1 first button
-                         * @param item2 second button
-                         * @param item3 third button
-                         * @param item4 fourth button
-                         */
-                        fun additionalFormatBox(
-                                item1: Pair<Int, Int>,
-                                item2: Pair<Int, Int>,
-                                item3: Pair<Int, Int>,
-                                item4: Pair<Int, Int>
-                        ) = linearLayout {
-                            backgroundColorResource = R.color.white
-                            padding = dip(16)
-
-                            fun innerBox(
-                                    item1: Pair<Int, Int>,
-                                    item2: Pair<Int, Int>,
-                                    isSecond: Boolean = false
-                            ) = linearLayout {
-                                backgroundResource = R.drawable.round_rectangle_white
-                                gravity = Gravity.CENTER
-                                setPadding(0, dip(8), 0, dip(8))
-
-                                fun formatButton(item: Pair<Int, Int>, isSecond: Boolean = false) =
-                                        menuFormatButtons.put(
-                                                item.first,
-                                                imageView(item.second) {
-                                                    backgroundResource = R.drawable.btn_white_material
-                                                    padding = dip(10)
-
-                                                    onClick { onMenuButtonClicked(item.first) }
+                                                click = MenuItem.OnMenuItemClickListener {
+                                                    onMenuButtonClicked(SIZE,  when (it.itemId) {
+                                                        R.id.font_size_small -> "small"
+                                                        R.id.font_size_large -> "large"
+                                                        R.id.font_size_huge -> "huge"
+                                                        else -> ""
+                                                    } )
+                                                    true
                                                 }
-                                                        .lparams { if (isSecond) marginStart = dip(32) }
-                                                        .apply { actionImageViewStyle() }
-                                        )
+                                            }.show(ui.ctx)
+                                        }
+                                    }.lparams { topMargin = dip(8) }
 
-                                formatButton(item1)
-                                formatButton(item2, true)
-                            }.lparams(width = wrapContent, height = wrapContent) {
-                                weight = 1f
-                                if (isSecond) marginStart = dip(8)
-                            }
+                                }.lparams(width = dip(0), height = dip(100)) { weight = 3f }
 
-                            innerBox(item1, item2)
-                            innerBox(item3, item4, true)
+                                verticalLayout {
+                                    gravity = Gravity.CENTER
 
-                        }.lparams(width = matchParent, height = wrapContent) { topMargin = dip(8) }
+                                    // Justify(alignment) buttonsLayout
+                                    linearLayout {
+                                        backgroundResource = R.drawable.round_rectangle_white
+                                        gravity = Gravity.CENTER
+                                        setPadding(16, dip(6), 16, dip(6))
 
-                        additionalFormatBox(
-                                item1 = SUBSCRIPT to R.drawable.ic_format_subscript,
-                                item2 = SUPERSCRIPT to R.drawable.ic_format_superscript,
-                                item3 = BLOCK_QUOTE to R.drawable.ic_format_quote,
-                                item4 = BLOCK_CODE to R.drawable.ic_code_block
-                        )
-
-                        additionalFormatBox(
-                                item1 = INDENT to R.drawable.ic_format_indent_increase,
-                                item2 = OUTDENT to R.drawable.ic_format_indent_decrease,
-                                item3 = UNORDERED to R.drawable.ic_format_list_bulleted,
-                                item4 = ORDERED to R.drawable.ic_format_list_numbered
-                        )
-
-                        // Sixth box: insert buttonsLayout - image, link, table, code
-                        verticalLayout {
-                            backgroundColorResource = R.color.white
-                            padding = dip(16)
-                            isBaselineAligned = false
-
-                            textView(R.string.font_insert) {
-                                textSize = 10f
-                            }.lparams(width = matchParent)
-
-                            linearLayout {
-                                backgroundResource = R.drawable.round_rectangle_white
-                                gravity = Gravity.CENTER
-                                padding = dip(8)
-
-                                fun insertButton(@EditorButton.Companion.ActionType type: Int, drawable: Int) =
-                                        themedImageView(
-                                                drawable,
-                                                R.style.ActionImageView
-                                        ) {
-                                            this.id = id
-                                            backgroundResource = R.drawable.btn_white_material
+                                        fun justifyButton(
+                                                @EditorButton.Companion.ActionType type: Int,
+                                                drawable: Int,
+                                                neighbor: Boolean = false) = menuFormatButtons.put(type, imageView(drawable) {
                                             padding = dip(8)
+                                            backgroundResource = R.drawable.btn_white_material
 
                                             onClick { onMenuButtonClicked(type) }
-                                        }.lparams { weight = 1f }.apply { actionImageViewStyle() }
+                                        }.lparams {
+                                            if (neighbor) marginStart = dip(16)
+                                        }.apply { actionImageViewStyle() })
 
-                                insertButton(CHECK, R.drawable.ic_format_list_check)
-                                insertButton(IMAGE, R.drawable.ic_insert_photo)
-                                insertButton(LINK, R.drawable.ic_insert_link)
-                                // insertButton(R.drawable.ic_table, R.id.iv_action_table)
-                                insertButton(CODE_VIEW, R.drawable.ic_code_review)
+                                        justifyButton(JUSTIFY_LEFT, R.drawable.ic_format_align_left)
+                                        justifyButton(JUSTIFY_CENTER, R.drawable.ic_format_align_center, true)
+                                        justifyButton(JUSTIFY_RIGHT, R.drawable.ic_format_align_right, true)
+                                        justifyButton(JUSTIFY_FULL, R.drawable.ic_format_align_justify, true)
+
+                                    }.lparams(width = matchParent, height = dip(46))
+
+                                    // Basic formats: bold, italic, underline, strike
+                                    linearLayout {
+                                        backgroundResource = R.drawable.round_rectangle_white
+                                        gravity = Gravity.CENTER
+                                        setPadding(dip(16), dip(6), dip(16), dip(6))
+
+                                        fun formatButton(
+                                                @EditorButton.Companion.ActionType type: Int,
+                                                drawable: Int
+                                        ) = menuFormatButtons.put(type, imageView(drawable) {
+                                            padding = dip(8)
+                                            backgroundResource = R.drawable.btn_white_material
+
+                                            onClick { onMenuButtonClicked(type) }
+                                        }
+                                                .lparams { weight = 1f }
+                                                .apply { actionImageViewStyle() })
+
+                                        formatButton(BOLD, R.drawable.ic_format_bold)
+                                        formatButton(ITALIC, R.drawable.ic_format_italic)
+                                        formatButton(UNDERLINE, R.drawable.ic_format_underlined)
+                                        formatButton(STRIKETHROUGH, R.drawable.ic_format_strikethrough)
+
+                                    }.lparams(width = matchParent, height = dip(46)) { topMargin = dip(8) }
+
+                                }.lparams(width = dip(0), height = dip(100)) {
+                                    marginStart = dip(8)
+                                    weight = 7f
+                                }
+
+                            }.lparams(width = matchParent, height = wrapContent)
+
+                            // Second box: text color and highlight
+                            verticalLayout {
+                                backgroundColorResource = R.color.white
+                                padding = dip(16)
+
+                                textView(R.string.font_color) {
+                                    textSize = 10f
+                                }.lparams(width = matchParent)
+
+                                linearLayout {
+                                    gravity = Gravity.CENTER
+                                    backgroundResource = R.drawable.round_rectangle_white
+
+                                    textColorPalette = ankoView(::ColorPaletteView, 0){
+                                        onColorChange { onMenuButtonClicked(FORE_COLOR, this.selectedColor) }
+                                    }.lparams(width = matchParent, height = wrapContent)
+
+                                }.lparams(width = matchParent, height = wrapContent) { topMargin = dip(8) }
+
+                                textView(R.string.font_highlight_color) {
+                                    textSize = 10f
+                                }.lparams(width = matchParent, height = wrapContent) { topMargin = dip(16) }
+
+                                linearLayout {
+                                    gravity = Gravity.CENTER
+
+                                    highlightColorPalette = ankoView(::ColorPaletteView, 0) {
+                                        backgroundResource = R.drawable.round_rectangle_white
+                                        gravity = android.view.Gravity.CENTER
+
+                                        onColorChange { onMenuButtonClicked(BACK_COLOR, this.selectedColor) }
+                                    }.lparams(width = wrapContent, height = wrapContent) { weight = 1f }
+
+                                }.lparams(width = matchParent, height = wrapContent) { topMargin = dip(8) }
 
                             }.lparams(width = matchParent, height = wrapContent) { topMargin = dip(8) }
 
-                        }.lparams(width = matchParent, height = wrapContent) { topMargin = dip(8) }
+                            // Third box: headings
+                            horizontalScrollView {
+                                linearLayout {
+                                    padding = dip(16)
+                                    backgroundColorResource = R.color.white
+
+                                    fun headingBlock(
+                                            @EditorButton.Companion.ActionType type: Int,
+                                            previewText: Pair<String, Float>,
+                                            text: Int,
+                                            neighbor: Boolean = false
+                                    ) = menuFormatHeadingBlocks.put(type, verticalLayout {
+                                        backgroundResource = R.drawable.round_rectangle_white
+                                        gravity = Gravity.CENTER
+                                        setPadding(0, 0, 0, dip(8))
+
+                                        onClick { onMenuButtonClicked(type) }
+
+                                        textView(previewText.first) {
+                                            maxLines = 1
+                                            gravity = Gravity.CENTER
+                                            textSize = previewText.second
+                                        }.lparams(width = wrapContent, height = dip(32))
+
+                                        view {
+                                            backgroundColor = 0xe0e0e0.opaque
+                                        }.lparams(width = matchParent, height = dip(0.5f)) {
+                                            bottomMargin = dip(4)
+                                        }
+
+                                        textView(text) {
+                                            textSize = 10f
+                                            gravity = Gravity.CENTER
+                                        }
+
+                                    }.lparams(width = dip(80), height = matchParent) {
+                                        if (neighbor) marginStart = dip(8)
+                                    })
+
+                                    headingBlock(
+                                            NORMAL, previewText = "AaBbCcDd" to 10f,
+                                            text = R.string.font_style_normal
+                                    )
+
+                                    headingBlock(
+                                            H1, previewText = "AaBb" to 18f,
+                                            text = R.string.font_style_heading_1, neighbor = true
+                                    )
+
+                                    headingBlock(
+                                            H2, previewText = "AaBbC" to 14f,
+                                            text = R.string.font_style_heading_2, neighbor = true
+                                    )
+
+                                    headingBlock(
+                                            H3, previewText = "AaBbCcD" to 12f,
+                                            text = R.string.font_style_heading_3, neighbor = true
+                                    )
+
+                                    headingBlock(
+                                            H4, previewText = "AaBbCcDd" to 12f,
+                                            text = R.string.heading_4, neighbor = true
+                                    )
+
+                                    headingBlock(
+                                            H5, previewText = "AaBbCcDd" to 12f,
+                                            text = R.string.heading_5, neighbor = true
+                                    )
+
+                                    headingBlock(
+                                            H6, previewText = "AaBbCcDd" to 12f,
+                                            text = R.string.heading_6, neighbor = true
+                                    )
+
+                                }.lparams { topMargin = dip(8) }
+
+                            }.lparams(width = matchParent, height = wrapContent)
+
+                            /**
+                             * Inner function:  additionalFormatBox
+                             * Description:     Create a box with 4 buttonsLayout divided into two
+                             *                  smaller ones.
+                             * Param pattern:   a pair mapping ActionType Int to Drawable Res Id
+                             * @param item1 first button
+                             * @param item2 second button
+                             * @param item3 third button
+                             * @param item4 fourth button
+                             */
+                            fun additionalFormatBox(
+                                    item1: Pair<Int, Int>,
+                                    item2: Pair<Int, Int>,
+                                    item3: Pair<Int, Int>,
+                                    item4: Pair<Int, Int>
+                            ) = linearLayout {
+                                backgroundColorResource = R.color.white
+                                padding = dip(16)
+
+                                fun innerBox(
+                                        item1: Pair<Int, Int>,
+                                        item2: Pair<Int, Int>,
+                                        isSecond: Boolean = false
+                                ) = linearLayout {
+                                    backgroundResource = R.drawable.round_rectangle_white
+                                    gravity = Gravity.CENTER
+                                    setPadding(0, dip(8), 0, dip(8))
+
+                                    fun formatButton(item: Pair<Int, Int>, isSecond: Boolean = false) =
+                                            menuFormatButtons.put(
+                                                    item.first,
+                                                    imageView(item.second) {
+                                                        backgroundResource = R.drawable.btn_white_material
+                                                        padding = dip(10)
+
+                                                        onClick { onMenuButtonClicked(item.first) }
+                                                    }
+                                                            .lparams { if (isSecond) marginStart = dip(32) }
+                                                            .apply { actionImageViewStyle() }
+                                            )
+
+                                    formatButton(item1)
+                                    formatButton(item2, true)
+                                }.lparams(width = wrapContent, height = wrapContent) {
+                                    weight = 1f
+                                    if (isSecond) marginStart = dip(8)
+                                }
+
+                                innerBox(item1, item2)
+                                innerBox(item3, item4, true)
+
+                            }.lparams(width = matchParent, height = wrapContent) { topMargin = dip(8) }
+
+                            additionalFormatBox(
+                                    item1 = SUBSCRIPT to R.drawable.ic_format_subscript,
+                                    item2 = SUPERSCRIPT to R.drawable.ic_format_superscript,
+                                    item3 = BLOCK_QUOTE to R.drawable.ic_format_quote,
+                                    item4 = BLOCK_CODE to R.drawable.ic_code_block
+                            )
+
+                            additionalFormatBox(
+                                    item1 = INDENT to R.drawable.ic_format_indent_increase,
+                                    item2 = OUTDENT to R.drawable.ic_format_indent_decrease,
+                                    item3 = UNORDERED to R.drawable.ic_format_list_bulleted,
+                                    item4 = ORDERED to R.drawable.ic_format_list_numbered
+                            )
+
+                            // Sixth box: insert buttonsLayout - image, link, table, code
+                            verticalLayout {
+                                backgroundColorResource = R.color.white
+                                padding = dip(16)
+                                isBaselineAligned = false
+
+                                textView(R.string.font_insert) {
+                                    textSize = 10f
+                                }.lparams(width = matchParent)
+
+                                linearLayout {
+                                    backgroundResource = R.drawable.round_rectangle_white
+                                    gravity = Gravity.CENTER
+                                    padding = dip(8)
+
+                                    fun insertButton(@EditorButton.Companion.ActionType type: Int, drawable: Int) =
+                                            themedImageView(
+                                                    drawable,
+                                                    R.style.ActionImageView
+                                            ) {
+                                                this.id = id
+                                                backgroundResource = R.drawable.btn_white_material
+                                                padding = dip(8)
+
+                                                onClick { onMenuButtonClicked(type) }
+                                            }.lparams { weight = 1f }.apply { actionImageViewStyle() }
+
+                                    insertButton(CHECK, R.drawable.ic_format_list_check)
+                                    insertButton(IMAGE, R.drawable.ic_insert_photo)
+                                    insertButton(LINK, R.drawable.ic_insert_link)
+                                    // insertButton(R.drawable.ic_table, R.id.iv_action_table)
+                                    insertButton(CODE_VIEW, R.drawable.ic_code_review)
+
+                                }.lparams(width = matchParent, height = wrapContent) { topMargin = dip(8) }
+
+                            }.lparams(width = matchParent, height = wrapContent) { topMargin = dip(8) }
+
+                        }.lparams(width = matchParent, height = wrapContent)
 
                     }.lparams(width = matchParent, height = wrapContent)
 
-                }.lparams(width = matchParent, height = wrapContent)
+                }.lparams(width = matchParent, height = dip(132))
 
-            }.lparams(width = matchParent, height = 0) { weight = 1f }
+            }.lparams(width = matchParent, height = wrapContent)
         }
         setupListeners(ui.owner)
         rootView!!
