@@ -126,7 +126,7 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
     var buttonActivatedColorId: Int = R.color.colorAccent
     var buttonDeactivatedColorId: Int = R.color.tintColor
 
-    var initContents: String = ""
+    var onInitialized: (() -> Unit)? = null
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun createView(ui: AnkoContext<KRichEditorFragment>) = rootView ?: with(ui) {
@@ -201,7 +201,7 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
                 editor.apply {
                     mWebView = this@ankoView
                     placeHolder = this@KRichEditorFragmentLayout.placeHolder
-                    initContents = this@KRichEditorFragmentLayout.initContents
+                    onInitialized = this@KRichEditorFragmentLayout.onInitialized
                 }
                 addJavascriptInterface(editor, "KRichEditor")
 

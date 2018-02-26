@@ -17,11 +17,6 @@ var initEditor = function(){
         console.log('Cursor not in the editor');
       }
     });
-    var initContents = KRichEditor.getInitContents();
-    console.log(initContents)
-    if (initContents && initContents != "") {
-        quill.setContents(JSON.parse(initContents))
-    }
     quill.focus();
 
     KRichEditor.onInitialized();

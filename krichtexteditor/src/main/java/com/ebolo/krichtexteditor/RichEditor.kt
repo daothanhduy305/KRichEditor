@@ -36,6 +36,7 @@ import com.github.salomonbrys.kotson.fromJson
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import org.jetbrains.anko.doAsync
+import org.jetbrains.anko.runOnUiThread
 import org.jetbrains.anko.toast
 import org.jetbrains.anko.uiThread
 import java.io.ByteArrayOutputStream
@@ -66,8 +67,6 @@ class RichEditor {
     ) }
 
     lateinit var placeHolder: String
-        @JavascriptInterface get
-    lateinit var initContents: String
         @JavascriptInterface get
 
     lateinit var mWebView: WebView
@@ -221,11 +220,12 @@ class RichEditor {
 
     fun setContents(data: String) = load("javascript:setContents($data)")
 
-    private fun load(trigger: String, callBack: ValueCallback<String>? = null) {
+    private fun load(trigger: String, callBack: ValueCallback<String>? = null) = mWebView.context.runOnUiThread {
+        // Make sure every calls would be run on ui thread
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            this.mWebView.evaluateJavascript(trigger, callBack)
+            mWebView.evaluateJavascript(trigger, callBack)
         } else {
-            this.mWebView.loadUrl(trigger)
+            mWebView.loadUrl(trigger)
         }
     }
 

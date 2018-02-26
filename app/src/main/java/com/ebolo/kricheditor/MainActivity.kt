@@ -59,8 +59,12 @@ class MainActivity : AppCompatActivity() {
                     EditorButton.BLOCK_CODE,
                     EditorButton.CODE_VIEW
             )
-            // To support loading last saved contents
-            initContents = Paper.book("demo").read("content", "")
+            // Simulate loading last saved contents
+            onInitialized = {
+                editorFragment.editor.setContents(
+                        Paper.book("demo").read("content", "")
+                )
+            }
         }
 
         supportFragmentManager
