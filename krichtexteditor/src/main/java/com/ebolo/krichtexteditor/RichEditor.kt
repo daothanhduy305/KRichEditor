@@ -204,11 +204,17 @@ class RichEditor {
                 .replace(oldValue = "\\\"", newValue = "\"")
         callback?.invoke(escapedData.substring(startIndex = 1, endIndex = escapedData.length - 1))
     } )
+    // This is only used in Java interface
+    interface OnHtmlReturned { fun process(html: String) }
+    fun getHtml(callback: OnHtmlReturned) = getHtml( { callback.process(it) } )
 
     private fun getText(callback: ValueCallback<String>) = load("javascript:getText()", callback)
     fun getText(callback: ((text: String) -> Unit)?) = getText( ValueCallback {
         callback?.invoke(it.substring(1, it.length - 1).replace("\\n", "\n"))
     } )
+    // This is only used in Java interface
+    interface OnTextReturned { fun process(text: String) }
+    fun getText(callback: OnTextReturned) = getText( { callback.process(it) } )
 
     /**
      * Function:    getContents
@@ -217,6 +223,9 @@ class RichEditor {
      */
     private fun getContents(callback: ValueCallback<String>) = load("javascript:getContents()", callback)
     fun getContents(callback: ((text: String) -> Unit)?) = getContents( ValueCallback { callback?.invoke(it) } )
+    // This is only used in Java interface
+    interface OnContentsReturned { fun process(contents: String) }
+    fun getContents(callback: OnContentsReturned) = getContents( { callback.process(it) } )
 
     fun setContents(data: String) = load("javascript:setContents($data)")
 

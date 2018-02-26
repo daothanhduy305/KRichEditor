@@ -8,16 +8,16 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.ebolo.krichtexteditor.RichEditor;
 import com.ebolo.krichtexteditor.fragments.KRichEditorFragment;
 import com.ebolo.krichtexteditor.fragments.Options;
 import com.ebolo.krichtexteditor.ui.widgets.EditorButton;
 import com.esafirm.imagepicker.features.ImagePicker;
 import com.esafirm.imagepicker.model.Image;
 
-import java.util.Arrays;
+import org.jetbrains.annotations.NotNull;
 
-import kotlin.Unit;
-import kotlin.jvm.functions.Function1;
+import java.util.Arrays;
 
 public class JavaActivity extends AppCompatActivity {
     private KRichEditorFragment editorFragment;
@@ -89,30 +89,28 @@ public class JavaActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_html:
-                editorFragment.getEditor().getHtml(new Function1<String, Unit>() {
+                editorFragment.getEditor().getHtml( new RichEditor.OnHtmlReturned() {
                     @Override
-                    public Unit invoke(final String s) {
-                        runOnUiThread(new Runnable() {
+                    public void process(@NotNull final String html) {
+                        runOnUiThread( new Runnable() {
                             @Override
                             public void run() {
-                                Toast.makeText(JavaActivity.this, s, Toast.LENGTH_LONG).show();
+                                Toast.makeText(JavaActivity.this, html, Toast.LENGTH_LONG).show();
                             }
-                        });
-                        return null;
+                        } );
                     }
-                });
+                } );
                 return true;
             case R.id.action_text:
-                editorFragment.getEditor().getText(new Function1<String, Unit>() {
+                editorFragment.getEditor().getText(new RichEditor.OnTextReturned() {
                     @Override
-                    public Unit invoke(final String s) {
-                        runOnUiThread(new Runnable() {
+                    public void process(@NotNull final String text) {
+                        runOnUiThread( new Runnable() {
                             @Override
                             public void run() {
-                                Toast.makeText(JavaActivity.this, s, Toast.LENGTH_LONG).show();
+                                Toast.makeText(JavaActivity.this, text, Toast.LENGTH_LONG).show();
                             }
-                        });
-                        return null;
+                        } );
                     }
                 });
                 return true;
