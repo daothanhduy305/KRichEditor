@@ -1,5 +1,6 @@
 package com.ebolo.krichtexteditor.ui.widgets
 
+import android.content.Context
 import android.support.v4.content.ContextCompat
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -21,8 +22,6 @@ class EditorToolbar(private val editor: RichEditor, private val buttonsLayout: L
 
     fun createToolbar(parent: ViewGroup) = parent.horizontalScrollView {
         linearLayout {
-            val eventBus = EventBus.getInstance()
-
             fun createButton(@EditorButton.Companion.ActionType actionType: Int) = imageView(
                     EditorButton.actionButtonDrawables[actionType]!!
             ) {
@@ -42,24 +41,26 @@ class EditorToolbar(private val editor: RichEditor, private val buttonsLayout: L
                 }
             }.apply { actionImageViewStyle() }
 
-            buttons = buttonsLayout.map {
-                val button = createButton(it)
-                eventBus.on("style_$it") {
-                    val state = it as Boolean
-                    context.runOnUiThread {
-                        button.setColorFilter( ContextCompat.getColor(
-                                context,
-                                when {
-                                    state -> buttonActivatedColorId
-                                    else -> buttonDeactivatedColorId
-                                }
-                        ) )
-                    }
-                }
-                it to button
-            }.toMap()
+            buttons = buttonsLayout.map { it to createButton(it) }.toMap()
 
         }.lparams(width = wrapContent, height = dip(40))
     }
 
+    fun setupListeners(context: Context) {
+        val eventBus = EventBus.getInstance()
+        buttonsLayout.forEach { buttonId ->
+            eventBus.on("style", "style_$buttonId") {
+                val state = it as Boolean
+                context.runOnUiThread {
+                    buttons[buttonId]?.setColorFilter( ContextCompat.getColor(
+                            context,
+                            when {
+                                state -> buttonActivatedColorId
+                                else -> buttonDeactivatedColorId
+                            }
+                    ) )
+                }
+            }
+        }
+    }
 }

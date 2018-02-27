@@ -79,7 +79,7 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
     private lateinit var textColorPalette: ColorPaletteView
     private lateinit var highlightColorPalette: ColorPaletteView
     private lateinit var editorMenu: LinearLayout
-    private lateinit var editorToolbar: LinearLayout
+    private lateinit var editorToolbar: EditorToolbar
     private var rootView: LinearLayout? = null
 
     private lateinit var menuButton: ImageView
@@ -234,7 +234,7 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
             }
 
             if (showToolbar)
-                editorToolbar = verticalLayout {
+                verticalLayout {
 
                     // Inner toolbar
                     linearLayout {
@@ -258,7 +258,7 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
                             backgroundColor = 0x9e9e9e.opaque
                         }.lparams(width = dip(0.5f), height = dip(24))
 
-                        EditorToolbar(editor, buttonsLayout).apply {
+                        editorToolbar = EditorToolbar(editor, buttonsLayout).apply {
                             if (LINK in buttonsLayout)
                                 linkButtonAction = { onMenuButtonClicked(LINK) }
                             if (IMAGE in buttonsLayout)
@@ -266,7 +266,8 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
 
                             buttonActivatedColorId = this@KRichEditorFragmentLayout.buttonActivatedColorId
                             buttonDeactivatedColorId = this@KRichEditorFragmentLayout.buttonDeactivatedColorId
-                        }.createToolbar(this)
+                        }
+                        editorToolbar.createToolbar(this)
 
                     }.lparams(width = matchParent, height = wrapContent)
 
@@ -659,13 +660,9 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
                 }
             }
         }
+
+        editorToolbar.setupListeners(fragment.ctx)
     } else {} // Do nothing as this is not necessary
 
-    fun removeListeners() = if (showToolbar) {
-        listOf(
-                NORMAL, H1, H2, H3, H4, H5, H6, BOLD, ITALIC, UNDERLINE, STRIKETHROUGH,
-                JUSTIFY_CENTER, JUSTIFY_FULL, JUSTIFY_LEFT, JUSTIFY_RIGHT, SUBSCRIPT,
-                SUPERSCRIPT, CODE_VIEW, BLOCK_CODE, BLOCK_QUOTE, SIZE, FORE_COLOR, BACK_COLOR
-        ).forEach { eventBus.unsubscribe("style") }
-    }  else {} // Do nothing as this is not necessary
+    fun removeListeners() { if (showToolbar) eventBus.unsubscribe("style") }
 }

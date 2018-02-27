@@ -151,7 +151,7 @@ class RichEditor {
 
     private fun notifyFontStyleChange(@EditorButton.Companion.ActionType type: Int, value: Any) {
         when (styleUpdatedCallback) {
-            null -> EventBus.getInstance().post("style_$type", value)
+            null -> EventBus.getInstance().post("style", "style_$type", value)
             else -> styleUpdatedCallback!!.invoke(type, value)
         }
     }
