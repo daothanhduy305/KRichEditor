@@ -26,6 +26,10 @@ class MainActivity : AppCompatActivity() {
             // This is just a demo for image action
             imageButtonAction = { ImagePicker.create(this@MainActivity).start() }
             placeHolder = "Write something cool..."
+
+            // Un-comment this line and comment out the layout below to disable the toolbar
+            // showToolbar = false
+
             // This is relevant to the default layout (full mode)
             // Customize to your needs
             buttonsLayout = listOf(

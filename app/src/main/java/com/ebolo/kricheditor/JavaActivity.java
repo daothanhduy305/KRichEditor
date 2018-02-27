@@ -43,6 +43,9 @@ public class JavaActivity extends AppCompatActivity {
                                     ImagePicker.create(JavaActivity.this).start();
                                 }
                             })
+                            // Un-comment this line and comment out the layout below to
+                            // disable the toolbar
+                            // .showToolbar(false)
                             .buttonLayout( Arrays.asList(
                                     EditorButton.UNDO,
                                     EditorButton.REDO,

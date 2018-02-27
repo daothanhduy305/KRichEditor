@@ -92,6 +92,7 @@ class Options {
     var buttonActivatedColorId: Int = R.color.colorAccent
     var buttonDeactivatedColorId: Int = R.color.tintColor
     var onInitialized: (() -> Unit)? = null
+    var showToolbar = true
 
     fun placeHolder(text: String) = this.apply { placeHolder = text }
 
@@ -104,6 +105,8 @@ class Options {
     fun buttonDeactivatedColorResource(res: Int) = this.apply { buttonDeactivatedColorId = res }
 
     fun onInitialized(action: Runnable) = this.apply { onInitialized = { action.run() } }
+
+    fun showToolbar(show: Boolean) = this.apply { showToolbar = show }
 
     companion object {
         @JvmField val DEFAULT = Options()
