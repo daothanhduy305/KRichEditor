@@ -10,7 +10,6 @@ import com.ebolo.krichtexteditor.RichEditor
 import com.ebolo.krichtexteditor.ui.layouts.KRichEditorFragmentLayout
 import com.ebolo.krichtexteditor.ui.widgets.EditorButton
 import org.jetbrains.anko.AnkoContext
-import org.jetbrains.anko.support.v4.ctx
 
 class KRichEditorFragment: Fragment() {
     private val layout by lazy { KRichEditorFragmentLayout() }
@@ -23,7 +22,7 @@ class KRichEditorFragment: Fragment() {
             savedInstanceState: Bundle?
     ): View? {
         layout.apply { settings?.invoke(this) }
-        return layout.createView(AnkoContext.Companion.create(ctx, this))
+        return layout.createView(AnkoContext.create(context!!, this))
     }
 
     override fun onResume() {

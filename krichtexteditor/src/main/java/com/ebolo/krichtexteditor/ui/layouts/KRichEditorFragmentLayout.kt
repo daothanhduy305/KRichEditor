@@ -62,9 +62,8 @@ import org.jetbrains.anko.custom.ankoView
 import org.jetbrains.anko.design.longSnackbar
 import org.jetbrains.anko.design.textInputEditText
 import org.jetbrains.anko.design.textInputLayout
-import org.jetbrains.anko.sdk25.coroutines.onClick
-import org.jetbrains.anko.support.v4.ctx
-import org.jetbrains.anko.support.v4.onUiThread
+import org.jetbrains.anko.sdk27.coroutines.onClick
+import org.jetbrains.anko.support.v4.runOnUiThread
 import org.jetbrains.anko.support.v4.toast
 import ru.whalemare.sheetmenu.SheetMenu
 
@@ -139,7 +138,7 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
         fun showMenu() {
             menuButton.setColorFilter(ContextCompat.getColor(ui.ctx, buttonActivatedColorId))
             editorMenu.visibility = View.VISIBLE
-            editor.updateStyle()
+            editor.refreshStyle()
         }
 
         /**
@@ -159,8 +158,8 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
                     else -> imageButtonAction!!.invoke()
                 }
                 LINK -> {
-                    editor.getSelection( ValueCallback {
-                        val selection = Gson().fromJson<Map<String, Int>>(it)
+                    editor.getSelection( ValueCallback { value ->
+                        val selection = Gson().fromJson<Map<String, Int>>(value)
                         if (selection["length"]!! > 0) {
                             if (!editor.selectingLink()) {
                                 var addressInput: TextInputEditText? = null
@@ -190,14 +189,14 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
                                             hideMenu()
                                             editor.command(LINK, urlValue)
                                         }
-                                        else toast(ui.owner.ctx.getString(R.string.link_missing_protocol))
+                                        else toast(ui.owner.context!!.getString(R.string.link_missing_protocol))
                                     }
 
                                     noButton {  }
                                 }.show()
                             }
                             else editor.command(LINK,"")
-                        } else longSnackbar(rootView!!, R.string.link_empty_warning).show()
+                        } else rootView!!.longSnackbar(R.string.link_empty_warning).show()
                     } )
                 }
                 else -> editor.command(type)
@@ -300,7 +299,7 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
                                             textColorResource = R.color.light_blue_500
                                             gravity = Gravity.CENTER
 
-                                            onClick {
+                                            onClick { _ ->
                                                 //val menu = PopupMenu(ui.ctx, this@textView)
                                                 SheetMenu().apply {
                                                     titleId = R.string.font_sizes_title
@@ -616,25 +615,25 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
     fun setupListeners(fragment: KRichEditorFragment) = if (showToolbar) {
         // Setup ui handlers for editor menu
         eventBus.on("style", "style_$SIZE") {
-            fragment.onUiThread { fontSizeTextView.text = (it as String) }
+            fragment.runOnUiThread { fontSizeTextView.text = (it as String) }
         }
 
         eventBus.on("style", "style_$FORE_COLOR") {
             val selectedColor = rgbToHex(it as String)
             if (selectedColor != null)
-                fragment.onUiThread { textColorPalette.selectedColor = selectedColor }
+                fragment.runOnUiThread { textColorPalette.selectedColor = selectedColor }
         }
 
         eventBus.on("style", "style_$BACK_COLOR") {
             val selectedColor = rgbToHex(it as String)
             if (selectedColor != null)
-                fragment.onUiThread { highlightColorPalette.selectedColor = selectedColor }
+                fragment.runOnUiThread { highlightColorPalette.selectedColor = selectedColor }
         }
 
         listOf(NORMAL, H1, H2, H3, H4, H5, H6).forEach { style ->
             eventBus.on("style", "style_$style") {
                 val state = it as Boolean
-                fragment.onUiThread {
+                fragment.runOnUiThread {
                     menuFormatHeadingBlocks[style]?.backgroundResource = when {
                         state -> R.drawable.round_rectangle_blue
                         else -> R.drawable.round_rectangle_white
@@ -649,9 +648,9 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
         ).forEach { style ->
             eventBus.on("style", "style_$style") {
                 val state = it as Boolean
-                fragment.onUiThread {
+                fragment.runOnUiThread {
                     menuFormatButtons[style]?.setColorFilter(ContextCompat.getColor(
-                            fragment.ctx,
+                            fragment.context!!,
                             when {
                                 state -> buttonActivatedColorId
                                 else -> buttonDeactivatedColorId
@@ -661,7 +660,7 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
             }
         }
 
-        editorToolbar.setupListeners(fragment.ctx)
+        editorToolbar.setupListeners(fragment.context!!)
     } else {} // Do nothing as this is not necessary
 
     fun removeListeners() { if (showToolbar) eventBus.unsubscribe("style") }

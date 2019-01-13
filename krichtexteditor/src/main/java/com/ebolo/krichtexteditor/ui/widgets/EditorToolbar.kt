@@ -9,7 +9,7 @@ import com.ebolo.krichtexteditor.R
 import com.ebolo.krichtexteditor.RichEditor
 import com.ebolo.krichtexteditor.ui.actionImageViewStyle
 import org.jetbrains.anko.*
-import org.jetbrains.anko.sdk25.coroutines.onClick
+import org.jetbrains.anko.sdk27.coroutines.onClick
 
 class EditorToolbar(private val editor: RichEditor, private val buttonsLayout: List<Int>) {
     var linkButtonAction: (() -> Unit)? = null

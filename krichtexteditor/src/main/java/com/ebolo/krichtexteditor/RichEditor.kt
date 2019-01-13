@@ -68,31 +68,112 @@ class RichEditor {
     ) }
 
     lateinit var placeHolder: String
+        // Allow the webview layer to access the placeholder string
         @JavascriptInterface get
 
     lateinit var mWebView: WebView
     var onInitialized: (() -> Unit)? = null
     var styleUpdatedCallback: ((type: Int, value: Any) -> Unit)? = null
 
+    // region Low level function access
+
+    /**
+     * Method to allow the lower webview layer to set the html content
+     *
+     * @author ebolo (daothanhduy305@gmail.com)
+     * @since 0.0.1
+     *
+     * @param html String
+     */
     @JavascriptInterface
     fun returnHtml(html: String) { this.html = html }
 
+    /**
+     * Method to allow the lower webview layer to be able to set the current style data
+     *
+     * @author ebolo (daothanhduy305@gmail.com)
+     * @since 0.0.1
+     *
+     * @param currentStyle String
+     */
     @JavascriptInterface
     fun updateCurrentStyle(currentStyle: String) = try {
         Log.d("FontStyle", currentStyle)
         updateStyle(gson.fromJson(currentStyle))
     } catch (e: Exception) {} // ignored
 
+    /**
+     * Method to allow the lower webview layer to be able to log the message to Android logging
+     * interface
+     *
+     * @author ebolo (daothanhduy305@gmail.com)
+     * @since 0.0.1
+     *
+     * @param message String
+     * @return Int
+     */
     @JavascriptInterface
     fun debugJs(message: String) = Log.d("JS", message)
 
+    /**
+     * Method to allow the lower webview layer to invoke the code block set to be run on init
+     *
+     * @author ebolo (daothanhduy305@gmail.com)
+     * @since 0.0.1
+     *
+     * @return Unit?
+     */
     @JavascriptInterface
     fun onInitialized() = onInitialized?.invoke()
 
-    fun updateStyle() = getStyle( ValueCallback {
+    // endregion
+
+    // region Inner interfaces
+
+    /**
+     * Interface as the callback for Java API on HTML returned
+     *
+     * @author ebolo (daothanhduy305@gmail.com)
+     * @since 0.0.1
+     */
+    interface OnHtmlReturned { fun process(html: String) }
+
+    /**
+     * Interface as the callback for Java API on text returned
+     *
+     * @author ebolo (daothanhduy305@gmail.com)
+     * @since 0.0.1
+     */
+    interface OnTextReturned { fun process(text: String) }
+
+    /**
+     * Interface as the callback for Java API on contents (delta) returned
+     *
+     * @author ebolo (daothanhduy305@gmail.com)
+     * @since 0.0.1
+     */
+    interface OnContentsReturned { fun process(contents: String) }
+
+    // endregion
+
+    /**
+     * Method to refresh the current style
+     *
+     * @author ebolo (daothanhduy305@gmail.com)
+     * @since 0.0.1
+     */
+    fun refreshStyle() = getStyle( ValueCallback {
         try { updateStyle(gson.fromJson(it)) } catch (e: Exception) {} // ignored
     } )
 
+    /**
+     * Private function to update the current style of the editor
+     *
+     * @author ebolo (daothanhduy305@gmail.com)
+     * @since 0.0.1
+     *
+     * @param quillFormat QuillFormat
+     */
     private fun updateStyle(quillFormat: QuillFormat) {
         // Log.d("FontStyle", gson.toJson(fontStyle))
 
@@ -149,6 +230,15 @@ class RichEditor {
         currentFormat = quillFormat
     }
 
+    /**
+     * Private method to notify when the style has been changed
+     *
+     * @author ebolo (daothanhduy305@gmail.com)
+     * @since 0.0.1
+     *
+     * @param type Int of the action button
+     * @param value Any data for the action
+     */
     private fun notifyFontStyleChange(@EditorButton.Companion.ActionType type: Int, value: Any) {
         when (styleUpdatedCallback) {
             null -> EventBus.getInstance().post("style", "style_$type", value)
@@ -156,32 +246,381 @@ class RichEditor {
         }
     }
 
-    // Start of Js wrapper
+    // region Js wrapper
+
+    // region General commands
+
+    /**
+     * Method to undo the last change
+     *
+     * @author ebolo (daothanhduy305@gmail.com)
+     * @since 0.0.1
+     */
     private fun undo() = load("javascript:undo()")
+
+    /**
+     * Method to redo the last undo
+     *
+     * @author ebolo (daothanhduy305@gmail.com)
+     * @since 0.0.1
+     */
     private fun redo() = load("javascript:redo()")
+
+    /**
+     * Method to make the cursor to focus into view
+     *
+     * @author ebolo (daothanhduy305@gmail.com)
+     * @since 0.0.1
+     */
     fun focus() = load("javascript:focus()")
+
+    /**
+     * Method to disable the editor
+     *
+     * @author ebolo (daothanhduy305@gmail.com)
+     * @since 0.0.1
+     */
     fun disable() = load("javascript:disable()")
+
+    /**
+     * Method to enable back the editor
+     *
+     * @author ebolo (daothanhduy305@gmail.com)
+     * @since 0.0.1
+     */
     fun enable() = load("javascript:enable()")
 
-    // Font
+    // endregion
+
+    // region Font
+    /**
+     * Method to bold to current text or the next at the cursor
+     *
+     * @author ebolo (daothanhduy305@gmail.com)
+     * @since 0.0.1
+     */
     private fun bold() = load("javascript:bold()")
+
+    /**
+     * Method to italic to current text or the next at the cursor
+     *
+     * @author ebolo (daothanhduy305@gmail.com)
+     * @since 0.0.1
+     */
     private fun italic() = load("javascript:italic()")
+
+    /**
+     * Method to underline to current text or the next at the cursor
+     *
+     * @author ebolo (daothanhduy305@gmail.com)
+     * @since 0.0.1
+     */
     private fun underline() = load("javascript:underline()")
+
+    /**
+     * Method to strike to current text or the next at the cursor
+     *
+     * @author ebolo (daothanhduy305@gmail.com)
+     * @since 0.0.1
+     */
     private fun strikethrough() = load("javascript:strikethrough()")
+
+    /**
+     * Method to apply sub/superscript to current text or the next at the cursor
+     *
+     * @author ebolo (daothanhduy305@gmail.com)
+     * @since 0.0.1
+     *
+     * @param style String available styles ['sub', 'super', '']
+     */
     private fun script(style: String) = load("javascript:script('$style')")
+
+    /**
+     * Method to change the background color of current text selection or the next at the cursor
+     *
+     * @author ebolo (daothanhduy305@gmail.com)
+     * @since 0.0.1
+     *
+     * @param color String
+     */
     private fun backColor(color: String) = load("javascript:background('$color')")
+
+    /**
+     * Method to change the foreground color of current text selection or the next at the cursor
+     *
+     * @author ebolo (daothanhduy305@gmail.com)
+     * @since 0.0.1
+     *
+     * @param color String
+     */
     private fun foreColor(color: String) = load("javascript:color('$color')")
+
+    /**
+     * Method to change font size to current text or the next at the cursor
+     *
+     * @author ebolo (daothanhduy305@gmail.com)
+     * @since 0.0.1
+     *
+     * @param size String Available font sizes ['small', 'large', 'huge', '']
+     */
     private fun fontSize(size: String) = load("javascript:fontSize('$size')")
 
-    // Paragraph
+    // endregion
+
+    // region Paragraph
+
+    /**
+     * Method to align the current paragraph
+     *
+     * @author ebolo (daothanhduy305@gmail.com)
+     * @since 0.0.1
+     *
+     * @param style String Available styles ['center', 'right', 'justify', '']
+     */
     private fun align(style: String) = load("javascript:align('$style')")
+
+    /**
+     * Method to insert an ordered list
+     *
+     * @author ebolo (daothanhduy305@gmail.com)
+     * @since 0.0.1
+     */
     private fun insertOrderedList() = load("javascript:insertOrderedList()")
+
+    /**
+     * Method to insert an un-ordered list
+     *
+     * @author ebolo (daothanhduy305@gmail.com)
+     * @since 0.0.1
+     */
     private fun insertUnorderedList() = load("javascript:insertUnorderedList()")
+
+    /**
+     * Method to insert a check list
+     *
+     * @author ebolo (daothanhduy305@gmail.com)
+     * @since 0.0.1
+     */
     private fun insertCheckList() = load("javascript:insertCheckList()")
+
+    /**
+     * Method to indent the current paragraph
+     *
+     * @author ebolo (daothanhduy305@gmail.com)
+     * @since 0.0.1
+     */
     private fun indent() = load("javascript:indent()")
+
+    /**
+     * Method to outdent the current paragraph
+     *
+     * @author ebolo (daothanhduy305@gmail.com)
+     * @since 0.0.1
+     */
     private fun outdent() = load("javascript:outdent()")
+
+    /**
+     * Method to format the current paragraph into a blockquote
+     *
+     * @author ebolo (daothanhduy305@gmail.com)
+     * @since 0.0.1
+     */
+    private fun formatBlockquote() = load("javascript:formatBlock('blockquote')")
+
+    /**
+     * Method to format the current paragraph into a code block
+     *
+     * @author ebolo (daothanhduy305@gmail.com)
+     * @since 0.0.1
+     */
+    private fun formatBlockCode() = load("javascript:formatBlock('pre')")
+
+    /**
+     * Method to get the current selection and do (any) actions on the result
+     *
+     * @author ebolo (daothanhduy305@gmail.com)
+     * @since 0.0.1
+     *
+     * @param callback ValueCallback<String>? action to do
+     */
+    fun getSelection(callback: ValueCallback<String>? = null) = load("javascript:getSelection()", callback)
+
+    /**
+     * Method to get the current style at the cursor and do (any) actions on it
+     *
+     * @author ebolo (daothanhduy305@gmail.com)
+     * @since 0.0.1
+     *
+     * @param callback ValueCallback<String>? action to do
+     */
+    private fun getStyle(callback: ValueCallback<String>? = null) = load("javascript:getStyle()", callback)
+
+    /**
+     * Private method to get the HTML content and do (any) actions on the result
+     * This method is to be utilized by the public ones
+     *
+     * @author ebolo (daothanhduy305@gmail.com)
+     * @since 0.0.1
+     *
+     * @param callBack ValueCallback<String> action to do
+     */
+    private fun getHtmlContent(callBack: ValueCallback<String>) = load("javascript:getHtmlContent()", callBack)
+
+    /**
+     * Method to get the HTML content and do (any) actions on the result
+     *
+     * @author ebolo (daothanhduy305@gmail.com)
+     * @since 0.0.1
+     *
+     * @param callback ValueCallback<String> action to do
+     */
+    fun getHtmlContent(callback: ((html: String) -> Unit)? = null) = getHtmlContent( ValueCallback { html ->
+        val escapedData = html
+                // There a bug? that the returned result has the unicode for < instead of the  char
+                // and has double \\. So we are escaping them here
+                .replace(oldValue = "\\u003C", newValue = "<")
+                .replace(oldValue = "\\\"", newValue = "\"")
+        callback?.invoke(escapedData.substring(startIndex = 1, endIndex = escapedData.length - 1))
+    } )
+
+    /**
+     * Method to allow setting the HTML content to the editor
+     *
+     * @author ebolo (daothanhduy305@gmail.com)
+     * @since 0.0.1
+     *
+     * @param htmlContent String
+     * @param replaceCurrentContent Boolean set to true replace the whole content, false to concatenate
+     */
+    fun setHtmlContent(
+            htmlContent: String,
+            replaceCurrentContent: Boolean = true
+    ) = load("javascript:setHtml('$htmlContent', $replaceCurrentContent)")
+
+    /**
+     * Method to get the HTML content and do (any) actions on the result - Java version
+     *
+     * @author ebolo (daothanhduy305@gmail.com)
+     * @since 0.0.1
+     *
+     * @param callback ValueCallback<String> action to do
+     */
+    fun getHtmlContent(callback: OnHtmlReturned) = getHtmlContent { callback.process(it) }
+
+    /**
+     * Private method to get the HTML content and do (any) actions on the result
+     *
+     * @author ebolo (daothanhduy305@gmail.com)
+     * @since 0.0.1
+     *
+     * @param callback ValueCallback<String> action to do
+     */
+    private fun getText(callback: ValueCallback<String>) = load("javascript:getText()", callback)
+
+    /**
+     * Method to get the text content and do (any) actions on the result
+     *
+     * @author ebolo (daothanhduy305@gmail.com)
+     * @since 0.0.1
+     *
+     * @param callback ValueCallback<String> action to do
+     */
+    fun getText(callback: ((text: String) -> Unit)?) = getText( ValueCallback {
+        callback?.invoke(it.substring(1, it.length - 1).replace("\\n", "\n"))
+    } )
+
+    /**
+     * Method to get the text content and do (any) actions on the result - Java version
+     *
+     * @author ebolo (daothanhduy305@gmail.com)
+     * @since 0.0.1
+     *
+     * @param callback ValueCallback<String> action to do
+     */
+    fun getText(callback: OnTextReturned) = getText { callback.process(it) }
+
+    /**
+     * Private method to get the delta content and do (any) actions on the result
+     *
+     * @author ebolo (daothanhduy305@gmail.com)
+     * @since 0.0.1
+     *
+     * @param callback ValueCallback<String> action to do
+     */
+    private fun getContents(callback: ValueCallback<String>) = load("javascript:getContents()", callback)
+
+    /**
+     * Method to get the delta content and do (any) actions on the result
+     *
+     * @author ebolo (daothanhduy305@gmail.com)
+     * @since 0.0.1
+     *
+     * @param callback ValueCallback<String> action to do
+     */
+    fun getContents(callback: ((text: String) -> Unit)?) = getContents( ValueCallback { callback?.invoke(it) } )
+
+    /**
+     * Method to get the delta content and do (any) actions on the result - Java version
+     *
+     * @author ebolo (daothanhduy305@gmail.com)
+     * @since 0.0.1
+     *
+     * @param callback ValueCallback<String> action to do
+     */
+    fun getContents(callback: OnContentsReturned) = getContents { callback.process(it) }
+
+    /**
+     * Method to set the delta content to the editor
+     *
+     * @author ebolo (daothanhduy305@gmail.com)
+     * @since 0.0.1
+     *
+     * @param data String delta content as string
+     */
+    fun setContents(data: String) = load("javascript:setContents($data)")
+
+    /**
+     * Method to format the current paragraph to the header styles
+     *
+     * @author ebolo (daothanhduy305@gmail.com)
+     * @since 0.0.1
+     *
+     * @param level Int 1 -> 6
+     */
     private fun header(level: Int) = load("javascript:header($level)")
+
+    /**
+     * Method to toggle the code view to the current paragraph
+     *
+     * @author ebolo (daothanhduy305@gmail.com)
+     * @since 0.0.1
+     */
+    private fun codeView() = load("javascript:codeView()")
+
+    // endregion
+
+    // region Advanced formatting
+
+    /**
+     * Method to allow inserting an image by url to a specific selection index
+     *
+     * @author ebolo (daothanhduy305@gmail.com)
+     * @since 0.0.1
+     *
+     * @param index Int
+     * @param url String
+     */
     private fun insertImage(index: Int, url: String) = load("javascript:insertEmbed($index, 'image', '$url')")
+
+    /**
+     * Method to allow inserting an image as base 64 data to a specific selection index
+     *
+     * @author ebolo (daothanhduy305@gmail.com)
+     * @since 0.0.1
+     *
+     * @param index Int
+     * @param path String path of the image to be converted to base 64
+     */
     private fun insertImageB64(index: Int, path: String) = doAsync {
         val type = path.split('.').last().toUpperCase()
         val bitmap = BitmapFactory.decodeFile(path)
@@ -193,53 +632,40 @@ class RichEditor {
             load("javascript:insertEmbed($index, 'image', 'data:image/${type.toLowerCase()};base64, $encodedImage')")
         }
     }
-    private fun createLink(linkUrl: String) = load("javascript:createLink('$linkUrl')")
-    private fun codeView() = load("javascript:codeView()")
-    // fun insertTable(colCount: Int, rowCount: Int) = load("javascript:insertTable('${colCount}x$rowCount')")
-    private fun insertHorizontalRule() = load("javascript:insertHorizontalRule()")
-    private fun formatBlockquote() = load("javascript:formatBlock('blockquote')")
-    private fun formatBlockCode() = load("javascript:formatBlock('pre')")
-    fun getSelection(callback: ValueCallback<String>? = null) = load("javascript:getSelection()", callback)
-    private fun getStyle(callback: ValueCallback<String>? = null) = load("javascript:getStyle()", callback)
-
-    private fun getHtmlContent(callBack: ValueCallback<String>) = load("javascript:getHtmlContent()", callBack)
-    fun getHtmlContent(callback: ((html: String) -> Unit)? = null) = getHtmlContent( ValueCallback { html ->
-        val escapedData = html
-                .replace(oldValue = "\\u003C", newValue = "<")
-                .replace(oldValue = "\\\"", newValue = "\"")
-        callback?.invoke(escapedData.substring(startIndex = 1, endIndex = escapedData.length - 1))
-    } )
-
-    fun setHtmlContent(
-            htmlContent: String,
-            replaceCurrentContent: Boolean = true
-    ) = load("javascript:setHtml('$htmlContent', $replaceCurrentContent)")
-
-    // This is only used in Java interface
-    interface OnHtmlReturned { fun process(html: String) }
-    fun getHtmlContent(callback: OnHtmlReturned) = getHtmlContent { callback.process(it) }
-
-    private fun getText(callback: ValueCallback<String>) = load("javascript:getText()", callback)
-    fun getText(callback: ((text: String) -> Unit)?) = getText( ValueCallback {
-        callback?.invoke(it.substring(1, it.length - 1).replace("\\n", "\n"))
-    } )
-    // This is only used in Java interface
-    interface OnTextReturned { fun process(text: String) }
-    fun getText(callback: OnTextReturned) = getText { callback.process(it) }
 
     /**
-     * Function:    getContents
-     * Description: Retrieves contents of the editor, with formatting data,
-     *              represented by a Delta object (https://quilljs.com/docs/delta/).
+     * Method to allow inserting a hyperlink
+     *
+     * @author ebolo (daothanhduy305@gmail.com)
+     * @since 0.0.1
+     *
+     * @param linkUrl String
      */
-    private fun getContents(callback: ValueCallback<String>) = load("javascript:getContents()", callback)
-    fun getContents(callback: ((text: String) -> Unit)?) = getContents( ValueCallback { callback?.invoke(it) } )
-    // This is only used in Java interface
-    interface OnContentsReturned { fun process(contents: String) }
-    fun getContents(callback: OnContentsReturned) = getContents { callback.process(it) }
+    private fun createLink(linkUrl: String) = load("javascript:createLink('$linkUrl')")
 
-    fun setContents(data: String) = load("javascript:setContents($data)")
+    // fun insertTable(colCount: Int, rowCount: Int) = load("javascript:insertTable('${colCount}x$rowCount')")
 
+    /**
+     * Method to insert a horizontal line
+     *
+     * @author ebolo (daothanhduy305@gmail.com)
+     * @since 0.0.1
+     */
+    private fun insertHorizontalRule() = load("javascript:insertHorizontalRule()")
+
+    // endregion
+
+    // endregion
+
+    /**
+     * Method to evaluate a script and do action on result via the callback
+     *
+     * @author ebolo (daothanhduy305@gmail.com)
+     * @since 0.0.1
+     *
+     * @param trigger String script to be evaluated
+     * @param callBack ValueCallback<String>?
+     */
     private fun load(trigger: String, callBack: ValueCallback<String>? = null) = mWebView.context.runOnUiThread {
         // Make sure every calls would be run on ui thread
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
@@ -250,9 +676,13 @@ class RichEditor {
     }
 
     /**
-     * Function:    command
-     * Description: A bridge between Jvm api and JS api
-     * @param   mActionType type of calling action
+     * A bridge between Jvm api and JS api
+     *
+     * @author ebolo (daothanhduy305@gmail.com)
+     * @since 0.0.1
+     *
+     * @param mActionType Int type of calling action
+     * @param options Array<out Any>
      */
     fun command(@EditorButton.Companion.ActionType mActionType: Int, vararg options: Any) {
         when (mActionType) {
@@ -305,5 +735,13 @@ class RichEditor {
         }
     }
 
+    /**
+     * Method to return if the current selection is a link
+     *
+     * @author ebolo (daothanhduy305@gmail.com)
+     * @since 0.0.1
+     *
+     * @return Boolean
+     */
     fun selectingLink() = !currentFormat.link.isNullOrBlank()
 }
