@@ -202,16 +202,22 @@ class RichEditor {
     fun getSelection(callback: ValueCallback<String>? = null) = load("javascript:getSelection()", callback)
     private fun getStyle(callback: ValueCallback<String>? = null) = load("javascript:getStyle()", callback)
 
-    private fun getHtml(callBack: ValueCallback<String>) = load("javascript:getHtml()", callBack)
-    fun getHtml(callback: ((html: String) -> Unit)? = null) = getHtml( ValueCallback { html ->
+    private fun getHtmlContent(callBack: ValueCallback<String>) = load("javascript:getHtmlContent()", callBack)
+    fun getHtmlContent(callback: ((html: String) -> Unit)? = null) = getHtmlContent( ValueCallback { html ->
         val escapedData = html
                 .replace(oldValue = "\\u003C", newValue = "<")
                 .replace(oldValue = "\\\"", newValue = "\"")
         callback?.invoke(escapedData.substring(startIndex = 1, endIndex = escapedData.length - 1))
     } )
+
+    fun setHtmlContent(
+            htmlContent: String,
+            replaceCurrentContent: Boolean = true
+    ) = load("javascript:setHtml('$htmlContent', $replaceCurrentContent)")
+
     // This is only used in Java interface
     interface OnHtmlReturned { fun process(html: String) }
-    fun getHtml(callback: OnHtmlReturned) = getHtml( { callback.process(it) } )
+    fun getHtmlContent(callback: OnHtmlReturned) = getHtmlContent { callback.process(it) }
 
     private fun getText(callback: ValueCallback<String>) = load("javascript:getText()", callback)
     fun getText(callback: ((text: String) -> Unit)?) = getText( ValueCallback {
@@ -219,7 +225,7 @@ class RichEditor {
     } )
     // This is only used in Java interface
     interface OnTextReturned { fun process(text: String) }
-    fun getText(callback: OnTextReturned) = getText( { callback.process(it) } )
+    fun getText(callback: OnTextReturned) = getText { callback.process(it) }
 
     /**
      * Function:    getContents
@@ -230,7 +236,7 @@ class RichEditor {
     fun getContents(callback: ((text: String) -> Unit)?) = getContents( ValueCallback { callback?.invoke(it) } )
     // This is only used in Java interface
     interface OnContentsReturned { fun process(contents: String) }
-    fun getContents(callback: OnContentsReturned) = getContents( { callback.process(it) } )
+    fun getContents(callback: OnContentsReturned) = getContents { callback.process(it) }
 
     fun setContents(data: String) = load("javascript:setContents($data)")
 
@@ -247,8 +253,6 @@ class RichEditor {
      * Function:    command
      * Description: A bridge between Jvm api and JS api
      * @param   mActionType type of calling action
-     * @param   reFocus     we disable the editor as a workaround when menu is shown,
-     *                      by setting this to true would make the editor have the focus again
      */
     fun command(@EditorButton.Companion.ActionType mActionType: Int, vararg options: Any) {
         when (mActionType) {

@@ -89,7 +89,7 @@ class MainActivity : AppCompatActivity() {
         // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
             R.id.action_html -> {
-                editorFragment.editor.getHtml { html ->
+                editorFragment.editor.getHtmlContent { html ->
                     runOnUiThread { alert(message = html, title = "HTML").show() }
                 }
                 true
@@ -98,6 +98,10 @@ class MainActivity : AppCompatActivity() {
                 editorFragment.editor.getText { text ->
                     runOnUiThread { alert(message = text, title = "Text").show() }
                 }
+                true
+            }
+            R.id.action_set_html -> {
+                editorFragment.editor.setHtmlContent("<strong>This is a test HTML content</strong>")
                 true
             }
             else -> super.onOptionsItemSelected(item)

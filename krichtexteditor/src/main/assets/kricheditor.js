@@ -127,6 +127,13 @@ function updateCurrentStyle() { KRichEditor.updateCurrentStyle(JSON.stringify(qu
 function getStyle() { return quill.getFormat(); }
 function getSelection() { return quill.getSelection(); }
 function getHtml() { return quill.root.innerHTML; }
+function setHtml(htmlContent, replaceCurrentContent) {
+    if (replaceCurrentContent) {
+        quill.root.innerHTML = htmlContent;
+    } else {
+        quill.root.innerHTML += htmlContent;
+    }
+}
 function getText() { return quill.getText(); }
 function getContents() { return quill.getContents(); }
 function setContents(data) { quill.setContents(data); }

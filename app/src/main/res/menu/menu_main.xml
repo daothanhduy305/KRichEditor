@@ -10,4 +10,8 @@
         android:id="@+id/action_text"
         android:title="@string/action_text"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/action_set_html"
+        android:title="@string/action_set_html"
+        app:showAsAction="never" />
 </menu>

@@ -103,7 +103,7 @@ public class JavaActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_html:
-                editorFragment.getEditor().getHtml( new RichEditor.OnHtmlReturned() {
+                editorFragment.getEditor().getHtmlContent(new RichEditor.OnHtmlReturned() {
                     @Override
                     public void process(@NotNull final String html) {
                         runOnUiThread( new Runnable() {
@@ -127,6 +127,9 @@ public class JavaActivity extends AppCompatActivity {
                         } );
                     }
                 });
+                return true;
+            case R.id.action_set_html:
+                editorFragment.getEditor().setHtmlContent("<strong>This is a test HTML content</strong>", true);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

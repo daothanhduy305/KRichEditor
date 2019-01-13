@@ -4,4 +4,5 @@
     <string name="action_done">Done</string>
     <string name="action_html">Show HTML</string>
     <string name="action_text">Show text</string>
+    <string name="action_set_html">Set HTML</string>
 </resources>
