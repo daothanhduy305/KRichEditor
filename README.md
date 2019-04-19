@@ -1,3 +1,4 @@
+[![](https://jitpack.io/v/RahulSDeshpande/KRichEditor.svg)](https://jitpack.io/#RahulSDeshpande/KRichEditor)
 [![API](https://img.shields.io/badge/API-17%2B-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=17)
 [ ![Download](https://api.bintray.com/packages/ebolo/ebolo-oss/krichtexteditor/images/download.svg)](https://bintray.com/ebolo/ebolo-oss/krichtexteditor/_latestVersion)
 [![](https://jitpack.io/v/daothanhduy305/KRichEditor.svg)](https://jitpack.io/#daothanhduy305/KRichEditor)
