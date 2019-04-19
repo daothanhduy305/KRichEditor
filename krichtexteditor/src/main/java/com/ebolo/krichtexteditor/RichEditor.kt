@@ -464,7 +464,9 @@ class RichEditor {
      *
      * @param callBack ValueCallback<String> action to do
      */
-    private fun getHtmlContent(callBack: ValueCallback<String>) = load("javascript:getHtmlContent()", callBack)
+    // Correcting javascript method name from `getHtmlContent()' to 'getHtml()'
+    // private fun getHtmlContent(callBack: ValueCallback<String>) = load("javascript:getHtmlContent()", callBack)
+    private fun getHtmlContent(callBack: ValueCallback<String>) = load("javascript:getHtml()", callBack)
 
     /**
      * Method to get the HTML content and do (any) actions on the result
