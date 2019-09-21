@@ -1,9 +1,9 @@
 package com.ebolo.krichtexteditor.ui.widgets
 
 import android.content.Context
-import android.support.v4.content.ContextCompat
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.core.content.ContextCompat
 import com.bitbucket.eventbus.EventBus
 import com.ebolo.krichtexteditor.R
 import com.ebolo.krichtexteditor.RichEditor

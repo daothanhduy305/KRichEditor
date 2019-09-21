@@ -1,6 +1,6 @@
 package com.ebolo.krichtexteditor.ui.widgets
 
-import android.support.annotation.IntRange
+import androidx.annotation.IntRange
 import com.ebolo.krichtexteditor.R
 
 class EditorButton(val type: Int) {

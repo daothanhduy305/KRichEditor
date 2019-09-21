@@ -1,8 +1,6 @@
 package com.ebolo.krichtexteditor.ui.layouts
 
 import android.annotation.SuppressLint
-import android.support.design.widget.TextInputEditText
-import android.support.v4.content.ContextCompat
 import android.text.InputType
 import android.view.Gravity
 import android.view.Gravity.CENTER_VERTICAL
@@ -16,6 +14,7 @@ import android.webkit.WebViewClient
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import com.bitbucket.eventbus.EventBus
 import com.ebolo.krichtexteditor.R
 import com.ebolo.krichtexteditor.fragments.KRichEditorFragment
@@ -56,6 +55,7 @@ import com.ebolo.krichtexteditor.ui.widgets.EditorToolbar
 import com.ebolo.krichtexteditor.ui.widgets.TextEditorWebView
 import com.ebolo.krichtexteditor.utils.rgbToHex
 import com.github.salomonbrys.kotson.fromJson
+import com.google.android.material.textfield.TextInputEditText
 import com.google.gson.Gson
 import org.jetbrains.anko.*
 import org.jetbrains.anko.custom.ankoView
