@@ -6,7 +6,7 @@ ext {
     // compile '<groupId>:<artifactId>:<libVersion>'
     groupId = 'com.ebolo' // package name of the project
     artifactId = "krichtexteditor" // module name of the library
-    libVersion = "0.0.5"
+    libVersion = "0.0.6"
 }
 version = libVersion
 group = groupId
