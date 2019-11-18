@@ -18,6 +18,7 @@ import androidx.core.content.ContextCompat
 import com.bitbucket.eventbus.EventBus
 import com.ebolo.krichtexteditor.R
 import com.ebolo.krichtexteditor.fragments.KRichEditorFragment
+import com.ebolo.krichtexteditor.fragments.Options
 import com.ebolo.krichtexteditor.ui.actionImageViewStyle
 import com.ebolo.krichtexteditor.ui.widgets.ColorPaletteView
 import com.ebolo.krichtexteditor.ui.widgets.EditorButton
@@ -86,7 +87,7 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
     // Customizable settings
     var placeHolder = "Start writing..."
     var imageButtonAction: (() -> Unit)? = null
-    var showToolbar = true
+    var showToolbar = Options().showToolbar
 
     // Default buttons layout
     var buttonsLayout = listOf(
