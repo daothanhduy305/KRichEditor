@@ -87,7 +87,7 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
     // Customizable settings
     var placeHolder = "Start writing..."
     var imageButtonAction: (() -> Unit)? = null
-    var showToolbar = Options().showToolbar
+    var showToolbar = true
 
     // Default buttons layout
     var buttonsLayout = listOf(
