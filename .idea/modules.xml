@@ -3,6 +3,9 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/KRichEditor.iml" filepath="$PROJECT_DIR$/KRichEditor.iml" />
+      <module fileurl="file://$PROJECT_DIR$/KRichEditorSmarp.iml" filepath="$PROJECT_DIR$/KRichEditorSmarp.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/KRichEditorSmarp-app.iml" filepath="$PROJECT_DIR$/app/KRichEditorSmarp-app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/krichtexteditor/KRichEditorSmarp-krichtexteditor.iml" filepath="$PROJECT_DIR$/krichtexteditor/KRichEditorSmarp-krichtexteditor.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/krichtexteditor/krichtexteditor.iml" filepath="$PROJECT_DIR$/krichtexteditor/krichtexteditor.iml" />
     </modules>

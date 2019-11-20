@@ -25,7 +25,7 @@ class EditorToolbar(private val editor: RichEditor, private val buttonsLayout: L
             fun createButton(@EditorButton.Companion.ActionType actionType: Int) = imageView(
                     EditorButton.actionButtonDrawables[actionType]!!
             ) {
-                padding = dip(8)
+                padding = dip(12)
                 backgroundResource = R.drawable.btn_colored_material
 
                 onClick {

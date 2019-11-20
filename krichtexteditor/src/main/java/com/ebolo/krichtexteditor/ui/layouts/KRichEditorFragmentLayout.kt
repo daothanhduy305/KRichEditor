@@ -242,11 +242,13 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
                         gravity = CENTER_VERTICAL
 
                         menuButton = imageView(R.drawable.ic_action) {
+                            visibility = View.GONE   // not Required
                             padding = dip(10)
 
                             onClick {
                                 // Toggle editor menu
                                 when (editorMenu.visibility) {
+
                                     View.VISIBLE -> hideMenu()
                                     else -> showMenu()
                                 }
