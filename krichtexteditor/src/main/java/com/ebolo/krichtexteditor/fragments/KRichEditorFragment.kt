@@ -43,6 +43,7 @@ class KRichEditorFragment: Fragment() {
                 buttonsLayout = options.buttonsLayout
                 buttonActivatedColorId = options.buttonActivatedColorId
                 buttonDeactivatedColorId = options.buttonDeactivatedColorId
+                showToolbar = options.showToolbar
             }
         }
     }
