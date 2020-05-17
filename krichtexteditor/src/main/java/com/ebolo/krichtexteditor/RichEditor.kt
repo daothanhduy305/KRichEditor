@@ -1,10 +1,12 @@
 package com.ebolo.krichtexteditor
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Build
 import android.util.Base64
 import android.util.Log
+import android.view.inputmethod.InputMethodManager
 import android.webkit.JavascriptInterface
 import android.webkit.ValueCallback
 import android.webkit.WebView
@@ -41,6 +43,7 @@ import org.jetbrains.anko.runOnUiThread
 import org.jetbrains.anko.toast
 import org.jetbrains.anko.uiThread
 import java.io.ByteArrayOutputStream
+
 
 /**
  * Rich Editor = Rich Editor Action + Rich Editor Callback
@@ -271,8 +274,16 @@ class RichEditor {
      *
      * @author ebolo (daothanhduy305@gmail.com)
      * @since 0.0.1
+     *
+     * @param showKeyboard Set to true to implicitly show keyboard after focus
      */
-    fun focus() = load("javascript:focus()")
+    fun focus(showKeyboard: Boolean = false) = run {
+        mWebView.requestFocus()
+        load("javascript:focus()")
+        if (showKeyboard)
+            (mWebView.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?)
+                    ?.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, 0)
+    }
 
     /**
      * Method to disable the editor
