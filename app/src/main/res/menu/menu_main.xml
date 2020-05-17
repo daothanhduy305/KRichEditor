@@ -14,4 +14,8 @@
         android:id="@+id/action_set_html"
         android:title="@string/action_set_html"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/action_save_content"
+        android:title="@string/action_save_content"
+        app:showAsAction="never" />
 </menu>

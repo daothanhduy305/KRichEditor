@@ -44,6 +44,8 @@ class KRichEditorFragment: Fragment() {
                 buttonActivatedColorId = options.buttonActivatedColorId
                 buttonDeactivatedColorId = options.buttonDeactivatedColorId
                 showToolbar = options.showToolbar
+                readOnly = options.readOnly
+                onInitialized = options.onInitialized
             }
         }
     }
@@ -56,6 +58,9 @@ fun kRichEditorFragment(
     this.retainInstance = true
 }
 
+/**
+ * Class serve as a container of options to be transmitted to the editor to set it up
+ */
 class Options {
     var placeHolder: String = "Start writing..."
     var imageButtonAction: (() -> Unit)? = null
@@ -93,20 +98,47 @@ class Options {
     var buttonDeactivatedColorId: Int = R.color.tintColor
     var onInitialized: (() -> Unit)? = null
     var showToolbar = true
+    var readOnly = false
 
+    /**
+     * Method to setup the placeholder text for the web view text area
+     */
     fun placeHolder(text: String) = this.apply { placeHolder = text }
 
+    /**
+     * Define the call back to be executed when the image button is clicked
+     */
     fun onImageButtonClicked(action: Runnable) = this.apply { imageButtonAction = { action.run() } }
 
+    /**
+     * Define the custom layout for the buttons toolbar
+     */
     fun buttonLayout(layout: List<Int>) = this.apply { buttonsLayout = layout }
 
+    /**
+     * Define the color of the activated buttons in the toolbar
+     */
     fun buttonActivatedColorResource(res: Int) = this.apply { buttonActivatedColorId = res }
 
+    /**
+     * Define the color of the de-ctivated buttons in the toolbar
+     */
     fun buttonDeactivatedColorResource(res: Int) = this.apply { buttonDeactivatedColorId = res }
 
+    /**
+     * Define the callback to be executed on editor initialized
+     */
     fun onInitialized(action: Runnable) = this.apply { onInitialized = { action.run() } }
 
+    /**
+     * Define whether the toolbar must be hidden or not
+     */
     fun showToolbar(show: Boolean) = this.apply { showToolbar = show }
+
+    /**
+     * Define whether the text view is disabled or not (read only)
+     */
+    fun readOnly(disable: Boolean) = this.apply { readOnly = disable }
 
     companion object {
         @JvmField val DEFAULT = Options()

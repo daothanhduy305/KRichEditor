@@ -87,6 +87,7 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
     var placeHolder = "Start writing..."
     var imageButtonAction: (() -> Unit)? = null
     var showToolbar = true
+    var readOnly = false
 
     // Default buttons layout
     var buttonsLayout = listOf(
@@ -222,7 +223,11 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
                 editor.apply {
                     mWebView = this@ankoView
                     placeHolder = this@KRichEditorFragmentLayout.placeHolder
-                    onInitialized = this@KRichEditorFragmentLayout.onInitialized
+                    onInitialized = {
+                        this@KRichEditorFragmentLayout.onInitialized?.invoke()
+
+                        if (readOnly) editor.disable()
+                    }
                 }
                 addJavascriptInterface(editor, "KRichEditor")
 
@@ -267,6 +272,8 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
                             buttonDeactivatedColorId = this@KRichEditorFragmentLayout.buttonDeactivatedColorId
                         }
                         editorToolbar.createToolbar(this)
+
+                        if (readOnly) visibility = View.GONE
 
                     }.lparams(width = matchParent, height = wrapContent)
 
@@ -612,56 +619,58 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
         rootView!!
     }
 
-    fun setupListeners(fragment: KRichEditorFragment) = if (showToolbar) {
-        // Setup ui handlers for editor menu
-        eventBus.on("style", "style_$SIZE") {
-            fragment.runOnUiThread { fontSizeTextView.text = (it as String) }
-        }
+    fun setupListeners(fragment: KRichEditorFragment) {
+        if (showToolbar) {
+            // Setup ui handlers for editor menu
+            eventBus.on("style", "style_$SIZE") {
+                fragment.runOnUiThread { fontSizeTextView.text = (it as String) }
+            }
 
-        eventBus.on("style", "style_$FORE_COLOR") {
-            val selectedColor = rgbToHex(it as String)
-            if (selectedColor != null)
-                fragment.runOnUiThread { textColorPalette.selectedColor = selectedColor }
-        }
+            eventBus.on("style", "style_$FORE_COLOR") {
+                val selectedColor = rgbToHex(it as String)
+                if (selectedColor != null)
+                    fragment.runOnUiThread { textColorPalette.selectedColor = selectedColor }
+            }
 
-        eventBus.on("style", "style_$BACK_COLOR") {
-            val selectedColor = rgbToHex(it as String)
-            if (selectedColor != null)
-                fragment.runOnUiThread { highlightColorPalette.selectedColor = selectedColor }
-        }
+            eventBus.on("style", "style_$BACK_COLOR") {
+                val selectedColor = rgbToHex(it as String)
+                if (selectedColor != null)
+                    fragment.runOnUiThread { highlightColorPalette.selectedColor = selectedColor }
+            }
 
-        listOf(NORMAL, H1, H2, H3, H4, H5, H6).forEach { style ->
-            eventBus.on("style", "style_$style") {
-                val state = it as Boolean
-                fragment.runOnUiThread {
-                    menuFormatHeadingBlocks[style]?.backgroundResource = when {
-                        state -> R.drawable.round_rectangle_blue
-                        else -> R.drawable.round_rectangle_white
+            listOf(NORMAL, H1, H2, H3, H4, H5, H6).forEach { style ->
+                eventBus.on("style", "style_$style") {
+                    val state = it as Boolean
+                    fragment.runOnUiThread {
+                        menuFormatHeadingBlocks[style]?.backgroundResource = when {
+                            state -> R.drawable.round_rectangle_blue
+                            else -> R.drawable.round_rectangle_white
+                        }
                     }
                 }
             }
-        }
 
-        listOf(
-                BOLD, ITALIC, UNDERLINE, STRIKETHROUGH, JUSTIFY_CENTER, JUSTIFY_FULL, JUSTIFY_LEFT,
-                JUSTIFY_RIGHT, SUBSCRIPT, SUPERSCRIPT, CODE_VIEW, BLOCK_CODE, BLOCK_QUOTE, LINK
-        ).forEach { style ->
-            eventBus.on("style", "style_$style") {
-                val state = it as Boolean
-                fragment.runOnUiThread {
-                    menuFormatButtons[style]?.setColorFilter(ContextCompat.getColor(
-                            fragment.context!!,
-                            when {
-                                state -> buttonActivatedColorId
-                                else -> buttonDeactivatedColorId
-                            }
-                    ) )
+            listOf(
+                    BOLD, ITALIC, UNDERLINE, STRIKETHROUGH, JUSTIFY_CENTER, JUSTIFY_FULL, JUSTIFY_LEFT,
+                    JUSTIFY_RIGHT, SUBSCRIPT, SUPERSCRIPT, CODE_VIEW, BLOCK_CODE, BLOCK_QUOTE, LINK
+            ).forEach { style ->
+                eventBus.on("style", "style_$style") {
+                    val state = it as Boolean
+                    fragment.runOnUiThread {
+                        menuFormatButtons[style]?.setColorFilter(ContextCompat.getColor(
+                                fragment.context!!,
+                                when {
+                                    state -> buttonActivatedColorId
+                                    else -> buttonDeactivatedColorId
+                                }
+                        ) )
+                    }
                 }
             }
-        }
 
-        editorToolbar.setupListeners(fragment.context!!)
-    } else {} // Do nothing as this is not necessary
+            editorToolbar.setupListeners(fragment.context!!)
+        }
+    } // Else do nothing as this is not necessary
 
     fun removeListeners() { if (showToolbar) eventBus.unsubscribe("style") }
 }

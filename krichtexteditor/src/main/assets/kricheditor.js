@@ -14,7 +14,7 @@ var initEditor = function(){
       if (range) {
         updateCurrentStyle();
       } else {
-        console.log('Cursor not in the editor');
+        // console.log('Cursor not in the editor');
       }
     });
     quill.focus();

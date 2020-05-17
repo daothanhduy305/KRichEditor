@@ -132,6 +132,14 @@ public class JavaActivity extends AppCompatActivity {
             case R.id.action_set_html:
                 editorFragment.getEditor().setHtmlContent("<strong>This is a test HTML content</strong>", true);
                 return true;
+            case R.id.action_save_content:
+                editorFragment.getEditor().getContents(new RichEditor.OnContentsReturned() {
+                    @Override
+                    public void process(@NotNull String contents) {
+                        Paper.book("demo").write("content", contents);
+                    }
+                });
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }

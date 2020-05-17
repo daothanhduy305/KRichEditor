@@ -104,6 +104,12 @@ class MainActivity : AppCompatActivity() {
                 editorFragment.editor.setHtmlContent("<strong>This is a test HTML content</strong>")
                 true
             }
+            R.id.action_save_content -> {
+                editorFragment.editor.getContents{ contents -> // String
+                    Paper.book("demo").write("content", contents)
+                }
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }
