@@ -20,9 +20,9 @@ class KRichEditorFragment: Fragment() {
             inflater: LayoutInflater,
             container: ViewGroup?,
             savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         layout.apply { settings?.invoke(this) }
-        return layout.createView(AnkoContext.create(context!!, this))
+        return layout.createView(AnkoContext.create(requireContext(), this))
     }
 
     override fun onResume() {

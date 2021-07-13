@@ -7,7 +7,6 @@ import android.view.Gravity.CENTER_VERTICAL
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -159,7 +158,7 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
                     else -> imageButtonAction!!.invoke()
                 }
                 LINK -> {
-                    editor.getSelection( ValueCallback { value ->
+                    editor.getSelection { value ->
                         val selection = Gson().fromJson<Map<String, Int>>(value)
                         if (selection["length"]!! > 0) {
                             if (!editor.selectingLink()) {
@@ -186,19 +185,22 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
                                     yesButton {
                                         val urlValue = addressInput?.text.toString()
                                         if (urlValue.startsWith("http://", true)
-                                                || urlValue.startsWith("https://", true)) {
+                                            || urlValue.startsWith("https://", true)
+                                        ) {
                                             hideMenu()
                                             editor.command(LINK, urlValue)
-                                        }
-                                        else toast(ui.owner.context!!.getString(R.string.link_missing_protocol))
+                                        } else toast(
+                                            ui.owner
+                                                .requireContext()
+                                                .getString(R.string.link_missing_protocol)
+                                        )
                                     }
 
-                                    noButton {  }
+                                    noButton { }
                                 }.show()
-                            }
-                            else editor.command(LINK,"")
+                            } else editor.command(LINK, "")
                         } else rootView!!.longSnackbar(R.string.link_empty_warning).show()
-                    } )
+                    }
                 }
                 else -> editor.command(type)
             }
@@ -416,7 +418,7 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
 
                                         highlightColorPalette = ankoView(::ColorPaletteView, 0) {
                                             backgroundResource = R.drawable.round_rectangle_white
-                                            gravity = android.view.Gravity.CENTER
+                                            gravity = Gravity.CENTER
 
                                             onColorChange { onMenuButtonClicked(BACK_COLOR, this.selectedColor) }
                                         }.lparams(width = wrapContent, height = wrapContent) { weight = 1f }
@@ -599,7 +601,7 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
 
                                         insertButton(CHECK, R.drawable.ic_format_list_check)
                                         insertButton(IMAGE, R.drawable.ic_insert_photo)
-                                        menuFormatButtons.put(LINK, insertButton(LINK, R.drawable.ic_insert_link))
+                                        menuFormatButtons[LINK] = insertButton(LINK, R.drawable.ic_insert_link)
                                         // insertButton(R.drawable.ic_table, R.id.iv_action_table)
                                         insertButton(CODE_VIEW, R.drawable.ic_code_review)
 
@@ -658,7 +660,7 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
                     val state = it as Boolean
                     fragment.runOnUiThread {
                         menuFormatButtons[style]?.setColorFilter(ContextCompat.getColor(
-                                fragment.context!!,
+                                fragment.requireContext(),
                                 when {
                                     state -> buttonActivatedColorId
                                     else -> buttonDeactivatedColorId
@@ -668,7 +670,7 @@ class KRichEditorFragmentLayout : AnkoComponent<KRichEditorFragment> {
                 }
             }
 
-            editorToolbar.setupListeners(fragment.context!!)
+            editorToolbar.setupListeners(fragment.requireContext())
         }
     } // Else do nothing as this is not necessary
 

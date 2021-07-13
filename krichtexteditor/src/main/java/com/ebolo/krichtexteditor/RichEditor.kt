@@ -43,6 +43,7 @@ import org.jetbrains.anko.runOnUiThread
 import org.jetbrains.anko.toast
 import org.jetbrains.anko.uiThread
 import java.io.ByteArrayOutputStream
+import java.util.*
 
 
 /**
@@ -165,9 +166,12 @@ class RichEditor {
      * @author ebolo (daothanhduy305@gmail.com)
      * @since 0.0.1
      */
-    fun refreshStyle() = getStyle( ValueCallback {
-        try { updateStyle(gson.fromJson(it)) } catch (e: Exception) {} // ignored
-    } )
+    fun refreshStyle() = getStyle {
+        try {
+            updateStyle(gson.fromJson(it))
+        } catch (e: Exception) {
+        } // ignored
+    }
 
     /**
      * Private function to update the current style of the editor
@@ -635,14 +639,14 @@ class RichEditor {
      * @param path String path of the image to be converted to base 64
      */
     private fun insertImageB64(index: Int, path: String) = doAsync {
-        val type = path.split('.').last().toUpperCase()
+        val type = path.split('.').last().uppercase(Locale.getDefault())
         val bitmap = BitmapFactory.decodeFile(path)
         val stream = ByteArrayOutputStream().apply {
-            bitmap.compress(Bitmap.CompressFormat.WEBP, 100, this)
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, this)
         }
         val encodedImage = Base64.encodeToString(stream.toByteArray(), Base64.NO_WRAP)
         uiThread {
-            load("javascript:insertEmbed($index, 'image', 'data:image/${type.toLowerCase()};base64, $encodedImage')")
+            load("javascript:insertEmbed($index, 'image', 'data:image/${type.lowercase(Locale.getDefault())};base64, $encodedImage')")
         }
     }
 
@@ -701,48 +705,53 @@ class RichEditor {
         when (mActionType) {
             EditorButton.UNDO -> undo()
             EditorButton.REDO -> redo()
-            EditorButton.BOLD -> bold()
-            EditorButton.ITALIC -> italic()
-            EditorButton.UNDERLINE -> underline()
-            EditorButton.SUBSCRIPT -> script("sub")
-            EditorButton.SUPERSCRIPT -> script("super")
-            EditorButton.STRIKETHROUGH -> strikethrough()
-            EditorButton.NORMAL -> header(0)
-            EditorButton.H1 -> header(1)
-            EditorButton.H2 -> header(2)
-            EditorButton.H3 -> header(3)
-            EditorButton.H4 -> header(4)
-            EditorButton.H5 -> header(5)
-            EditorButton.H6 -> header(6)
-            EditorButton.JUSTIFY_LEFT -> align("")
-            EditorButton.JUSTIFY_CENTER -> align("center")
-            EditorButton.JUSTIFY_RIGHT -> align("right")
-            EditorButton.JUSTIFY_FULL -> align("justify")
-            EditorButton.ORDERED -> insertOrderedList()
-            EditorButton.UNORDERED -> insertUnorderedList()
+            BOLD -> bold()
+            ITALIC -> italic()
+            UNDERLINE -> underline()
+            SUBSCRIPT -> script("sub")
+            SUPERSCRIPT -> script("super")
+            STRIKETHROUGH -> strikethrough()
+            NORMAL -> header(0)
+            H1 -> header(1)
+            H2 -> header(2)
+            H3 -> header(3)
+            H4 -> header(4)
+            H5 -> header(5)
+            H6 -> header(6)
+            JUSTIFY_LEFT -> align("")
+            JUSTIFY_CENTER -> align("center")
+            JUSTIFY_RIGHT -> align("right")
+            JUSTIFY_FULL -> align("justify")
+            ORDERED -> insertOrderedList()
+            UNORDERED -> insertUnorderedList()
             EditorButton.CHECK -> insertCheckList()
             EditorButton.INDENT -> indent()
             EditorButton.OUTDENT -> outdent()
             EditorButton.LINE -> insertHorizontalRule()
             EditorButton.BLOCK_QUOTE -> formatBlockquote()
             EditorButton.BLOCK_CODE -> formatBlockCode()
-            EditorButton.CODE_VIEW -> codeView()
-            EditorButton.LINK -> try {
+            CODE_VIEW -> codeView()
+            LINK -> try {
                 createLink(options[0] as String)
             } catch (e: Exception) { mWebView.context.toast("Wrong param(s)!") }
-            EditorButton.IMAGE -> getSelection( ValueCallback {
+            EditorButton.IMAGE -> getSelection {
                 try {
                     // Check params
                     if (options.size < 2) mWebView.context.toast("Missing param(s)!")
                     else {
                         val selection = Gson().fromJson<Map<String, Int>>(it)
                         // BASE64 mode and URL mode
-                        if (options[0] as Boolean) insertImageB64(selection["index"]!!, options[1] as String)
+                        if (options[0] as Boolean) insertImageB64(
+                            selection["index"]!!,
+                            options[1] as String
+                        )
                         else insertImage(selection["index"]!!, options[1] as String)
                     }
-                } catch (e: Exception) { mWebView.context.toast("Something went wrong! Param?") }
-            } )
-            EditorButton.SIZE -> fontSize(options[0] as String)
+                } catch (e: Exception) {
+                    mWebView.context.toast("Something went wrong! Param?")
+                }
+            }
+            SIZE -> fontSize(options[0] as String)
             EditorButton.FORE_COLOR -> foreColor(options[0] as String)
             EditorButton.BACK_COLOR -> backColor(options[0] as String)
         }

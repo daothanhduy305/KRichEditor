@@ -9,6 +9,7 @@ import android.widget.LinearLayout
 import org.jetbrains.anko.dip
 import org.jetbrains.anko.linearLayout
 import org.jetbrains.anko.padding
+import java.util.*
 
 /**
  * Color PaletteView
@@ -32,8 +33,8 @@ class ColorPaletteView(context: Context): HorizontalScrollView(context) {
 
     var selectedColor: String = ""
         set(value) {
-            require(!value.isBlank()) { return }
-            field = value.toUpperCase()
+            require(value.isNotBlank()) { return }
+            field = value.uppercase(Locale.getDefault())
 
             colorViews.forEach { it.value.isSelected = it.key == field }
         }
